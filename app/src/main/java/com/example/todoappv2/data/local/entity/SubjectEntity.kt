@@ -8,7 +8,7 @@ data class SubjectEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     val name: String,
-    val colorHex: String,
+    val colorHex: Long,
     val createdAt: Long =  System.currentTimeMillis()
 )
 
