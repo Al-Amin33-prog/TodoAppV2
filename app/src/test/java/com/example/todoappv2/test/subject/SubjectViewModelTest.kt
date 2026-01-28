@@ -23,7 +23,7 @@ class SubjectViewModelTest {
         viewModel = SubjectViewModel(repository)
     }
     @Test
-    fun `adding subject updates subjects list`() = runTest {
+    fun addingSubjectUpdatesSubjectsList() = runTest {
         viewModel.onEvent(SubjectEvent.AddSubject("Mathematics"))
 
         val state = viewModel.uiState.value
