@@ -30,7 +30,7 @@ class SubjectViewModelTest {
         assertEquals(1, state.subjects.size)
         assertEquals("Mathematics",state.subjects.first().name)
     }
-    fun deletingSubjectsRemovesItFromState() = runTest {
+    fun deletingSubjectsRemoveItFromState() = runTest {
 
     }
   }
