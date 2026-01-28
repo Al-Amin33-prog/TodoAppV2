@@ -6,7 +6,7 @@ import com.example.todoappv2.data.local.entity.TaskEntity
 @Composable
 fun TaskFilter(
     selectedFilter: TaskFilterType,
-    onFilterSelected: (TaskEntity) -> Unit
+    onFilterSelected: (TaskFilterType) -> Unit
 ){
 
 }
