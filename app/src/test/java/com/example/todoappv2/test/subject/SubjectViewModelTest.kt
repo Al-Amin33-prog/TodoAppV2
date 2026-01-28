@@ -1,6 +1,7 @@
 package com.example.todoappv2.test.subject
 
 
+import com.example.todoappv2.data.local.entity.SubjectEntity
 import com.example.todoappv2.subject.SubjectEvent
 import com.example.todoappv2.subject.SubjectViewModel
 import com.example.todoappv2.test.data.repository.FakeAppRepository
@@ -31,6 +32,17 @@ class SubjectViewModelTest {
         assertEquals("Mathematics",state.subjects.first().name)
     }
     fun deletingSubjectDeleteSubjectsList() = runTest {
+       val subject = SubjectEntity(
+           1L,
+           "Physics",
+           0xFF2563EB,
+           createdAt = System.currentTimeMillis()
+       )
+        repository.insertSubject(subject)
+        viewModel.onEvent(SubjectEvent.DeleteSubject(subject))
+
+        val state = viewModel.uiState.value
+        assertEquals(0,state.subjects.size)
 
     }
   }
