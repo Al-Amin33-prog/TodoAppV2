@@ -73,10 +73,13 @@ class TaskViewModel (
                 }
             }
             is TaskEvent.ChangeFilter -> {
-                val tasks = uiState.value.allTasks
+                val filtered = applyFilterTasks(
+                    _uiState.value.allTasks,
+                    event.filter
+                )
                 _uiState.value = _uiState.value.copy(
                     filter = event.filter,
-                    visibleTasks = applyFilterTasks(tasks, event.filter)
+                    visibleTasks = filtered
                 )
             }
         }
