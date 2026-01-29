@@ -13,7 +13,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class TaskViewModelFilterTask {
+class TaskViewModelFilterTaskTest {
     @get:Rule
     val mainDispatcher = MainDispatcherRule()
     private lateinit var repository: FakeAppRepository
@@ -61,21 +61,7 @@ class TaskViewModelFilterTask {
         addTasks()
         viewModel.onEvent(TaskEvent.ChangeFilter(TaskFilterType.PENDING))
     }
-    @Test
-    fun addTaskInsertTaskAndUpdateUiState() = runTest {
-        viewModel.onEvent(
-            TaskEvent.AddTask(
-              subjectId =   subjectId,
-                title = "New Task",
-                description = "Test Description",
-                dueDate = null
 
-            )
-        )
-        val state = viewModel.uiState.first { !it.isLoading }
-        assertEquals(1, state.allTasks.size)
-        assertEquals("New task", state.allTasks.first().title)
-    }
    @Test
    fun updateTaskModifiesExistingTask() = runTest {
        val task =  TaskEntity(

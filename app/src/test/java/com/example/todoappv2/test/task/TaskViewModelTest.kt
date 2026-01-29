@@ -40,4 +40,5 @@ class TaskViewModelTest {
         assertEquals(1,state.visibleTasks.size)
         assertEquals("Test Task", state.visibleTasks.first().title)
     }
+
 }
