@@ -9,53 +9,70 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class AuthRepositoryImplementation(
-    private val firebaseAuth: FirebaseAuth
+    private val auth: FirebaseAuth
 ) : AuthRepository {
 
     override val currentUser: FirebaseUser?
-        get() = firebaseAuth.currentUser
+        get() = auth.currentUser
 
-    override fun authStateFlow(): Flow<FirebaseUser?> = callbackFlow {
-        val listener = FirebaseAuth.AuthStateListener { auth ->
-            trySend(auth.currentUser)
+    override fun observeAuthState(): Flow<FirebaseUser?> = callbackFlow {
+        trySend(auth.currentUser)
+
+        val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            trySend(firebaseAuth.currentUser)
         }
-        firebaseAuth.addAuthStateListener(listener)
-        awaitClose { firebaseAuth.removeAuthStateListener(listener) }
-    }
 
-    override suspend fun login(email: String, password: String): Result<FirebaseUser> {
-        return try {
-            val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            Result.success(result.user!!)
-        } catch (e: Exception) {
-            Result.failure(e)
+        auth.addAuthStateListener(listener)
+
+        awaitClose {
+            auth.removeAuthStateListener(listener)
         }
     }
 
-    override suspend fun signup(email: String, name: String, password: String): Result<FirebaseUser> {
+    override suspend fun login(
+        email: String,
+        password: String
+    ): Result<FirebaseUser> {
         return try {
-            val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            val user = result.user!!
-            val profileUpdates = UserProfileChangeRequest.Builder()
-                .setDisplayName(name)
-                .build()
-            user.updateProfile(profileUpdates).await()
+            val result = auth.signInWithEmailAndPassword(email, password).await()
+            val user = result.user ?: return Result.failure(Exception("Login failed"))
             Result.success(user)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception("Login error: ${e.message}", e))
+        }
+    }
+
+    override suspend fun register(
+        name: String,
+        email: String,
+        password: String
+    ): Result<FirebaseUser> {
+        return try {
+            val result = auth.createUserWithEmailAndPassword(email, password).await()
+            val user = result.user ?: return Result.failure(Exception("Registration failed"))
+
+            val updates = UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build()
+
+            user.updateProfile(updates).await()
+
+            Result.success(user)
+        } catch (e: Exception) {
+            Result.failure(Exception("Registration error: ${e.message}", e))
         }
     }
 
     override suspend fun logout() {
-        firebaseAuth.signOut()
+        auth.signOut()
     }
 
     override suspend fun resetPassword(email: String): Result<Unit> {
         return try {
-            firebaseAuth.sendPasswordResetEmail(email).await()
+            auth.sendPasswordResetEmail(email).await()
             Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception("Reset failed: ${e.message}", e))
         }
     }
 }
