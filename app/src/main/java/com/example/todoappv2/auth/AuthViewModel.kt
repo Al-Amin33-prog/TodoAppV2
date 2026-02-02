@@ -16,10 +16,10 @@ class AuthViewModel(
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
     init {
-        observeAuth()
+        observeAuthState()
     }
 
-    private fun observeAuth() {
+    private fun observeAuthState() {
         viewModelScope.launch {
             repository.observeAuthState().collect { user ->
                 _uiState.value = _uiState.value.copy(
@@ -79,7 +79,7 @@ class AuthViewModel(
         }
     }
 
-    private fun register(name: String, email: String, password: String) {
+    private fun register(name: String,email: String,  password: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
@@ -107,6 +107,7 @@ class AuthViewModel(
     private fun logout() {
         viewModelScope.launch {
             repository.logout()
+            _uiState.value = AuthUiState()
         }
     }
 

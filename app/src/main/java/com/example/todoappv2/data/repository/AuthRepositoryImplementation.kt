@@ -1,7 +1,8 @@
 package com.example.todoappv2.data.repository
 
+import com.example.todoappv2.data.mapper.toUserModel
+import com.example.todoappv2.domain.UserModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -12,14 +13,14 @@ class AuthRepositoryImplementation(
     private val auth: FirebaseAuth
 ) : AuthRepository {
 
-    override val currentUser: FirebaseUser?
-        get() = auth.currentUser
+    override val currentUser: UserModel?
+        get() = auth.currentUser?.toUserModel()
 
-    override fun observeAuthState(): Flow<FirebaseUser?> = callbackFlow {
-        trySend(auth.currentUser)
+    override fun observeAuthState(): Flow<UserModel?> = callbackFlow {
+        trySend(auth.currentUser?.toUserModel())
 
         val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            trySend(firebaseAuth.currentUser)
+            trySend(firebaseAuth.currentUser?.toUserModel())
         }
 
         auth.addAuthStateListener(listener)
@@ -32,11 +33,11 @@ class AuthRepositoryImplementation(
     override suspend fun login(
         email: String,
         password: String
-    ): Result<FirebaseUser> {
+    ): Result<UserModel> {
         return try {
             val result = auth.signInWithEmailAndPassword(email, password).await()
             val user = result.user ?: return Result.failure(Exception("Login failed"))
-            Result.success(user)
+            Result.success(user.toUserModel())
         } catch (e: Exception) {
             Result.failure(Exception("Login error: ${e.message}", e))
         }
@@ -46,7 +47,7 @@ class AuthRepositoryImplementation(
         name: String,
         email: String,
         password: String
-    ): Result<FirebaseUser> {
+    ): Result<UserModel> {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
             val user = result.user ?: return Result.failure(Exception("Registration failed"))
@@ -57,7 +58,7 @@ class AuthRepositoryImplementation(
 
             user.updateProfile(updates).await()
 
-            Result.success(user)
+            Result.success(user.toUserModel())
         } catch (e: Exception) {
             Result.failure(Exception("Registration error: ${e.message}", e))
         }
