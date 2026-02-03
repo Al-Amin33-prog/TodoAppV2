@@ -8,7 +8,10 @@
       <SelectionState runConfigName="testFirebaseInitialization()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="FirebaseConfigTest">
+      <SelectionState runConfigName="AuthIntegrationTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="register_updates_auth_state_real_repo()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
