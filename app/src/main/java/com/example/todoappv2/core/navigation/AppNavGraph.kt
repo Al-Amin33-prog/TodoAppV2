@@ -10,19 +10,33 @@ import com.example.todoappv2.auth.LoginScreen
 import com.example.todoappv2.auth.RegisterScreen
 import com.example.todoappv2.subject.SubjectScreen
 import com.example.todoappv2.subject.SubjectViewModel
+import com.example.todoappv2.task.TaskViewModel
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    subjectViewModel: SubjectViewModel
+    subjectViewModel: SubjectViewModel,
+    taskViewModelFactory: (Long) -> TaskViewModel
 ){
     NavHost(
         navController = navController,
         startDestination = Routes.AUTH_GATE
     ){
         composable(Routes.AUTH_GATE){
-            AuthGateScreen(authViewModel, navController)
+            AuthGateScreen(
+                authViewModel = authViewModel,
+                onAuthenticated = {
+                    navController.navigate(Routes.HOME){
+                        popUpTo(Routes.AUTH_GATE){inclusive = true}
+                    }
+                },
+                onUnAuthenticated = {
+                    navController.navigate(Routes.LOGIN){
+                        popUpTo(Routes.AUTH_GATE){inclusive = true}
+                    }
+                }
+            )
         }
         composable(Routes.LOGIN) {
             LoginScreen(
@@ -40,8 +54,8 @@ fun AppNavGraph(
                 }
             )
         }
-        composable(Routes.SUBJECTS) {
-            SubjectScreen(subjectViewModel)
+        composable(Routes.HOME) {
+           AppNavigationShell(navController)
         }
     }
 }
