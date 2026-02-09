@@ -2,6 +2,7 @@ package com.example.todoappv2.task
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todoappv2.core.notification.TaskReminderSchedule
 import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.data.repository.AppRepository
 
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class TaskViewModel (
     private val repository: AppRepository,
+    private val scheduler: TaskReminderSchedule,
     private val subjectId: Long,
 
 ): ViewModel(){
@@ -51,25 +53,29 @@ class TaskViewModel (
         when(event){
             is TaskEvent.AddTask -> {
                 viewModelScope.launch {
-                    repository.insertTask(
-                        TaskEntity(
+                   val task =      TaskEntity(
                             subjectId = event.subjectId,
                             title = event.title,
                             description = event.description,
                             dueDate = event.dueDate,
                             createdAt = System.currentTimeMillis()
                         )
-                    )
+                    repository.insertTask(task)
+                    scheduler.scheduleTaskReminder(task)
+
                 }
             }
             is TaskEvent.DeleteTask -> {
                 viewModelScope.launch {
                     repository.deleteTask(event.task)
+                    scheduler.cancelTaskReminder(event.task.id)
                 }
             }
             is TaskEvent.UpdateTask -> {
                 viewModelScope.launch {
                     repository.updateTask(event.task)
+                    scheduler.cancelTaskReminder(event.task.id)
+                    scheduler.scheduleTaskReminder(event.task)
                 }
             }
             is TaskEvent.ChangeFilter -> {
