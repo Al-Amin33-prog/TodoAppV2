@@ -8,16 +8,15 @@ import com.example.todoappv2.auth.AuthGateScreen
 import com.example.todoappv2.auth.AuthViewModel
 import com.example.todoappv2.auth.LoginScreen
 import com.example.todoappv2.auth.RegisterScreen
-import com.example.todoappv2.subject.SubjectScreen
-import com.example.todoappv2.subject.SubjectViewModel
-import com.example.todoappv2.task.TaskViewModel
+
+
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    subjectViewModel: SubjectViewModel,
-    taskViewModelFactory: (Long) -> TaskViewModel
+
+
 ){
     NavHost(
         navController = navController,

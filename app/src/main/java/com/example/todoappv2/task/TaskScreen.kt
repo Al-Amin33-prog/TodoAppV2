@@ -9,7 +9,8 @@ import com.example.todoappv2.task.components.TaskProgressBar
 
 @Composable
 fun TaskScreen(
-    viewModel: TaskViewModel
+    viewModel: TaskViewModel,
+    subjectId: Long
 ){
     val state = viewModel.uiState.collectAsState().value
     TaskFilter(

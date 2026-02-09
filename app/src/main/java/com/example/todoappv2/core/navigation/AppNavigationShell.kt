@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,7 +12,6 @@ import com.example.todoappv2.core.components.AppBottomBar
 import com.example.todoappv2.core.components.AppTopBar
 import com.example.todoappv2.core.notification.components.NotificationScreen
 import com.example.todoappv2.dashboard.HomeScreen
-import com.example.todoappv2.data.repository.AppRepository
 import com.example.todoappv2.settings.SettingsScreen
 import com.example.todoappv2.statistics.StatisticScreen
 import com.example.todoappv2.subject.SubjectScreen
@@ -22,54 +22,51 @@ import com.example.todoappv2.task.TaskViewModel
 @Composable
 fun AppNavigationShell(
     navController: NavHostController
-){
+) {
     Scaffold(
-        bottomBar = {
-            AppBottomBar(navController)
-        },
-        topBar = {
-            AppTopBar()
-        }
+        bottomBar = { AppBottomBar(navController) },
+        topBar = { AppTopBar() }
     ) { padding ->
+
         NavHost(
-            navController  = navController,
+            navController = navController,
             startDestination = Routes.HOME,
             modifier = Modifier.padding(padding)
-        ){
+        ) {
+
             composable(Routes.HOME) {
                 HomeScreen(navController)
             }
-            composable(Routes.SUBJECTS){
-                SubjectScreen(
-                    viewModel = SubjectViewModel
-                )
+
+            composable(Routes.SUBJECTS) {
+                val subjectViewModel: SubjectViewModel = viewModel()
+                SubjectScreen(viewModel = subjectViewModel)
             }
-            composable(
-                Routes.TASKS
-            ){backStackEntry ->
+
+            composable(Routes.TASKS) { backStackEntry ->
                 val subjectId = backStackEntry.arguments
                     ?.getString("subjectId")
-                    ?.toLong()?: 0L
+                    ?.toLongOrNull() ?: 0L
+
+                val taskViewModel: TaskViewModel = viewModel()
+
                 TaskScreen(
-                    viewModel = TaskViewModel,
+                    viewModel = taskViewModel,
                     subjectId = subjectId
                 )
-
             }
-            composable(Routes.STATS){
+
+            composable(Routes.STATS) {
                 StatisticScreen()
             }
-            composable(Routes.NOTIFICATIONS){
+
+            composable(Routes.NOTIFICATIONS) {
                 NotificationScreen()
             }
-            composable(Routes.SETTINGS){
+
+            composable(Routes.SETTINGS) {
                 SettingsScreen()
             }
-
-
-
         }
-
     }
-
 }

@@ -6,12 +6,27 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
+import androidx.compose.ui.res.painterResource
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.todoappv2.R
 import com.example.todoappv2.core.navigation.Routes
 
 @Composable
 fun AppBottomBar(
     navController: NavController
-){
+) {
+    fun getIconForRoute(route: String?): Int {
+        return when {
+            route?.startsWith(Routes.SUBJECTS) == true -> R.drawable.ic_book
+            route?.startsWith("tasks") == true -> R.drawable.ic_task
+            route == Routes.HOME -> R.drawable.ic_home_work
+            route == Routes.STATS -> R.drawable.ic_bar_chart
+            route == Routes.NOTIFICATIONS -> R.drawable.ic_notification
+            route == Routes.SETTINGS -> R.drawable.ic_settings
+            else -> R.drawable.ic_home_work
+        }
+    }
+
     val items = listOf(
         Routes.HOME,
         Routes.SUBJECTS,
@@ -19,21 +34,28 @@ fun AppBottomBar(
         Routes.STATS,
         Routes.SETTINGS
     )
+
+    val currentRoute = navController.currentBackStackEntryAsState().value
+        ?.destination?.route
+
     NavigationBar {
         items.forEach { route ->
             NavigationBarItem(
-                selected = false,
+                selected = currentRoute == route,
                 onClick = {
-                    navController.navigate(route){
+                    navController.navigate(route) {
                         popUpTo(Routes.HOME)
                         launchSingleTop = true
                     }
                 },
-                icon = { Icon(getIconForRoute(route),null) },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = getIconForRoute(route)),
+                        contentDescription = route
+                    )
+                },
                 label = { Text(route.uppercase()) }
             )
-
         }
     }
-
 }
