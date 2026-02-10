@@ -46,12 +46,13 @@ fun AppBottomBar(
                     navController.navigate(route) {
                         popUpTo(Routes.HOME)
                         launchSingleTop = true
+                        restoreState = true
                     }
                 },
                 icon = {
                     Icon(
                         painter = painterResource(id = getIconForRoute(route)),
-                        contentDescription = route
+                        contentDescription = null
                     )
                 },
                 label = { Text(route.uppercase()) }
