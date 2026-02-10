@@ -21,24 +21,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TodoAppV2Theme {
-                Scaffold(modifier = Modifier.Companion.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.Companion.padding(innerPadding)
-                    )
-                }
+
+               }
             }
         }
-    }
+
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier.Companion) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+
 
 @Preview(showBackground = true)
 @Composable
