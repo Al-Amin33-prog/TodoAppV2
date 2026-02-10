@@ -8,14 +8,16 @@ import com.example.todoappv2.auth.AuthGateScreen
 import com.example.todoappv2.auth.AuthViewModel
 import com.example.todoappv2.auth.LoginScreen
 import com.example.todoappv2.auth.RegisterScreen
-
+import com.example.todoappv2.core.notification.TaskReminderSchedule
+import com.example.todoappv2.data.repository.AppRepository
 
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-
+    repository: AppRepository,
+    schedule: TaskReminderSchedule
 
 ){
     NavHost(
@@ -26,13 +28,19 @@ fun AppNavGraph(
             AuthGateScreen(
                 authViewModel = authViewModel,
                 onAuthenticated = {
-                    navController.navigate(Routes.HOME){
-                        popUpTo(Routes.AUTH_GATE){inclusive = true}
+                    navController.navigate(Routes.APP_SHEL){
+                        popUpTo(Routes.AUTH_GATE){
+                            inclusive = true
+                        }
+                        launchSingleTop = true
                     }
                 },
                 onUnAuthenticated = {
                     navController.navigate(Routes.LOGIN){
-                        popUpTo(Routes.AUTH_GATE){inclusive = true}
+                        popUpTo(Routes.AUTH_GATE){
+                            inclusive = true
+                        }
+                        launchSingleTop = true
                     }
                 }
             )
@@ -53,8 +61,12 @@ fun AppNavGraph(
                 }
             )
         }
-        composable(Routes.HOME) {
-           AppNavigationShell(navController)
+        composable(Routes.APP_SHEL) {
+           AppNavigationShell(
+               navController = navController,
+               repository = repository,
+               schedule = schedule
+           )
         }
     }
 }
