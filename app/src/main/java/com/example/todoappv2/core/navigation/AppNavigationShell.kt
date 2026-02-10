@@ -10,18 +10,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.todoappv2.core.components.AppBottomBar
 import com.example.todoappv2.core.components.AppTopBar
+import com.example.todoappv2.core.notification.TaskReminderSchedule
 import com.example.todoappv2.core.notification.components.NotificationScreen
 import com.example.todoappv2.dashboard.HomeScreen
+import com.example.todoappv2.data.repository.AppRepository
 import com.example.todoappv2.settings.SettingsScreen
 import com.example.todoappv2.statistics.StatisticScreen
 import com.example.todoappv2.subject.SubjectScreen
 import com.example.todoappv2.subject.SubjectViewModel
 import com.example.todoappv2.task.TaskScreen
-import com.example.todoappv2.task.TaskViewModel
+
 
 @Composable
 fun AppNavigationShell(
-    navController: NavHostController
+    navController: NavHostController,
+    repository: AppRepository,
+    schedule: TaskReminderSchedule
 ) {
     Scaffold(
         bottomBar = { AppBottomBar(navController) },
@@ -48,11 +52,11 @@ fun AppNavigationShell(
                     ?.getString("subjectId")
                     ?.toLongOrNull() ?: 0L
 
-                val taskViewModel: TaskViewModel = viewModel()
 
                 TaskScreen(
-                    viewModel = taskViewModel,
-                    subjectId = subjectId
+                    subjectId = subjectId,
+                    repository = repository,
+                    scheduler = schedule
                 )
             }
 
