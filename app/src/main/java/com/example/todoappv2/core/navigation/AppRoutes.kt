@@ -4,6 +4,7 @@ object Routes {
     const val LOGIN = "login"
 
     const val REGISTER ="register"
+    const val APP_SHEL ="app_shell"
 
     const val HOME = "home"
     const val SUBJECTS = "subjects"
@@ -11,4 +12,5 @@ object Routes {
     const val STATS = "stats"
     const val NOTIFICATIONS = "notifications"
     const val SETTINGS = "settings"
+
 }
