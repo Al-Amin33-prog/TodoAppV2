@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 fun AppTopBar(){
     TopAppBar(
         title = {
-            Text("TodoApp",
+            Text("HOME",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )
