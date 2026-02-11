@@ -2,6 +2,8 @@ package com.example.todoappv2.core.navigation
 object Routes {
     const val AUTH_GATE = "auth_gate"
     const val LOGIN = "login"
+    const val LOGOUT ="logout"
+    const val RESET_PASSWORD = "reset_password"
 
     const val REGISTER ="register"
     const val APP_SHEL ="app_shell"

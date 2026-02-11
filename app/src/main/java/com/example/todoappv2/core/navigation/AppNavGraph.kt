@@ -6,8 +6,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.todoappv2.auth.AuthGateScreen
 import com.example.todoappv2.auth.AuthViewModel
-import com.example.todoappv2.auth.LoginScreen
-import com.example.todoappv2.auth.RegisterScreen
+import com.example.todoappv2.auth.components.LoginScreen
+import com.example.todoappv2.auth.components.LogoutScreen
+import com.example.todoappv2.auth.components.RegisterScreen
+import com.example.todoappv2.auth.components.ResetPasswordScreen
 import com.example.todoappv2.core.notification.TaskReminderSchedule
 import com.example.todoappv2.data.repository.AppRepository
 
@@ -55,6 +57,22 @@ fun AppNavGraph(
         }
         composable(Routes.REGISTER){
             RegisterScreen(
+                authViewModel = authViewModel,
+                onBackToLogin = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Routes.LOGOUT){
+            LogoutScreen(
+                authViewModel = authViewModel,
+                onNavigateToLogin = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Routes.RESET_PASSWORD){
+            ResetPasswordScreen(
                 authViewModel = authViewModel,
                 onBackToLogin = {
                     navController.popBackStack()

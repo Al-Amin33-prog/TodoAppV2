@@ -1,6 +1,7 @@
 package com.example.todoappv2.core.components
 
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -52,10 +53,18 @@ fun AppBottomBar(
                 icon = {
                     Icon(
                         painter = painterResource(id = getIconForRoute(route)),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = if (currentRoute == route){
+                            MaterialTheme.colorScheme.primary
+                        }else{
+                            MaterialTheme.colorScheme.onSurface
+                        }
                     )
                 },
-                label = { Text(route.uppercase()) }
+                label = { Text(route.uppercase(),
+                    style = MaterialTheme.typography.labelSmall
+                )
+                }
             )
         }
     }
