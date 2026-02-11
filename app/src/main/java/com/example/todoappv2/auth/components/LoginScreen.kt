@@ -1,4 +1,4 @@
-package com.example.todoappv2.auth
+package com.example.todoappv2.auth.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
@@ -7,6 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import com.example.todoappv2.auth.AuthEvent
+import com.example.todoappv2.auth.AuthViewModel
 
 @Composable
 fun LoginScreen(
