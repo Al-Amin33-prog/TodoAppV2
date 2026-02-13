@@ -25,11 +25,13 @@ import com.example.todoappv2.task.TaskScreen
 fun AppNavigationShell(
     navController: NavHostController,
     repository: AppRepository,
-    schedule: TaskReminderSchedule
+    schedule: TaskReminderSchedule,
+    isDarkMode: Boolean,
+    onThemeChange: (Boolean) -> Unit
 ) {
     Scaffold(
         bottomBar = { AppBottomBar(navController) },
-        topBar = { AppTopBar() }
+        topBar = { AppTopBar(navController) }
     ) { padding ->
 
         NavHost(
@@ -69,7 +71,11 @@ fun AppNavigationShell(
             }
 
             composable(Routes.SETTINGS) {
-                SettingsScreen()
+                SettingsScreen(
+                    navController = navController,
+                    isDarkMode = isDarkMode,
+                    onThemeChange = onThemeChange
+                )
             }
         }
     }

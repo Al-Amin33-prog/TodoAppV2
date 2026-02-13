@@ -1,13 +1,14 @@
 package com.example.todoappv2.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.todoappv2.auth.AuthEvent
 import com.example.todoappv2.auth.AuthGateScreen
 import com.example.todoappv2.auth.AuthViewModel
 import com.example.todoappv2.auth.components.LoginScreen
-import com.example.todoappv2.auth.components.LogoutScreen
 import com.example.todoappv2.auth.components.RegisterScreen
 import com.example.todoappv2.auth.components.ResetPasswordScreen
 import com.example.todoappv2.core.notification.TaskReminderSchedule
@@ -19,8 +20,9 @@ fun AppNavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
     repository: AppRepository,
-    schedule: TaskReminderSchedule
-
+    schedule: TaskReminderSchedule,
+    isDarkMode: Boolean,
+    onThemeChange: (Boolean) -> Unit
 ){
     NavHost(
         navController = navController,
@@ -63,13 +65,14 @@ fun AppNavGraph(
                 }
             )
         }
+        // Headless route for logout action
         composable(Routes.LOGOUT){
-            LogoutScreen(
-                authViewModel = authViewModel,
-                onNavigateToLogin = {
-                    navController.popBackStack()
+            LaunchedEffect(Unit) {
+                authViewModel.onEvent(AuthEvent.Logout)
+                navController.navigate(Routes.LOGIN) {
+                    popUpTo(0) { inclusive = true }
                 }
-            )
+            }
         }
         composable(Routes.RESET_PASSWORD){
             ResetPasswordScreen(
@@ -83,7 +86,9 @@ fun AppNavGraph(
            AppNavigationShell(
                navController = navController,
                repository = repository,
-               schedule = schedule
+               schedule = schedule,
+               isDarkMode = isDarkMode,
+               onThemeChange = onThemeChange
            )
         }
     }

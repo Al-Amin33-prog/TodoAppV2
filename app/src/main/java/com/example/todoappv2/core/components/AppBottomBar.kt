@@ -23,7 +23,6 @@ fun AppBottomBar(
             route == Routes.HOME -> R.drawable.ic_home_work
             route == Routes.STATS -> R.drawable.ic_bar_chart
             route == Routes.NOTIFICATIONS -> R.drawable.ic_notification
-            route == Routes.SETTINGS -> R.drawable.ic_settings
             else -> R.drawable.ic_home_work
         }
     }
@@ -32,8 +31,7 @@ fun AppBottomBar(
         Routes.HOME,
         Routes.SUBJECTS,
         Routes.NOTIFICATIONS,
-        Routes.STATS,
-        Routes.SETTINGS
+        Routes.STATS
     )
 
     val currentRoute = navController.currentBackStackEntryAsState().value
@@ -45,7 +43,9 @@ fun AppBottomBar(
                 selected = currentRoute == route,
                 onClick = {
                     navController.navigate(route) {
-                        popUpTo(Routes.HOME)
+                        popUpTo(Routes.HOME) {
+                            saveState = true
+                        }
                         launchSingleTop = true
                         restoreState = true
                     }
@@ -61,9 +61,15 @@ fun AppBottomBar(
                         }
                     )
                 },
-                label = { Text(route.uppercase(),
-                    style = MaterialTheme.typography.labelSmall
-                )
+                label = { 
+                    val label = when(route) {
+                        Routes.HOME -> "Home"
+                        Routes.SUBJECTS -> "Subjects"
+                        Routes.NOTIFICATIONS -> "Alerts"
+                        Routes.STATS -> "Stats"
+                        else -> route
+                    }
+                    Text(label, style = MaterialTheme.typography.labelSmall)
                 }
             )
         }
