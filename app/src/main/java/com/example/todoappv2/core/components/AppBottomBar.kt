@@ -30,6 +30,7 @@ fun AppBottomBar(
     val items = listOf(
         Routes.HOME,
         Routes.SUBJECTS,
+        Routes.TASKS,
         Routes.NOTIFICATIONS,
         Routes.STATS
     )
@@ -65,6 +66,7 @@ fun AppBottomBar(
                     val label = when(route) {
                         Routes.HOME -> "Home"
                         Routes.SUBJECTS -> "Subjects"
+                        Routes.TASKS -> "Tasks"
                         Routes.NOTIFICATIONS -> "Alerts"
                         Routes.STATS -> "Stats"
                         else -> route
