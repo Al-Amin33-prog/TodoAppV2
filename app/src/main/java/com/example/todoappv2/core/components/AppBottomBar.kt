@@ -16,6 +16,7 @@ import com.example.todoappv2.core.navigation.Routes
 fun AppBottomBar(
     navController: NavController
 ) {
+
     fun getIconForRoute(route: String?): Int {
         return when {
             route?.startsWith(Routes.SUBJECTS) == true -> R.drawable.ic_book
@@ -30,21 +31,25 @@ fun AppBottomBar(
     val items = listOf(
         Routes.HOME,
         Routes.SUBJECTS,
-        Routes.TASKS,
+       "tasks",
         Routes.NOTIFICATIONS,
         Routes.STATS
     )
 
     val currentRoute = navController.currentBackStackEntryAsState().value
         ?.destination?.route
-
     NavigationBar {
         items.forEach { route ->
+            val isSelected = currentRoute?.startsWith(route) == true
             NavigationBarItem(
-                selected = currentRoute == route,
+                selected = isSelected,
                 onClick = {
-                    navController.navigate(route) {
-                        popUpTo(Routes.HOME) {
+                    val targetRoute = when(route){
+                        "tasks" -> Routes.tasksWithId(0L)
+                        else -> route
+                    }
+                    navController.navigate(targetRoute){
+                        popUpTo(Routes.HOME){
                             saveState = true
                         }
                         launchSingleTop = true
@@ -55,25 +60,18 @@ fun AppBottomBar(
                     Icon(
                         painter = painterResource(id = getIconForRoute(route)),
                         contentDescription = null,
-                        tint = if (currentRoute == route){
+                        tint = if (isSelected)
                             MaterialTheme.colorScheme.primary
-                        }else{
+                        else
                             MaterialTheme.colorScheme.onSurface
-                        }
                     )
                 },
-                label = { 
-                    val label = when(route) {
-                        Routes.HOME -> "Home"
-                        Routes.SUBJECTS -> "Subjects"
-                        Routes.TASKS -> "Tasks"
-                        Routes.NOTIFICATIONS -> "Alerts"
-                        Routes.STATS -> "Stats"
-                        else -> route
-                    }
-                    Text(label, style = MaterialTheme.typography.labelSmall)
+                label = {
+                    Text(route.replaceFirstChar { it.uppercase() })
                 }
             )
         }
     }
-}
+
+    }
+
