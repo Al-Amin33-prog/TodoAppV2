@@ -66,6 +66,9 @@ fun AppNavigationShell(
                         )
 
                     },
+                    onEditSubject = {subjectId ->
+                        appNavController.navigate(Routes.editSubject(subjectId))
+                    }
 
                 )
             }
@@ -108,6 +111,12 @@ fun AppNavigationShell(
                     onAddTask = {
                         appNavController.navigate(
                             Routes.addTask(subjectId)
+                        )
+
+                    },
+                    onEditTask = {taskId ->
+                        appNavController.navigate(
+                            Routes.editTask(taskId)
                         )
 
                     }
