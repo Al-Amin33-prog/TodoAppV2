@@ -31,7 +31,7 @@ fun AppBottomBar(
     val items = listOf(
         Routes.HOME,
         Routes.SUBJECTS,
-       "tasks",
+         Routes.TASKS_ROOT,
         Routes.NOTIFICATIONS,
         Routes.STATS
     )
@@ -40,16 +40,19 @@ fun AppBottomBar(
         ?.destination?.route
     NavigationBar {
         items.forEach { route ->
-            val isSelected = currentRoute?.startsWith(route) == true
+            val isSelected = when(route){
+                Routes.TASKS_ROOT ->
+                currentRoute?.startsWith("tasks") == true
+                else ->
+                    currentRoute == route
+            }
+
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
-                    val targetRoute = when(route){
-                        "tasks" -> Routes.tasksWithId(0L)
-                        else -> route
-                    }
-                    navController.navigate(targetRoute){
-                        popUpTo(Routes.HOME){
+
+                    navController.navigate(route){
+                        popUpTo(navController.graph.startDestinationId){
                             saveState = true
                         }
                         launchSingleTop = true

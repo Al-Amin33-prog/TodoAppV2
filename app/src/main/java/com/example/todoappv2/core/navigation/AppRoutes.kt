@@ -13,13 +13,16 @@ object Routes {
     const val SUBJECTS = "subjects"
     const val ADD_SUBJECT = "add_subject"
     const val EDIT_SUBJECT = "edit_subject/{subjectId}"
+
     fun editSubject(id: Long) = "edit_subject/$id"
-    const val TASKS = "tasks/{subjectId}"
+    const val TASKS_BY_SUBJECT = "tasks/{subjectId}"
     fun tasksWithId(id: Long) = "tasks/$id"
-    const val ADD_TASK = "add_task/{subjectId}"
-    fun addTask(subjectId: Long) ="add_task/$subjectId"
-    const val EDIT_TASK = "edit_task/{taskId}"
-    fun editTask(id: Long) = "edit_task/$id"
+    const val ADD_EDIT_TASK = "add_edit_tasks?taskId = {taskId}& subjectId = {subjectId}"
+    fun addTask(subjectId: Long)="add_edit_task?subjectId =$subjectId"
+    fun editTask(taskId:Long, subjectId: Long) = "edit_task_task?taskId=$taskId&subjectId=$subjectId"
+
+
+    const val TASKS_ROOT = "tasks"
     const val STATS = "stats"
     const val NOTIFICATIONS = "notifications"
     const val SETTINGS = "settings"
