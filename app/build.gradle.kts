@@ -55,6 +55,12 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
+    
+        // Required for Material 3 components and pull-to-refresh
+        implementation("androidx.compose.material3:material3:1.4.0")
+
+
+
     // Room dependencies
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

@@ -60,14 +60,9 @@ class AuthViewModel(
 
             val result = repository.login(email, password)
 
-            _uiState.value = result.fold(
-                onSuccess = { user ->
-                    _uiState.value.copy(
-                        user = user,
-                        isLoggedIn = true,
-                        isLoading = false,
-                        error = null
-                    )
+             result.fold(
+                onSuccess = {
+
                 },
                 onFailure = { error ->
                     _uiState.value.copy(
@@ -85,14 +80,8 @@ class AuthViewModel(
 
             val result = repository.register(name, email, password)
 
-            _uiState.value = result.fold(
-                onSuccess = { user ->
-                    _uiState.value.copy(
-                        user = user,
-                        isLoggedIn = true,
-                        isLoading = false,
-                        error = null
-                    )
+             result.fold(
+                onSuccess = {
                 },
                 onFailure = { error ->
                     _uiState.value.copy(
