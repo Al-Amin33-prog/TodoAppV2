@@ -14,12 +14,13 @@ import kotlinx.coroutines.launch
 
 class TaskViewModel (
     private val repository: AppRepository,
-    private val scheduler: TaskReminderSchedule,
-    private val subjectId: Long,
+    private val scheduler: TaskReminderSchedule
+
 
 ): ViewModel(){
     private val _uiState = MutableStateFlow(TaskUiState(isLoading = true))
     val uiState: StateFlow<TaskUiState> = _uiState.asStateFlow()
+    private var currentFilter: TaskFilterType = TaskFilterType.All
 
     init {
        observeTasks()
@@ -27,26 +28,32 @@ class TaskViewModel (
 
     private fun observeTasks(){
        viewModelScope.launch {
-           repository.getTasKBySubject(subjectId).collect { tasks ->
-              val filter = _uiState.value.filter
-               _uiState.value =_uiState.value.copy(
-                   isLoading = false,
-                   allTasks = tasks,
-                   visibleTasks = applyFilterTasks(tasks,filter)
-               )
-
+           repository.getAllTasks().collect { tasks ->
+             updateStateWithTasks(tasks)
 
            }
        }
+    }
+    private fun updateStateWithTasks(tasks: List<TaskEntity>){
+        _uiState.value =_uiState.value.copy(
+            isLoading = false,
+            allTasks = tasks,
+            visibleTasks = applyFilterTasks(tasks,currentFilter)
+        )
+
     }
     private fun applyFilterTasks(
         tasks: List<TaskEntity>,
         filter: TaskFilterType
     ): List<TaskEntity>{
         return when(filter){
-            TaskFilterType.ALL -> tasks
-            TaskFilterType.COMPLETED -> tasks.filter { it.isCompleted }
-            TaskFilterType.PENDING -> tasks.filter { !it.isCompleted }
+            TaskFilterType.All -> tasks
+            TaskFilterType.Completed -> tasks.filter { it.isCompleted }
+            TaskFilterType.Pending -> tasks.filter { !it.isCompleted }
+            is
+                    TaskFilterType.BySubject -> tasks.filter {
+                        it.subjectId == filter.subjectId
+            }
         }
     }
     fun onEvent(event: TaskEvent){
@@ -79,6 +86,7 @@ class TaskViewModel (
                 }
             }
             is TaskEvent.ChangeFilter -> {
+                currentFilter = event.filter
                 val filtered = applyFilterTasks(
                     _uiState.value.allTasks,
                     event.filter

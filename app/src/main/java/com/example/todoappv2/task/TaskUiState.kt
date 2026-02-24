@@ -7,6 +7,6 @@ data class TaskUiState(
     val isLoading: Boolean = false,
     val visibleTasks: List<TaskEntity> = emptyList(),
     val allTasks: List<TaskEntity> = emptyList(),
-    val filter: TaskFilterType = TaskFilterType.ALL,
+    val filter: TaskFilterType = TaskFilterType.All,
     val error: String? = null
 )

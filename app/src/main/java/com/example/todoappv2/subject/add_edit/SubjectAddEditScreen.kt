@@ -10,20 +10,24 @@ import androidx.compose.runtime.collectAsState
 
 @Composable
 fun SubjectAddEditScreen(
-    viewModel: SubjectAddEditViewModel
+    viewModel: SubjectAddEditViewModel,
+    onDone: () -> Unit
 ){
     val state = viewModel.uiState.collectAsState().value
-    Column() {
+    Column {
         TextField(
             value = state.title,
             onValueChange = viewModel::onTitleChange,
             label = { Text("Subject title") }
         )
         Button(
-            onClick = viewModel::onSave,
+            onClick = {
+                viewModel.onSave()
+                onDone()
+            },
             enabled = !state.isSaving
         ) {
-            Text(if (state.isEditMode)"update else " else "Create")
+            Text(if (state.isEditMode)"update  " else "Create")
         }
         state.error?.let {
             Text(

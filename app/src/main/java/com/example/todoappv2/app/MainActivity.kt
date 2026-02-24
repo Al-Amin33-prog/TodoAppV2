@@ -29,9 +29,7 @@ class MainActivity : ComponentActivity() {
         
 
         TaskNotificationChannel.create(this)
-        
         enableEdgeToEdge()
-        
 
         val database = AppDataBase.getDatabase(this)
         val appRepository = AppRepositoryImplementation(database.subjectDao(), database.taskDao())
@@ -45,11 +43,6 @@ class MainActivity : ComponentActivity() {
             TodoAppV2Theme(darkTheme = isDarkMode) {
                 val navController = rememberNavController()
                 val authViewModel = remember { AuthViewModel(authRepository) }
-                
-                Scaffold(
-                    modifier = Modifier.systemBarsPadding(),
-                    bottomBar = { AppBottomBar(navController) }
-                ) { innerPadding ->
 
                     AppNavGraph(
                         navController = navController,
@@ -59,7 +52,7 @@ class MainActivity : ComponentActivity() {
                         isDarkMode = isDarkMode,
                         onThemeChange = { isDarkMode = it }
                     )
-                }
+
             }
         }
     }

@@ -9,7 +9,9 @@ import com.example.todoappv2.data.local.entity.SubjectEntity
 fun SubjectList(
     subjects: List<SubjectEntity>,
     onDelete: (SubjectEntity) -> Unit,
-    onSubjectClick: (SubjectEntity) -> Unit = {}
+    onSubjectClick: (SubjectEntity) -> Unit,
+    onAddSubject: () -> Unit,
+    onEditSubject: (SubjectEntity) -> Unit
 ){
     LazyColumn {
         items(subjects){subject ->

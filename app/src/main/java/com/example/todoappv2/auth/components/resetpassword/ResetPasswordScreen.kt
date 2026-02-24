@@ -1,4 +1,4 @@
-package com.example.todoappv2.auth.components
+package com.example.todoappv2.auth.components.resetpassword
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -28,74 +29,67 @@ import com.example.todoappv2.auth.AuthEvent
 import com.example.todoappv2.auth.AuthUiState
 import com.example.todoappv2.auth.AuthViewModel
 import com.example.todoappv2.ui.theme.TodoAppV2Theme
+import com.example.todoappv2.R
 
 @Composable
-fun LoginScreen(
+fun ResetPasswordScreen(
     authViewModel: AuthViewModel,
-    onNavigateToRegister: () -> Unit
-){
+    onBackToLogin: () -> Unit
+) {
     val state = authViewModel.uiState.collectAsState().value
     
-    LoginContent(
+    ResetPasswordContent(
         state = state,
         onEvent = { authViewModel.onEvent(it) },
-        onNavigateToRegister = onNavigateToRegister
+        onBackToLogin = onBackToLogin
     )
 }
 
 @Composable
-fun LoginContent(
+fun ResetPasswordContent(
     state: AuthUiState,
     onEvent: (AuthEvent) -> Unit,
-    onNavigateToRegister: () -> Unit
+    onBackToLogin: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp, vertical = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Welcome Back",
+            text = "Reset Password",
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.primary
         )
         
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
         OutlinedTextField(
+            shape = RoundedCornerShape(26.dp),
             value = email,
             onValueChange = {email = it},
             label = {Text("Email", style= MaterialTheme.typography.labelMedium)},
-            modifier = Modifier.fillMaxWidth()
-
+            modifier = Modifier.fillMaxWidth(),
+            leadingIcon = {R.drawable.mail_24px},
+            singleLine = true
 
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
-            value = password,
-            onValueChange = {password = it},
-            label = {Text("Password", style= MaterialTheme.typography.labelMedium)},
-            modifier = Modifier.fillMaxWidth()
-        )
+        
+        Spacer(modifier = Modifier.height(32.dp))
 
 
 
-        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = {
-                onEvent(AuthEvent.Login("test@email.com", "12345"))
-            },
-            modifier = Modifier
-                .height(50.dp)
-                .fillMaxWidth()
+            onClick = { onEvent(AuthEvent.ResetPassword("test@email.com")) },
+            modifier = Modifier.height(50.dp)
         ) {
-            Text("Login",style = MaterialTheme.typography.labelMedium)
+            Text("Send Reset Link",style = MaterialTheme.typography.labelMedium)
         }
 
-        TextButton(onClick = onNavigateToRegister) {
-            Text("Don't have an account? Register",style = MaterialTheme.typography.bodyMedium )
+        TextButton(onClick = onBackToLogin) {
+            Text("Back to Login")
         }
 
         if (state.isLoading) {
@@ -114,12 +108,12 @@ fun LoginContent(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
+fun ResetPasswordScreenPreview() {
     TodoAppV2Theme {
-        LoginContent(
+        ResetPasswordContent(
             state = AuthUiState(isLoading = false),
             onEvent = {},
-            onNavigateToRegister = {}
+            onBackToLogin = {}
         )
     }
 }

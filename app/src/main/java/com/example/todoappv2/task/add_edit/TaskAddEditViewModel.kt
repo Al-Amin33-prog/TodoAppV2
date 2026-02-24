@@ -4,18 +4,29 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.data.repository.AppRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class TaskAddEditViewModel (
     private val repository: AppRepository,
-    private val subjectId: Long,
-    private val taskId: Long? = null
+
+    private val taskId: Long? = null,
+    private val subjectId: Long? = null
 ): ViewModel(){
-    private val _uiState = MutableStateFlow(TaskAddEditUiState())
+
+    private val _uiState = MutableStateFlow(TaskAddEditUiState(subjectId = subjectId))
     val uiState: StateFlow<TaskAddEditUiState> = _uiState.asStateFlow()
+    val subjects = repository.getSubjects()
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
+    sealed class UiEvent{
+        object SaveSuccess: UiEvent()
+        data class ShowError(val message: String): UiEvent()
+    }
 
     init {
         if (taskId != null){
@@ -26,11 +37,13 @@ class TaskAddEditViewModel (
     private fun loadTask(taskId: Long){
        viewModelScope.launch {
            val task = repository.getTaskById(taskId) ?: return@launch
+
            _uiState.value = _uiState.value.copy(
                title = task.title,
                description = task.description ?: "",
                dueDate = task.dueDate,
                isCompleted = task.isCompleted,
+               subjectId = task.subjectId,
                isEditing = true
            )
        }
@@ -50,6 +63,16 @@ class TaskAddEditViewModel (
             is TaskAddEditEvent.CompletionToggled -> {
                 _uiState.value = _uiState.value.copy(isCompleted = event.value)
             }
+           is TaskAddEditEvent.SubjectChanged ->{
+               _uiState.value =_uiState.value.copy(
+                   subjectId = event.subjectId, subjectName = event.subjectName
+               )
+           }
+            is TaskAddEditEvent.PriorityChanged ->{
+                _uiState.value = _uiState.value.copy(
+                    priority = event.value
+                )
+            }
             TaskAddEditEvent.SaveTask ->
                 saveTask()
         }
@@ -57,30 +80,34 @@ class TaskAddEditViewModel (
 
     private fun saveTask(){
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isSaving = true)
             val state = _uiState.value
-            if (state.isEditing){
-                repository.updateTask(
-                    TaskEntity(
-                        id = taskId!!,
-                        subjectId = subjectId,
-                        title = state.title,
-                        description = state.description,
-                        dueDate = state.dueDate,
-                        isCompleted = state.isCompleted
-                    )
-                )
-            } else {
-                repository.insertTask(
-                    TaskEntity(
-                        subjectId = subjectId,
-                        title = state.title,
-                        description = state.description,
-                        dueDate = state.dueDate
-                    )
-                )
+
+       val realSubjectId = state.subjectId ?: 0L
+            if (realSubjectId == 0L){
+                _uiEvent.emit(UiEvent
+                    .ShowError("Please select a subject"))
+                return@launch
             }
-            _uiState.value = _uiState.value.copy(isSaving = false)
-        }
+            if (state.title.isBlank()){
+                _uiEvent.emit(UiEvent
+                    .ShowError("Title cannot be blank"))
+                return@launch
+            }
+            _uiState.value = state.copy(isSaving = true)
+            val entity = TaskEntity(
+                id = if (state.isEditing)taskId ?: 0 else 0,
+                subjectId = realSubjectId,
+                title = state.title,
+                description = state.description,
+                dueDate = state.dueDate,
+                isCompleted = state.isCompleted
+            )
+            if (state.isEditing)
+                repository.updateTask(entity)
+            else
+                repository.insertTask(entity)
+            _uiState.value = state.copy(isSaving =  false)
+            _uiEvent.emit(UiEvent.SaveSuccess)
     }
+}
 }

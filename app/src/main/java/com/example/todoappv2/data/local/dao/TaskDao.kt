@@ -31,4 +31,10 @@ interface TaskDao {
         """
     )
     fun getTasksBySubject(subjectId: Long): Flow<List<TaskEntity>>
+    @Query(
+        """
+            SELECT * FROM tasks ORDER BY createdAt DESC
+        """
+    )
+    fun getAllTasks(): Flow<List<TaskEntity>>
 }
