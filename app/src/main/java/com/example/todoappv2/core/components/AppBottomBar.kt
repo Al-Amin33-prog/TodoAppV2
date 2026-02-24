@@ -23,7 +23,6 @@ fun AppBottomBar(
             route?.startsWith("tasks") == true -> R.drawable.ic_task
             route == Routes.HOME -> R.drawable.ic_home_work
             route == Routes.STATS -> R.drawable.ic_bar_chart
-            route == Routes.NOTIFICATIONS -> R.drawable.ic_notification
             else -> R.drawable.ic_home_work
         }
     }
@@ -32,7 +31,6 @@ fun AppBottomBar(
         Routes.HOME,
         Routes.SUBJECTS,
          Routes.TASKS_ROOT,
-        Routes.NOTIFICATIONS,
         Routes.STATS
     )
 
