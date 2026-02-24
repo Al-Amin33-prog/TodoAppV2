@@ -15,7 +15,6 @@ import androidx.navigation.navArgument
 import com.example.todoappv2.core.components.AppBottomBar
 import com.example.todoappv2.core.components.AppTopBar
 import com.example.todoappv2.core.notification.TaskReminderSchedule
-import com.example.todoappv2.core.notification.components.NotificationScreen
 import com.example.todoappv2.dashboard.HomeScreen
 import com.example.todoappv2.dashboard.HomeViewModel
 import com.example.todoappv2.data.repository.AppRepository
@@ -126,7 +125,7 @@ fun AppNavigationShell(
                 ){backStackEntry ->
                 val subjectId = backStackEntry.arguments?.getLong("subjectId") ?: 0L
                 TaskScreen(
-                    subjectId = subjectId,
+
                     repository = repository,
                     scheduler = schedule,
                     onAddTask = {
@@ -181,9 +180,7 @@ fun AppNavigationShell(
                 StatisticScreen()
             }
 
-            composable(Routes.NOTIFICATIONS) {
-                NotificationScreen()
-            }
+
 
             composable(Routes.SETTINGS) {
                 SettingsScreen(
@@ -198,14 +195,14 @@ fun AppNavigationShell(
             }
             composable(Routes.TASKS_ROOT){
                 TaskScreen(
-                 subjectId = 0L,
+
                     repository = repository,
                     scheduler = schedule,
                     onAddTask = {
                         appNavController.navigate(Routes.addTask(0L))
                     },
                     onEditTask = {taskId ->
-                        appNavController.navigate(Routes.editTask(taskId, 0L ))
+                        appNavController.navigate("edit_task/$taskId")
                     }
                 )
             }

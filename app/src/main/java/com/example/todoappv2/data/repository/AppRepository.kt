@@ -11,9 +11,10 @@ interface AppRepository {
     suspend fun getSubjectById(subjectId: Long?): SubjectEntity?
     fun getSubjects(): Flow<List<SubjectEntity>>
 
-    suspend fun insertTask(task: TaskEntity)
+    suspend fun insertTask(task: TaskEntity): Long
     suspend fun updateTask(task: TaskEntity)
     suspend fun deleteTask(task: TaskEntity)
     suspend fun getTaskById(taskId: Long): TaskEntity?
     fun getTasKBySubject(subjectId: Long): Flow<List<TaskEntity>>
+    fun getAllTasks(): Flow<List<TaskEntity>>
 }

@@ -50,4 +50,8 @@ class AppRepositoryImplementation (
         return taskDao.getTasksBySubject(subjectId)
     }
 
+    override fun getAllTasks(): Flow<List<TaskEntity>> {
+        return taskDao.getAllTasks()
+    }
+
 }
