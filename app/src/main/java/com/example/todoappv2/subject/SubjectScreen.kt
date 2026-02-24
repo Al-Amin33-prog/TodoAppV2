@@ -8,7 +8,10 @@ import com.example.todoappv2.subject.components.SubjectProgressBar
 
 @Composable
 fun SubjectScreen(
-    viewModel: SubjectViewModel
+    viewModel: SubjectViewModel,
+    onAddSubject: ()-> Unit,
+    onOpenSubject: (Long) -> Unit,
+    onEditSubject: (Long) -> Unit
 ){
     val state = viewModel.uiState.collectAsState().value
     when{
@@ -26,6 +29,13 @@ fun SubjectScreen(
                         SubjectEvent.DeleteSubject(subject)
                     )
 
+                },
+                onSubjectClick = {subject ->
+                    onOpenSubject(subject.id)
+                },
+               onAddSubject = onAddSubject,
+                onEditSubject = {subject ->
+                    onEditSubject(subject.id)
                 }
             )
         }

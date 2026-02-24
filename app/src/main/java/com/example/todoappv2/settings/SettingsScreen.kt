@@ -28,15 +28,17 @@ import com.example.todoappv2.ui.theme.TodoAppV2Theme
 
 @Composable
 fun SettingsScreen(
-    navController: NavController,
+    appNavController: NavController,
+   navController: NavController,
     isDarkMode: Boolean,
-    onThemeChange: (Boolean) -> Unit
+    onThemeChange: (Boolean) -> Unit,
+    onLogout: () -> Unit
 ) {
     var isSyncEnabled by remember { mutableStateOf(true) }
 
     val accountSettings = listOf(
         SettingItem("Profile", "View and edit your personal info", R.drawable.person_24px),
-        SettingItem("Security", "Passwords and 2FA", R.drawable.warning_24px)
+        SettingItem("Security", "Passwords and 2FA", R.drawable.security_24px)
     )
 
     LazyColumn(
@@ -52,7 +54,7 @@ fun SettingsScreen(
         }
 
         item { SectionHeader("Account") }
-        items(accountSettings) { item -> SettingRow(item, navController) }
+        items(accountSettings) { item -> SettingRow(item, appNavController) }
 
         item { SectionHeader("Preferences") }
         item { 
@@ -61,12 +63,7 @@ fun SettingsScreen(
                 onThemeChange = onThemeChange
             )
         }
-        item {
-            SettingRow(
-                item = SettingItem("Notifications", "Manage reminders", R.drawable.ic_notification, Routes.NOTIFICATIONS),
-                navController = navController
-            )
-        }
+
         item {
             SyncToggleRow(
                 isSyncEnabled = isSyncEnabled,
@@ -79,7 +76,7 @@ fun SettingsScreen(
         item { AboutRow() }
         item { 
             LogOutRow(onLogoutClick = {
-                navController.navigate(Routes.LOGOUT)
+              navController.navigate(Routes.LOGOUT)
             }) 
         }
     }
@@ -100,9 +97,11 @@ fun SectionHeader(title: String) {
 fun SettingsScreenPreview() {
     TodoAppV2Theme {
         SettingsScreen(
-            navController = rememberNavController(),
+            appNavController = rememberNavController(),
             isDarkMode = false,
-            onThemeChange = {}
+            onThemeChange = {},
+           navController = rememberNavController(),
+            onLogout = {}
         )
     }
 }
