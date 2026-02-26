@@ -67,8 +67,9 @@ class TaskViewModel (
                             dueDate = event.dueDate,
                             createdAt = System.currentTimeMillis()
                         )
-                    repository.insertTask(task)
-                    scheduler.scheduleTaskReminder(task)
+                  val id =  repository.insertTask(task)
+                    val tasksWithId = task.copy(id = id)
+                    scheduler.scheduleTaskReminder(tasksWithId)
 
                 }
             }

@@ -30,8 +30,8 @@ class AppRepositoryImplementation (
         return subjectDao.getSubjectById(subjectId)
     }
 
-    override suspend fun insertTask(task: TaskEntity) {
-        taskDao.insertTask(task)
+    override suspend fun insertTask(task: TaskEntity): Long {
+        return taskDao.insertTask(task)
     }
 
     override suspend fun deleteTask(task: TaskEntity) {

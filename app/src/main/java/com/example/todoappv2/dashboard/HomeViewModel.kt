@@ -2,7 +2,6 @@ package com.example.todoappv2.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.data.repository.AppRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,25 +25,20 @@ class HomeViewModel (
             _uiState.value = _uiState.value.copy(isLoading = true)
             val subjects = repository.getSubjects().first()
 
-            val allTasks = mutableListOf<TaskEntity>()
-            val subjectStats = mutableListOf<SubjectWithStats>()
+            val allTasks = repository.getAllTasks().first()
+            val subjectStats = subjects.map { subject ->
+                val tasksForSubject = allTasks.filter { it.subjectId == subject.id }
+                SubjectWithStats(
+                    subject = subject,
+                    totalTasks = tasksForSubject.size,
+                    completedTasks = tasksForSubject.count { it.isCompleted },
+                    pendingTasks = tasksForSubject.count { !it.isCompleted }
 
-            for (subject in subjects){
-                val tasks = repository
-                    .getTasKBySubject(subject.id)
-                    .first()
 
-                allTasks.addAll(tasks)
-                subjectStats.add(
-                    SubjectWithStats(
-                        subject = subject,
-                        totalTasks = tasks.size,
-                        completedTasks = tasks.count{it.isCompleted},
-                        pendingTasks = tasks.count { !it.isCompleted }
-                    )
                 )
-
             }
+
+
             val now = System.currentTimeMillis()
             val overDue = allTasks.filter {
                 !it.isCompleted &&
@@ -62,6 +56,7 @@ class HomeViewModel (
                         it.dueDate != null &&
                         it.dueDate > now
             }.sortedBy{it.dueDate}
+                .take(5)
             _uiState.value = HomeDashBoardUiState(
                 isLoading = false,
                 subjects = subjectStats,

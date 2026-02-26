@@ -13,13 +13,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.todoappv2.dashboard.components.PendingTaskSummary
+
 import com.example.todoappv2.dashboard.components.QuickActionButtons
 import com.example.todoappv2.dashboard.components.TodayOverviewCard
 import com.example.todoappv2.dashboard.components.UpcomingTaskItem
@@ -30,7 +29,7 @@ fun HomeScreen(
     onAddTaskClick: () -> Unit,
     onAddSubjectClick:() -> Unit,
     onTaskClick:(Long)-> Unit,
-    onSubjectClick:(Long)-> Unit,
+
 ){
 
     val isRefreshing by viewModel.isRefreshing.collectAsState()
@@ -61,12 +60,7 @@ fun HomeScreen(
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-                item {
-                    PendingTaskSummary(
-                    subjects = state.subjects,
-                        onSubjectClick = onSubjectClick
-                    )
-                }
+
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
