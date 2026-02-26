@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.todoappv2.R
+
 import com.example.todoappv2.core.navigation.Routes
 
 @Composable
@@ -17,39 +17,31 @@ fun AppBottomBar(
     navController: NavController
 ) {
 
-    fun getIconForRoute(route: String?): Int {
-        return when {
-            route?.startsWith(Routes.SUBJECTS) == true -> R.drawable.ic_book
-            route?.startsWith("tasks") == true -> R.drawable.ic_task
-            route == Routes.HOME -> R.drawable.ic_home_work
-            route == Routes.STATS -> R.drawable.ic_bar_chart
-            else -> R.drawable.ic_home_work
-        }
-    }
+
 
     val items = listOf(
-        Routes.HOME,
-        Routes.SUBJECTS,
-         Routes.TASKS_ROOT,
-        Routes.STATS
+        BottomNavItem.Home,
+        BottomNavItem.Subjects,
+        BottomNavItem.Tasks,
+        BottomNavItem.Stats
     )
 
     val currentRoute = navController.currentBackStackEntryAsState().value
         ?.destination?.route
     NavigationBar {
-        items.forEach { route ->
-            val isSelected = when(route){
+        items.forEach { item  ->
+            val isSelected = when(item.route){
                 Routes.TASKS_ROOT ->
-                currentRoute?.startsWith("tasks") == true
+                currentRoute?.startsWith(Routes.TASKS_ROOT) == true
                 else ->
-                    currentRoute == route
+                    currentRoute == item.route
             }
 
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
 
-                    navController.navigate(route){
+                    navController.navigate(item.route){
                         popUpTo(navController.graph.startDestinationId){
                             saveState = true
                         }
@@ -59,7 +51,7 @@ fun AppBottomBar(
                 },
                 icon = {
                     Icon(
-                        painter = painterResource(id = getIconForRoute(route)),
+                        painter = painterResource(id = item.icon),
                         contentDescription = null,
                         tint = if (isSelected)
                             MaterialTheme.colorScheme.primary
@@ -68,7 +60,7 @@ fun AppBottomBar(
                     )
                 },
                 label = {
-                    Text(route.replaceFirstChar { it.uppercase() })
+                    Text(item.label)
                 }
             )
         }

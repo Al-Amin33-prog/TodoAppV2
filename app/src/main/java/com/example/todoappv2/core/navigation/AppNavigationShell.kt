@@ -63,9 +63,7 @@ fun AppNavigationShell(
                     onTaskClick = {taskId ->
                         appNavController.navigate(Routes.addTask(taskId))
                     },
-                    onSubjectClick = {subjectId ->
-                                appNavController.navigate(Routes.tasksWithId(subjectId))
-                            },
+
 
                 )
             }
