@@ -36,25 +36,36 @@ class HomeViewModel (
 
 
                 )
+
             }
+            val calendar = java.util.Calendar.getInstance()
+            calendar.set(java.util.Calendar.HOUR_OF_DAY,0)
+            calendar.set(java.util.Calendar.MINUTE,0)
+            calendar.set(java.util.Calendar.SECOND,0)
+            calendar.set(java.util.Calendar.MILLISECOND,0)
+            val startOfToday = calendar.timeInMillis
+            calendar.add(java.util.Calendar.DAY_OF_YEAR, 1)
+            val startOfTomorrow = calendar.timeInMillis
 
 
-            val now = System.currentTimeMillis()
+
             val overDue = allTasks.filter {
                 !it.isCompleted &&
                         it.dueDate != null &&
-                        it.dueDate < now
+                        it.dueDate < startOfToday
 
             }
             val today = allTasks.filter {
                 !it.isCompleted &&
                         it.dueDate != null &&
-                        isSameDay(it.dueDate,now)
+                        it.dueDate >= startOfToday &&
+                        it.dueDate < startOfTomorrow
+
             }
             val upcoming = allTasks.filter {
                 !it.isCompleted &&
                         it.dueDate != null &&
-                        it.dueDate > now
+                        it.dueDate >= startOfTomorrow
             }.sortedBy{it.dueDate}
                 .take(5)
             _uiState.value = HomeDashBoardUiState(
@@ -74,10 +85,4 @@ class HomeViewModel (
 
 }
 
-    private fun isSameDay(time1: Long, time2: Long): Boolean{
-        val cal1 = java.util.Calendar.getInstance().apply { timeInMillis = time1 }
-        val cal2 = java.util.Calendar.getInstance().apply { timeInMillis = time2 }
 
-        return cal1.get(java.util.Calendar.YEAR) == cal2.get(java.util.Calendar.YEAR) &&
-                cal1.get(java.util.Calendar.DAY_OF_YEAR) == cal2.get(java.util.Calendar.DAY_OF_YEAR)
-    }
