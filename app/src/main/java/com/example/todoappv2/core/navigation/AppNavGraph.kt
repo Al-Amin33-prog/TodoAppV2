@@ -2,16 +2,14 @@ package com.example.todoappv2.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.todoappv2.auth.AuthEvent
 import com.example.todoappv2.auth.AuthGateScreen
 import com.example.todoappv2.auth.AuthViewModel
-import com.example.todoappv2.auth.components.login.LoginContent
 import com.example.todoappv2.auth.components.login.LoginScreen
-import com.example.todoappv2.auth.components.register.RegisterContent
 import com.example.todoappv2.auth.components.register.RegisterScreen
 import com.example.todoappv2.auth.components.resetpassword.ResetPasswordScreen
 import com.example.todoappv2.core.notification.TaskReminderSchedule

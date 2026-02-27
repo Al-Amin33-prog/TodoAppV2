@@ -8,9 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
 import com.example.todoappv2.R
-import com.example.todoappv2.core.navigation.Routes
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
