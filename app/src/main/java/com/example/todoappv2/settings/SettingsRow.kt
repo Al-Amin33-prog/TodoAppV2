@@ -11,14 +11,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+
 
 
 @Composable
-fun SettingRow(item: SettingItem, navController: NavController) {
+fun SettingRow(item: SettingItem,
+               onClick: () -> Unit) {
     ListItem(
         modifier = Modifier.clickable {
-            item.route?.let { navController.navigate(it) }
+            onClick()
+
         },
         headlineContent = {
             Text(

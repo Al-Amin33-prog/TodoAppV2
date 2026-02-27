@@ -15,10 +15,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.todoappv2.R
-import com.example.todoappv2.core.navigation.Routes
+import com.example.todoappv2.core.components.AppTopBar
 import com.example.todoappv2.settings.components.AboutRow
 import com.example.todoappv2.settings.components.HelpAndFeedbackRow
 import com.example.todoappv2.settings.components.LogOutRow
@@ -28,9 +26,8 @@ import com.example.todoappv2.ui.theme.TodoAppV2Theme
 
 @Composable
 fun SettingsScreen(
-    appNavController: NavController,
-   navController: NavController,
     isDarkMode: Boolean,
+    onBack: () -> Unit,
     onThemeChange: (Boolean) -> Unit,
     onLogout: () -> Unit
 ) {
@@ -45,16 +42,24 @@ fun SettingsScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         item {
-            Text(
-                "Settings",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(16.dp),
-                color = MaterialTheme.colorScheme.primary
+            AppTopBar(
+                title = "Settings",
+                showBackButton = true,
+                onBackClick = onBack,
+                onSettingClick = {}
             )
         }
 
+
         item { SectionHeader("Account") }
-        items(accountSettings) { item -> SettingRow(item, appNavController) }
+        items(accountSettings) { item ->
+            SettingRow(item, onClick = {
+             item.route?.let {
+
+             }
+            }
+            )
+        }
 
         item { SectionHeader("Preferences") }
         item { 
@@ -75,9 +80,7 @@ fun SettingsScreen(
         item { HelpAndFeedbackRow() }
         item { AboutRow() }
         item { 
-            LogOutRow(onLogoutClick = {
-              navController.navigate(Routes.LOGOUT)
-            }) 
+            LogOutRow(onLogoutClick = onLogout)
         }
     }
 }
@@ -96,12 +99,6 @@ fun SectionHeader(title: String) {
 @Composable
 fun SettingsScreenPreview() {
     TodoAppV2Theme {
-        SettingsScreen(
-            appNavController = rememberNavController(),
-            isDarkMode = false,
-            onThemeChange = {},
-           navController = rememberNavController(),
-            onLogout = {}
-        )
+
     }
 }

@@ -1,5 +1,5 @@
 package com.example.todoappv2.task.add_edit
-
+import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,9 +12,10 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,9 +24,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.todoappv2.R
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,16 +46,21 @@ fun TaskAddEditScreen(
                 is TaskAddEditViewModel.UiEvent.SaveSuccess ->
                     onDone()
                 is TaskAddEditViewModel.UiEvent.ShowError -> {
-
+                    //show snack bar
                 }
             }
         }
     }
+
     val state = viewModel.uiState.collectAsState().value
     val subjects = viewModel.subjects.collectAsState(initial = emptyList()).value
     var subjectExpanded by remember{mutableStateOf(false)}
     var priorityExpanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+    state.dueDate?.let { calendar.timeInMillis = it }
     Column(modifier = Modifier.padding(16.dp)) {
+
         TextField(
             value = state.title,
             onValueChange = {
@@ -142,6 +151,36 @@ fun TaskAddEditScreen(
                 }
             }
         }
+        Spacer(modifier = Modifier.height(12.dp))
+        TextButton(onClick = {
+            val datePicker = DatePickerDialog(
+                context, {_, year,month,dayOfMonth ->
+                    calendar.set(year,month,dayOfMonth)
+                    android.app.TimePickerDialog(
+                        context, { _, hour, minute ->
+                            calendar.set(Calendar.HOUR_OF_DAY, hour)
+                            calendar.set(Calendar.MINUTE, minute)
+                            calendar.set(Calendar.SECOND, 0)
+                            calendar.set(Calendar.MILLISECOND, 0)
+                            viewModel.onEvent(TaskAddEditEvent.DueDateChanged(calendar.timeInMillis))
+                        },
+                        calendar.get(Calendar.HOUR_OF_DAY),
+                        calendar.get(Calendar.MINUTE),
+                        false
+                    ).show()
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            )
+            datePicker.show()
+        }) {
+            Text(
+                text = state.dueDate?.let {
+                    "Due: ${SimpleDateFormat("dd MM yyyy, hh:mma",Locale.getDefault()).format(it)}"
+                }?: "Set Due Date"
+            )
+        }
         Spacer(modifier = Modifier.height(24.dp))
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -158,7 +197,9 @@ fun TaskAddEditScreen(
 
             }
         }
+
     }
+
 
 
 }

@@ -1,4 +1,4 @@
-package com.example.todoappv2.dashboard
+package com.example.todoappv2.dashboard.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.todoappv2.dashboard.SubjectWithStats
 
 @Composable
 fun SubjectDashBoardCard(

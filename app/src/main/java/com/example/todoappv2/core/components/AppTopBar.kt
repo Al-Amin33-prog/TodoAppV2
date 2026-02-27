@@ -14,23 +14,37 @@ import com.example.todoappv2.core.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppTopBar(navController: NavController){
+fun AppTopBar(
+    title: String,
+    showBackButton: Boolean,
+    onBackClick: () -> Unit,
+    onSettingClick: () -> Unit,
+
+){
     TopAppBar(
         title = {
-            Text("HOME",
+            Text(text = title,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )
         },
+       navigationIcon = {
+           if (showBackButton){
+               IconButton(onClick = onBackClick) {
+                   Icon(
+                       painter = painterResource(R.drawable.arrow_back_24px__1_),
+                       contentDescription = "Back"
+                   )
+               }
+           }
+       },
         actions = {
-            IconButton(onClick = {
-                navController.navigate(Routes.SETTINGS)
-            }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_settings),
-                    contentDescription = "Settings",
-                    tint = MaterialTheme.colorScheme.primary
-                )
+            if (!showBackButton){
+                IconButton(onClick = onSettingClick) {
+                    Icon(painter = painterResource(R.drawable.ic_settings),
+                        contentDescription = "Settings"
+                    )
+                }
             }
         }
     )

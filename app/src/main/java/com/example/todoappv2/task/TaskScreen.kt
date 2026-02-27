@@ -4,15 +4,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+
 import com.example.todoappv2.core.notification.TaskReminderSchedule
 import com.example.todoappv2.data.repository.AppRepository
 import com.example.todoappv2.task.components.EmptyTaskState
@@ -47,12 +47,7 @@ fun TaskScreen(
     )
 
     Scaffold(
-        topBar = { Text(
-            "Tasks",
-            modifier = Modifier.padding(16.dp),
-            style= MaterialTheme
-                .typography.headlineLarge,
-                ) },
+
         floatingActionButton = {
             FloatingActionButton(onClick = {onAddTask()}) {
                 Icon(painter = painterResource(R.drawable.add_task_24px),
