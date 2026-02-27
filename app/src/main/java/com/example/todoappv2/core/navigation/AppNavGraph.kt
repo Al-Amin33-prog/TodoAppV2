@@ -16,6 +16,7 @@ import com.example.todoappv2.auth.components.register.RegisterScreen
 import com.example.todoappv2.auth.components.resetpassword.ResetPasswordScreen
 import com.example.todoappv2.core.notification.TaskReminderSchedule
 import com.example.todoappv2.data.repository.AppRepository
+import com.example.todoappv2.settings.SettingsScreen
 
 
 @Composable
@@ -113,6 +114,19 @@ fun AppNavGraph(
                isDarkMode = isDarkMode,
                onThemeChange = onThemeChange
            )
+        }
+        composable(Routes.SETTINGS){
+            SettingsScreen(
+                isDarkMode = isDarkMode,
+                onThemeChange = onThemeChange,
+                onLogout = {
+                    navController.navigate(Routes.LOGOUT)
+                },
+                onBack = {
+                    navController.popBackStack()
+                },
+
+            )
         }
     }
 }

@@ -26,7 +26,8 @@ fun AppBottomBar(
         BottomNavItem.Stats
     )
 
-    val currentRoute = navController.currentBackStackEntryAsState().value
+    val currentRoute = navController.currentBackStackEntryAsState()
+        .value
         ?.destination?.route
     NavigationBar {
         items.forEach { item  ->

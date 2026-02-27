@@ -2,7 +2,9 @@ package com.example.todoappv2.core.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -10,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.todoappv2.core.components.AppBottomBar
@@ -18,7 +21,6 @@ import com.example.todoappv2.core.notification.TaskReminderSchedule
 import com.example.todoappv2.dashboard.HomeScreen
 import com.example.todoappv2.dashboard.HomeViewModel
 import com.example.todoappv2.data.repository.AppRepository
-import com.example.todoappv2.settings.SettingsScreen
 import com.example.todoappv2.statistics.StatisticScreen
 import com.example.todoappv2.subject.SubjectScreen
 import com.example.todoappv2.subject.SubjectViewModel
@@ -39,9 +41,29 @@ fun AppNavigationShell(
     onThemeChange: (Boolean) -> Unit
 ) {
     val appNavController = rememberNavController()
+    val navBackStackEntry by appNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val title = when{
+        currentRoute?.startsWith(Routes.TASKS_ROOT) == true -> "Tasks"
+currentRoute == Routes.SUBJECTS -> "Subjects"
+        currentRoute == Routes.STATS -> "Statistics"
+        currentRoute == Routes.HOME -> "Home"
+        currentRoute == Routes.ADD_SUBJECT -> "Add Subject"
+        currentRoute?.startsWith(Routes.EDIT_SUBJECT) == true -> "Edit Subject"
+        currentRoute?.startsWith(Routes.ADD_EDIT_TASK) == true -> "Add Edit Task"
+
+        else -> ""
+    }
     Scaffold(
         bottomBar = { AppBottomBar(appNavController) },
-        topBar = { AppTopBar(appNavController) }
+        topBar = { AppTopBar(
+            title = title,
+            showBackButton = false,
+            onBackClick = {},
+            onSettingClick = {
+                navController.navigate(Routes.SETTINGS)
+            }
+        ) }
     ) { padding ->
 
         NavHost(
@@ -180,17 +202,7 @@ fun AppNavigationShell(
 
 
 
-            composable(Routes.SETTINGS) {
-                SettingsScreen(
-                   appNavController = appNavController,
-                    navController = navController,
-                    isDarkMode = isDarkMode,
-                    onThemeChange = onThemeChange,
-                    onLogout = {
-                        navController.navigate(Routes.LOGOUT)
-                    }
-                )
-            }
+
             composable(Routes.TASKS_ROOT){
                 TaskScreen(
 
