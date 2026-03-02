@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,7 +20,8 @@ import androidx.compose.ui.unit.dp
 
 import com.example.todoappv2.dashboard.components.QuickActionButtons
 import com.example.todoappv2.dashboard.components.TodayOverviewCard
-import com.example.todoappv2.dashboard.components.UpcomingTaskItem
+import com.example.todoappv2.upcomingtasks.components.EmptyUpcomingState
+import com.example.todoappv2.upcomingtasks.components.UpcomingTaskItem
 
 @Composable
 fun HomeScreen(
@@ -76,10 +76,19 @@ fun HomeScreen(
                 item {
                     Text("Upcoming Tasks", style = MaterialTheme.typography.titleMedium)
                 }
-                items(state.upComingTasks){task ->
-                    UpcomingTaskItem(
-                        task= task,
-                        onClick = onTaskClick)
+                item{
+                    if (state.upComingTasks.isEmpty()){
+                        EmptyUpcomingState()
+                    }else{
+                        state.upComingTasks.forEach {task ->
+                            UpcomingTaskItem(
+                                task = task,
+                                onClick = onTaskClick
+                            )
+
+                        }
+                    }
+
 
                 }
 
