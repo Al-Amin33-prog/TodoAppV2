@@ -3,10 +3,12 @@ package com.example.todoappv2.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoappv2.data.repository.AppRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel (
@@ -21,6 +23,7 @@ class HomeViewModel (
     }
     fun refresh(){
         viewModelScope.launch {
+            delay(500)
             _isRefreshing.value = true
             _uiState.value = _uiState.value.copy(isLoading = true)
             val subjects = repository.getSubjects().first()
@@ -76,6 +79,10 @@ class HomeViewModel (
                 upComingTasks = upcoming
             )
             _isRefreshing.value = false
+
+            repository.getUpcomingTasks(System.currentTimeMillis()).collect { tasks ->
+                _uiState.update { it.copy(upComingTasks = tasks) }
+            }
 
         }
 

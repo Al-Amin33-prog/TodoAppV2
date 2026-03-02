@@ -2,6 +2,7 @@ package com.example.todoappv2.task.add_edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todoappv2.core.notification.TaskReminderSchedule
 import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.data.repository.AppRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -9,13 +10,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TaskAddEditViewModel (
     private val repository: AppRepository,
-
+    private val reminderSchedule: TaskReminderSchedule,
     private val taskId: Long? = null,
-    private val subjectId: Long? = null
+    private val subjectId: Long? = null,
 ): ViewModel(){
 
     private val _uiState = MutableStateFlow(TaskAddEditUiState(subjectId = subjectId))
@@ -103,7 +105,7 @@ class TaskAddEditViewModel (
                     .ShowError("Title cannot be blank"))
                 return@launch
             }
-            _uiState.value = state.copy(isSaving = true)
+            _uiState.update { it.copy(isSaving = true) }
             val entity = TaskEntity(
                 id = if (state.isEditing)taskId ?: 0 else 0,
                 subjectId = realSubjectId,
@@ -112,12 +114,19 @@ class TaskAddEditViewModel (
                 dueDate = state.dueDate,
                 isCompleted = state.isCompleted
             )
-            if (state.isEditing)
+
+            val saveId = if (state.isEditing){
                 repository.updateTask(entity)
-            else
+                entity.id
+            }else{
                 repository.insertTask(entity)
-            _uiState.value = state.copy(isSaving =  false)
-            _uiEvent.emit(UiEvent.SaveSuccess)
+            }
+            val savedTask = entity.copy(
+                id = saveId
+            )
+            reminderSchedule.scheduleTaskReminder(savedTask)
+            reminderSchedule.cancelTaskReminder(saveId)
+            reminderSchedule.scheduleTaskReminder(savedTask)
     }
 }
 }
