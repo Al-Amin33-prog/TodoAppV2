@@ -31,6 +31,16 @@ class TaskAddEditViewModel (
     init {
         if (taskId != null){
             loadTask(taskId)
+        }else if (subjectId != null){
+            viewModelScope.launch {
+                val subject = repository.getSubjectById(subjectId)
+                subject?.let {
+                    _uiState.value = _uiState.value.copy(
+                        subjectId =  it.id,
+                        subjectName =  it.name
+                    )
+                }
+            }
         }
     }
 
@@ -82,8 +92,8 @@ class TaskAddEditViewModel (
         viewModelScope.launch {
             val state = _uiState.value
 
-       val realSubjectId = state.subjectId ?: 0L
-            if (realSubjectId == 0L){
+       val realSubjectId = state.subjectId
+            if (realSubjectId == null){
                 _uiEvent.emit(UiEvent
                     .ShowError("Please select a subject"))
                 return@launch

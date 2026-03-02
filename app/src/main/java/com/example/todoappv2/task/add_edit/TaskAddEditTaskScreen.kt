@@ -53,7 +53,11 @@ fun TaskAddEditScreen(
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     val calendar = remember { Calendar.getInstance() }
-    state.dueDate?.let { calendar.timeInMillis = it }
+  LaunchedEffect(state.dueDate) {
+      state.dueDate?.let {
+          calendar.timeInMillis = it
+      }
+  }
 
     var subjectExpanded by remember { mutableStateOf(false) }
     var priorityExpanded by remember { mutableStateOf(false) }
@@ -268,35 +272,50 @@ fun TaskAddEditScreen(
             }
         }
     }
-
-    if (showDatePicker) {
-        DatePickerDialog(
-            context,
-            { _, year, month, day ->
-                calendar.set(Calendar.YEAR, year)
-                calendar.set(Calendar.MONTH, month)
-                calendar.set(Calendar.DAY_OF_MONTH, day)
+    LaunchedEffect(showDatePicker) {
+        if (showDatePicker) {
+           val dialog =  DatePickerDialog(
+                context,
+                { _, year, month, day ->
+                    calendar.set(Calendar.YEAR, year)
+                    calendar.set(Calendar.MONTH, month)
+                    calendar.set(Calendar.DAY_OF_MONTH, day)
+                    showDatePicker = false
+                    showTimePicker = true
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            )
+            dialog.setOnDismissListener {
                 showDatePicker = false
-                showTimePicker = true
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
+
+            }
+            dialog.show()
+        }
     }
 
-    if (showTimePicker) {
-        TimePickerDialog(
-            context,
-            { _, hour, minute ->
-                calendar.set(Calendar.HOUR_OF_DAY, hour)
-                calendar.set(Calendar.MINUTE, minute)
-                viewModel.onEvent(TaskAddEditEvent.DueDateChanged(calendar.timeInMillis))
-                showTimePicker = false
-            },
-            calendar.get(Calendar.HOUR_OF_DAY),
-            calendar.get(Calendar.MINUTE),
-            false
-        ).show()
-    }
+   LaunchedEffect(showTimePicker) {
+       if (showTimePicker) {
+          val dialog =  TimePickerDialog(
+               context,
+               { _, hour, minute ->
+                   calendar.set(Calendar.HOUR_OF_DAY, hour)
+                   calendar.set(Calendar.MINUTE, minute)
+                   viewModel.onEvent(TaskAddEditEvent.DueDateChanged(calendar.timeInMillis)
+                   )
+                   showTimePicker = false
+               },
+               calendar.get(Calendar.HOUR_OF_DAY),
+               calendar.get(Calendar.MINUTE),
+               false
+           )
+           dialog.setOnDismissListener {
+               showTimePicker = false
+           }
+           dialog.show()
+       }
+   }
+
+
 }
