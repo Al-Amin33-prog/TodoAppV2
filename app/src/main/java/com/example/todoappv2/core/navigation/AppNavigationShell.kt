@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -174,11 +175,14 @@ currentRoute == Routes.SUBJECTS -> "Subjects"
             ){backStackEntry ->
                 val taskId = backStackEntry.arguments?.getLong("taskId")?.takeIf { it != -1L }
                 val subjectId = backStackEntry.arguments?.getLong("subjectId")?.takeIf { it != -1L }
+                val context = LocalContext.current
+                val schedule = remember { TaskReminderSchedule(context) }
                 val viewModel: TaskAddEditViewModel = viewModel(
                     factory = TaskAddEditViewModelFactory(
                         repository = repository,
                         taskId = taskId,
-                        subjectId = subjectId
+                        subjectId = subjectId,
+                        reminderSchedule = schedule
                     )
                 )
                 TaskAddEditScreen(

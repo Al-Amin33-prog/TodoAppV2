@@ -1,5 +1,6 @@
 package com.example.todoappv2.task.add_edit
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoappv2.core.notification.TaskReminderSchedule
@@ -90,6 +91,7 @@ class TaskAddEditViewModel (
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     private fun saveTask(){
         viewModelScope.launch {
             val state = _uiState.value
