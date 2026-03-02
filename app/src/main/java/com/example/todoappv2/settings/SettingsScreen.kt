@@ -99,6 +99,12 @@ fun SectionHeader(title: String) {
 @Composable
 fun SettingsScreenPreview() {
     TodoAppV2Theme {
+        SettingsScreen(
+            isDarkMode = true,
+            onBack = {},
+            onThemeChange = {},
+            onLogout = {}
+        ) 
 
     }
 }
