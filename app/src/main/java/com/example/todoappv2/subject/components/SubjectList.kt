@@ -13,12 +13,17 @@ fun SubjectList(
     onAddSubject: () -> Unit,
     onEditSubject: (SubjectEntity) -> Unit
 ){
+    if (subjects.isEmpty()){
+        EmptySubjectState(onAddSubject)
+        return
+    }
     LazyColumn {
-        items(subjects){subject ->
+        items(subjects, key = {it.id}){subject ->
             SubjectCard(
                 subject = subject,
                 onClick = {onSubjectClick(subject)},
-                onDelete = {onDelete(subject)}
+                onDelete = {onDelete(subject)},
+                onEdit = {onEditSubject(subject)}
             )
         }
     }
