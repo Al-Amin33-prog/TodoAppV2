@@ -54,4 +54,9 @@ class AppRepositoryImplementation (
         return taskDao.getAllTasks()
     }
 
+    override fun getUpcomingTasks(now: Long): Flow<List<TaskEntity>> {
+
+       return taskDao.getUpcomingTasks(now)
+    }
+
 }

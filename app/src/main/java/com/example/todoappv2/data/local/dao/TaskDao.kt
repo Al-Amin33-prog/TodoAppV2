@@ -37,4 +37,12 @@ interface TaskDao {
         """
     )
     fun getAllTasks(): Flow<List<TaskEntity>>
+    @Query(
+        """
+            SELECT * FROM tasks WHERE dueDate IS NOT NULL AND dueDate > :now
+            ORDER BY dueDate ASC
+            """
+    )
+    fun getUpcomingTasks(now: Long):
+     Flow<List<TaskEntity>>
 }

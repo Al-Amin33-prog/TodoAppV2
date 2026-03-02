@@ -17,4 +17,7 @@ interface AppRepository {
     suspend fun getTaskById(taskId: Long): TaskEntity?
     fun getTasKBySubject(subjectId: Long): Flow<List<TaskEntity>>
     fun getAllTasks(): Flow<List<TaskEntity>>
+    fun getUpcomingTasks(now: Long):
+            Flow<List<TaskEntity>>
+
 }
