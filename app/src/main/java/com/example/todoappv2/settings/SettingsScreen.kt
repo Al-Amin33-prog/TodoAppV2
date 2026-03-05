@@ -35,7 +35,7 @@ fun SettingsScreen(
 
     val accountSettings = listOf(
         SettingItem("Profile", "View and edit your personal info", R.drawable.person_24px),
-        SettingItem("Security", "Passwords and 2FA", R.drawable.security_24px)
+        SettingItem("Security", "Password Management", R.drawable.security_24px)
     )
 
     LazyColumn(

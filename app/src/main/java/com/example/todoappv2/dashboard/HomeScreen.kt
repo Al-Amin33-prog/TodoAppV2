@@ -4,9 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
+
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -17,6 +18,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import com.example.todoappv2.dashboard.components.CustomPullRefreshIndicator
 
 import com.example.todoappv2.dashboard.components.QuickActionButtons
 import com.example.todoappv2.dashboard.components.TodayOverviewCard
@@ -37,13 +40,21 @@ fun HomeScreen(
     val refreshState = rememberPullToRefreshState()
     PullToRefreshBox(isRefreshing = isRefreshing,
         onRefresh = {viewModel.refresh()},
-        state = refreshState) {
+        state = refreshState,
+        indicator = {}) {
+        CustomPullRefreshIndicator(
+            isRefreshing = isRefreshing,
+            Modifier
+                .align(Alignment.TopCenter)
+                .zIndex(1f)
+                .offset(y = 16.dp)
+        )
         if (state.isLoading){
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+
             }
 
 
