@@ -56,6 +56,7 @@ class TaskViewModel (
             }
         }
     }
+
     fun onEvent(event: TaskEvent){
         when(event){
             is TaskEvent.AddTask -> {
@@ -70,6 +71,8 @@ class TaskViewModel (
                   val id =  repository.insertTask(task)
                     val tasksWithId = task.copy(id = id)
                     scheduler.scheduleTaskReminder(tasksWithId)
+
+
 
                 }
             }

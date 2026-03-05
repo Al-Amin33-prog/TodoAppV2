@@ -126,9 +126,9 @@ class TaskAddEditViewModel (
             val savedTask = entity.copy(
                 id = saveId
             )
-            reminderSchedule.scheduleTaskReminder(savedTask)
             reminderSchedule.cancelTaskReminder(saveId)
             reminderSchedule.scheduleTaskReminder(savedTask)
+            _uiEvent.emit(UiEvent.SaveSuccess)
     }
 }
 }
