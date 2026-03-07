@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.todoappv2.auth.AuthViewModel
 import com.example.todoappv2.core.components.AppBottomBar
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
                 val authViewModel = remember { AuthViewModel(authRepository) }
 
                     AppNavGraph(
-                        navController = navController,
+                        rootNavController = navController,
                         authViewModel = authViewModel,
                         repository = appRepository,
                         schedule = scheduler,
