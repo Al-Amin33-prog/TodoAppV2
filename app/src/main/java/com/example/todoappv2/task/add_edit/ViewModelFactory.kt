@@ -8,13 +8,12 @@ import com.example.todoappv2.data.repository.AppRepository
 class TaskAddEditViewModelFactory(
     private val repository: AppRepository,
     private val reminderSchedule: TaskReminderSchedule,
-    private val taskId: Long? = null,
-    private val subjectId: Long? = null
+    private val mode: TaskAddEditMode,
 ): ViewModelProvider.Factory{
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskAddEditViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
-            return TaskAddEditViewModel(repository, reminderSchedule = reminderSchedule, taskId = taskId,subjectId) as T
+            return TaskAddEditViewModel(repository, reminderSchedule = reminderSchedule, mode = mode ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

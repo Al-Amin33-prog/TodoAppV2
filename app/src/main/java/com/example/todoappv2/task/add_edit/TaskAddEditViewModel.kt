@@ -17,11 +17,10 @@ import kotlinx.coroutines.launch
 class TaskAddEditViewModel (
     private val repository: AppRepository,
     private val reminderSchedule: TaskReminderSchedule,
-    private val taskId: Long? = null,
-    private val subjectId: Long? = null,
+    private val mode: TaskAddEditMode
 ): ViewModel(){
 
-    private val _uiState = MutableStateFlow(TaskAddEditUiState(subjectId = subjectId))
+    private val _uiState = MutableStateFlow(TaskAddEditUiState())
     val uiState: StateFlow<TaskAddEditUiState> = _uiState.asStateFlow()
     val subjects = repository.getSubjects()
     private val _uiEvent = MutableSharedFlow<UiEvent>()
@@ -32,16 +31,23 @@ class TaskAddEditViewModel (
     }
 
     init {
-        if (taskId != null){
-            loadTask(taskId)
-        }else if (subjectId != null){
-            viewModelScope.launch {
-                val subject = repository.getSubjectById(subjectId)
-                subject?.let {
-                    _uiState.value = _uiState.value.copy(
-                        subjectId =  it.id,
-                        subjectName =  it.name
-                    )
+        when(mode){
+            is TaskAddEditMode.Edit ->{
+                loadTask(mode.taskId)
+            }
+            is TaskAddEditMode.Add ->{
+                mode.subjectId?.let{ subjectId ->
+                   viewModelScope.launch{
+                       val subject = repository.getSubjectById(subjectId)
+                       subject?.let{subjectEntity ->
+                           _uiState.update{state ->
+                              state.copy(
+                                  subjectId = subjectEntity.id,
+                                  subjectName = subjectEntity.name
+                              )
+                           }
+                       }
+                   }
                 }
             }
         }
@@ -50,12 +56,13 @@ class TaskAddEditViewModel (
     private fun loadTask(taskId: Long){
        viewModelScope.launch {
            val task = repository.getTaskById(taskId) ?: return@launch
-
+           val subject = repository.getSubjectById(task.subjectId)
            _uiState.value = _uiState.value.copy(
                title = task.title,
                description = task.description ?: "",
                dueDate = task.dueDate,
                isCompleted = task.isCompleted,
+               subjectName = subject?.name ?: "",
                subjectId = task.subjectId,
                isEditing = true
            )
@@ -108,8 +115,9 @@ class TaskAddEditViewModel (
                 return@launch
             }
             _uiState.update { it.copy(isSaving = true) }
+            val taskId = if(mode is TaskAddEditMode.Edit) mode.taskId else 0
             val entity = TaskEntity(
-                id = if (state.isEditing)taskId ?: 0 else 0,
+                id = if (state.isEditing)taskId  else 0,
                 subjectId = realSubjectId,
                 title = state.title,
                 description = state.description,

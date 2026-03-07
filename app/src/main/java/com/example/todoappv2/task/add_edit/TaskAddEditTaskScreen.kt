@@ -265,6 +265,7 @@ fun TaskAddEditScreen(
                     Text("Cancel", style = MaterialTheme.typography.labelLarge)
                 }
                 Button(
+                    enabled = !state.isSaving,
                     onClick = { viewModel.onEvent(TaskAddEditEvent.SaveTask) },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(50)
