@@ -19,7 +19,7 @@ object Routes {
     fun tasksWithId(id: Long) = "tasks_by_subject/$id"
     const val ADD_EDIT_TASK = "add_edit_task?taskId={taskId}&subjectId={subjectId}"
     fun addTask(subjectId: Long)="add_edit_task?taskId=-1&subjectId=$subjectId"
-    fun editTask(taskId:Long, subjectId: Long) = "add_edit_task_task?taskId=$taskId&subjectId=$subjectId"
+    fun editTask(taskId:Long, subjectId: Long) = "add_edit_task?taskId=$taskId&subjectId=$subjectId"
 
 
     const val TASKS_ROOT = "tasks_root"
