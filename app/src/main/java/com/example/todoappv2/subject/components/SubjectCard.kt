@@ -1,12 +1,15 @@
 package com.example.todoappv2.subject.components
 
-import androidx.compose.foundation.background
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,12 +33,15 @@ fun SubjectCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(subject.colorHex))
             .padding(vertical = 6.dp)
-            .clickable{onClick()}
+            .clickable{onClick()},
+        colors = CardDefaults.cardColors(
+            containerColor = Color(subject.colorHex)
+        )
     ) {
         Row(
            modifier = Modifier
+               .fillMaxWidth()
                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -47,13 +53,21 @@ fun SubjectCard(
                     text = subject.name,
                     style = MaterialTheme.typography.titleMedium
                 )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("Tap to view tasks", style = MaterialTheme.typography.bodySmall)
+
             }
-            IconButton(onClick = onDelete) {
-                Icon(
-                   painter = painterResource(R.drawable.ic_delete_24px),
-                    contentDescription = "Delete Subject"
-                )
-            }
+          Row {
+              IconButton(onClick = onEdit) {
+                  Icon(painter = painterResource(R.drawable.step_out_24px),contentDescription = null)
+              }
+              IconButton(onClick = onDelete) {
+                  Icon(
+                      painter = painterResource(R.drawable.ic_delete_24px),
+                      contentDescription = "Delete Subject"
+                  )
+              }
+          }
         }
     }
 }

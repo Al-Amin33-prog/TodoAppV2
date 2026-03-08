@@ -7,4 +7,5 @@ sealed class SubjectEvent{
     data class AddSubject(val name: String): SubjectEvent()
     data class DeleteSubject(val subject: SubjectEntity): SubjectEvent()
     data class UpdateSubject(val subject: SubjectEntity): SubjectEvent()
+    data class SearchQueryChange(val query: String): SubjectEvent()
 }
