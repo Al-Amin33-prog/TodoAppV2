@@ -59,6 +59,7 @@ fun SubjectAddEditScreen(
                 value = state.title,
                 onValueChange = viewModel::onTitleChange,
                 placeholder = {Text("Enter subject title")},
+                singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)

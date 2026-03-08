@@ -4,14 +4,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+
 
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 
 import com.example.todoappv2.core.notification.TaskReminderSchedule
 import com.example.todoappv2.data.repository.AppRepository
@@ -20,6 +24,7 @@ import com.example.todoappv2.task.components.TaskFilter
 import com.example.todoappv2.task.components.TaskList
 import com.example.todoappv2.task.components.TaskProgressBar
 import com.example.todoappv2.R
+import com.example.todoappv2.task.components.TaskSearchBar
 
 @Composable
 fun TaskScreen(
@@ -39,12 +44,8 @@ fun TaskScreen(
         )
     }
     val state = viewModel.uiState.collectAsState().value
-    TaskFilter(
-        selectedFilter = state.filter,
-        onFilterSelected = {filter ->
-            viewModel.onEvent(TaskEvent.ChangeFilter(filter))
-        }
-    )
+
+
 
     Scaffold(
 
@@ -59,10 +60,24 @@ fun TaskScreen(
         Column(
             modifier = Modifier.padding(padding)
         ) {
+            Text(
+                "Tasks",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(16.dp)
+            )
+            TaskSearchBar(
+                query = state.searchQuery,
+                onQueryChanged = {
+                    viewModel.onEvent(TaskEvent.SearchTasks(it))
+                }
+            )
+
+
+
             TaskFilter(
                 selectedFilter = state.filter,
-                onFilterSelected = {
-                    viewModel.onEvent(TaskEvent.ChangeFilter(it))
+                onFilterSelected = {filter ->
+                    viewModel.onEvent(TaskEvent.ChangeFilter(filter))
                 }
             )
             when{
@@ -74,7 +89,7 @@ fun TaskScreen(
                 }
                 else -> {
                     TaskList(
-                        tasks = state.visibleTasks,
+                     groupedTasks = state.groupedTasks,
                         onToggleCompleted = {task, completed->
                             viewModel.onEvent(
                                 TaskEvent.UpdateTask(
