@@ -14,4 +14,5 @@ sealed class TaskEvent {
     data class DeleteTask(val task: TaskEntity): TaskEvent()
     data class UpdateTask(val task: TaskEntity): TaskEvent()
     data class ChangeFilter(val filter: TaskFilterType): TaskEvent()
+    data class SearchTasks(val query: String): TaskEvent()
 }
