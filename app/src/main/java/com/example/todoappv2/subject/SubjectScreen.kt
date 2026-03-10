@@ -4,6 +4,7 @@ package com.example.todoappv2.subject
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -54,6 +55,7 @@ fun SubjectScreen(
                 ){
                     OutlinedTextField(
                         value = state.searchQuery,
+                        shape = RoundedCornerShape(16.dp),
                         onValueChange = {
                             viewModel.onEvent(
                                 SubjectEvent.SearchQueryChange(it)

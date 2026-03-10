@@ -3,6 +3,7 @@ package com.example.todoappv2.task.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -19,6 +20,7 @@ fun TaskSearchBar(
 ){
     OutlinedTextField(
         value = query,
+        shape = RoundedCornerShape(16.dp),
         onValueChange = onQueryChanged,
         modifier = Modifier
             .fillMaxWidth()

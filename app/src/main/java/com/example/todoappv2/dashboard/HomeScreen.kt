@@ -61,7 +61,8 @@ fun HomeScreen(
         }else{
             LazyColumn (modifier = Modifier
                 .fillMaxSize()
-                .padding(18.dp)){
+                .padding(horizontal = 16.dp)){
+
                 item {
                     TodayOverviewCard(
                         todayCount = state.todayTasks.size,

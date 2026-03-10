@@ -153,7 +153,9 @@ class TaskViewModel (
 
                 }
                _uiState.value =  _uiState.value.copy(
-                    visibleTasks = filtered
+                   searchQuery = event.query,
+                    visibleTasks = filtered,
+                   groupedTasks = groupTasks(filtered)
                 )
             }
         }
