@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -54,12 +55,14 @@ dependencies {
     
     // Navigation
     implementation(libs.androidx.navigation.compose)
-
     
-        // Required for Material 3 components and pull-to-refresh
-        implementation("androidx.compose.material3:material3:1.4.0")
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
-
+    // Required for Material 3 components and pull-to-refresh
+    implementation("androidx.compose.material3:material3:1.4.0")
 
     // Room dependencies
     implementation(libs.androidx.room.runtime)

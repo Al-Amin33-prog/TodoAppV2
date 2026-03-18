@@ -3,7 +3,7 @@ package com.example.todoappv2.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // Primary
-val BluePrimary = Color(0xFF2563EB)
+val BluePrimary = Color(0xFF1859E8)
 val BlueOnPrimary = Color(0xFFFFFFFF)
 
 // Secondary

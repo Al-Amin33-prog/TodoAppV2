@@ -2,6 +2,7 @@ package com.example.todoappv2.task.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Text
@@ -17,70 +18,32 @@ fun TaskFilter(
     selectedFilter: TaskFilterType,
     onFilterSelected: (TaskFilterType) -> Unit
 ){
+    val filters = listOf(
+        TaskFilterType.All to "All",
+        TaskFilterType.Pending to "Pending",
+        TaskFilterType.Completed to "Completed",
+        TaskFilterType.Overdue to "Overdue"
+    )
     LazyRow(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        item {
-            FilterChip(selected = selectedFilter
-                    is TaskFilterType.All,
-                onClick = {
-                    onFilterSelected(TaskFilterType.All)
-                },
-                label = { Text("All") },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = BluePrimary,
-                    selectedLabelColor = Color.Gray
-                )
-            )
-        }
-
-       item {
-           FilterChip(
-               selected = selectedFilter
-                       is TaskFilterType.Pending,
-               onClick = {
-                   onFilterSelected(TaskFilterType.Pending)
-               },
-               label = {Text("Pending")},
-               colors = FilterChipDefaults.filterChipColors(
-                   selectedContainerColor = BluePrimary,
-                   selectedLabelColor = Color.Gray
-               )
-           )
-       }
-
-     item {
-         FilterChip(
-             selected = selectedFilter
-                     is TaskFilterType.Completed,
-             onClick = {
-                 onFilterSelected(TaskFilterType.Completed)
-             },
-             label = {Text("Completed")},
-             colors = FilterChipDefaults.filterChipColors(
-                 selectedContainerColor = BluePrimary,
-                 selectedLabelColor = Color.Gray
-             )
-         )
-     }
-
-        item {
+        items(filters){(type, label) ->
             FilterChip(
-                selected = selectedFilter
-                        is
-                        TaskFilterType.Overdue,
-                onClick = {
-                    onFilterSelected(TaskFilterType.Overdue)
-                },
-                label = {Text("Overdue")},
+                selected = selectedFilter == type,
+                onClick = {onFilterSelected(type)},
+                label = {Text(label)},
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = BluePrimary,
-                    selectedLabelColor = Color.Gray
+                    selectedLabelColor = Color.White,
+                    containerColor = Color.Transparent,
+                    labelColor = Color.Gray
                 )
             )
+
         }
 
     }
+
 
 }

@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -17,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.todoappv2.subject.components.EmptySubjectState
@@ -55,7 +58,7 @@ fun SubjectScreen(
                 ){
                     OutlinedTextField(
                         value = state.searchQuery,
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(24.dp),
                         onValueChange = {
                             viewModel.onEvent(
                                 SubjectEvent.SearchQueryChange(it)
@@ -63,40 +66,45 @@ fun SubjectScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        placeholder = { Text("search subjects") },
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        placeholder = { Text(
+                            "search subjects...",
+                            style = MaterialTheme.typography.bodyMedium)
+                                      },
                         leadingIcon = {
                             Icon(
-                           painter = painterResource(R.drawable.search_24px__1_),  contentDescription = null
+                           painter = painterResource(R.drawable.search_24px__1_),
+                                contentDescription = null
                             )
                         },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.White,
+                            focusedContainerColor = Color.White,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.primary
+                        ),
                         singleLine = true
                     )
-                    SubjectList(
-                        subjects = state.subjects,
-                        onDelete = { subject ->
-                            coroutineScope.launch {
-                                val result = snackbarHostState.showSnackbar(
-                                    message = "Delete${subject.name}?",
-                                    actionLabel = "Confirm",
-                                    withDismissAction = true
-                                )
-                                if (result == SnackbarResult.ActionPerformed){
-                                    viewModel.onEvent(
-                                        SubjectEvent.DeleteSubject(subject)
-                                    )
-                                }
-                            }
+                   if (state.subjects.isEmpty() && ! state.isLoading){
+                      EmptySubjectState(onAddSubject = onAddSubject)
+                   }else {
+                       SubjectList(
+                           subjects = state.subjects,
+                           onDelete = {subject ->
+                               coroutineScope.launch {
+                                   val result = snackbarHostState.showSnackbar("Delete ${subject.name}?",
+                                       actionLabel = "Confirm",
+                                       withDismissAction = true)
+                                   if (result == SnackbarResult.ActionPerformed){
+                                       viewModel.onEvent(SubjectEvent.DeleteSubject(subject))
+                                   }
+                               }
 
-                        },
-                        onSubjectClick = {subject ->
-                            onOpenSubject(subject.id)
-                        },
-                        onAddSubject = onAddSubject,
-                        onEditSubject = {subject ->
-                            onEditSubject(subject.id)
-                        }
-                    )
+                           },
+                           onSubjectClick = {onOpenSubject(it.id)},
+                           onEditSubject = {onEditSubject(it.id)},
+                           onAddSubject = onAddSubject
+                       )
+                   }
                 }
             }
         }

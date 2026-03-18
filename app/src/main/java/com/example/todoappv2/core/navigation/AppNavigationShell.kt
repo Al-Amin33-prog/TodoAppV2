@@ -112,7 +112,9 @@ currentRoute == Routes.SUBJECTS -> "Subjects"
 
 
             composable(Routes.STATS) {
-                StatisticScreen()
+                StatisticScreen(
+                  repository = repository
+                )
             }
 
             composable(Routes.TASKS_ROOT){

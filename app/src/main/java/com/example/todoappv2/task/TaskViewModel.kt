@@ -158,6 +158,22 @@ class TaskViewModel (
                    groupedTasks = groupTasks(filtered)
                 )
             }
+            is TaskEvent.ToggleTaskCompletion -> {
+                viewModelScope.launch {
+                    val updatedTask = event.task.copy(
+                        isCompleted = ! event.task.isCompleted
+                    )
+                    repository.updateTask(updatedTask)
+                    if (updatedTask.isCompleted){
+                        scheduler.cancelTaskReminder(updatedTask.id)
+                    }
+                }
+            }
+            is TaskEvent.RestoreTask -> {
+                viewModelScope.launch {
+                    repository.insertTask(event.task)
+                }
+            }
         }
     }
 }
