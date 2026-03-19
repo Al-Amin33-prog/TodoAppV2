@@ -53,15 +53,23 @@ fun HomeScreen(
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ) {
-
-            }
+            ) {}
 
 
         }else{
             LazyColumn (modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)){
+                .padding(horizontal = 16.dp)
+            ){
+               item {
+                   GreetingHeader(
+                       userName = ""
+                   )
+               }
+
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
 
                 item {
                     TodayOverviewCard(

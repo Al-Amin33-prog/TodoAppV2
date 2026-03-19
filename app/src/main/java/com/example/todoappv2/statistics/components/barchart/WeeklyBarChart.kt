@@ -3,7 +3,6 @@ package com.example.todoappv2.statistics.components.barchart
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,7 +33,7 @@ fun WeeklyBarChart(
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White) ,
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface) ,
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(

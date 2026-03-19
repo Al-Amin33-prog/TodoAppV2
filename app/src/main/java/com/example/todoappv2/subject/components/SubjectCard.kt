@@ -46,7 +46,7 @@ fun SubjectCard(
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor =  MaterialTheme.colorScheme.surface
         )
 
     ) {

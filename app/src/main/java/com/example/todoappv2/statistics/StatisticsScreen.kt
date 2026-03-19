@@ -7,10 +7,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.todoappv2.data.repository.AppRepository
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todoappv2.statistics.components.piechart.PieChartCard
 import com.example.todoappv2.statistics.components.productivity.ProductivityCard
 import com.example.todoappv2.statistics.components.stats.StatsSummaryCards
@@ -18,11 +17,8 @@ import com.example.todoappv2.statistics.components.barchart.WeeklyBarChart
 
 @Composable
 fun StatisticScreen(
-    repository: AppRepository
 ){
-    val viewModel = remember {
-        StatisticsViewModel(repository)
-    }
+    val viewModel: StatisticsViewModel = hiltViewModel()
     val state = viewModel.uiState.collectAsState().value
     LazyColumn(
         modifier = Modifier

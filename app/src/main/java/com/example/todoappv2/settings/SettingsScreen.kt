@@ -1,6 +1,7 @@
 package com.example.todoappv2.settings
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,7 +40,9 @@ fun SettingsScreen(
     )
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         item {
             AppTopBar(
@@ -68,7 +71,6 @@ fun SettingsScreen(
                 onThemeChange = onThemeChange
             )
         }
-
         item {
             SyncToggleRow(
                 isSyncEnabled = isSyncEnabled,

@@ -33,13 +33,13 @@ fun TaskItem(
         task.dueDate?.let {
           it <  System.currentTimeMillis()
         } == true -> Color(0xffd32f2f)
-        else -> Color.Gray
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable{onClick()}
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier
@@ -65,7 +65,9 @@ fun TaskItem(
                         textDecoration = if (task.isCompleted)
                             TextDecoration.LineThrough else
                             TextDecoration.None,
-                        color = if (task.isCompleted) Color.Gray else Color.Unspecified
+                        color = if (task.isCompleted) MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.5f
+                        )  else MaterialTheme.colorScheme.onSurface
                     )
                 )
                 Text(
@@ -80,7 +82,7 @@ fun TaskItem(
             modifier = Modifier
                 .padding(start = 56.dp),
             thickness = 0.5.dp,
-            color = Color.LightGray.copy(0.5f)
+            color = MaterialTheme.colorScheme.outlineVariant
 
         )
     }

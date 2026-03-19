@@ -3,12 +3,15 @@ package com.example.todoappv2.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoappv2.data.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : ViewModel() {
 
@@ -65,7 +68,7 @@ class AuthViewModel(
 
                 },
                 onFailure = { error ->
-                    _uiState.value.copy(
+                    _uiState.value =  _uiState.value.copy(
                         isLoading = false,
                         error = error.message
                     )
@@ -84,7 +87,7 @@ class AuthViewModel(
                 onSuccess = {
                 },
                 onFailure = { error ->
-                    _uiState.value.copy(
+                    _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         error = error.message
                     )

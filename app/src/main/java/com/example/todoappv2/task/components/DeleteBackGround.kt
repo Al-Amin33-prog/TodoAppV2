@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.runtime.Composable
@@ -30,7 +31,7 @@ fun DeleteBackground(dismissState: SwipeToDismissBoxState){
         modifier = Modifier
         .fillMaxSize()
         .padding(horizontal = 20.dp)
-        .background(Color.Red.copy(alpha = animatedAlpha.value)),
+        .background(MaterialTheme.colorScheme.error),
         contentAlignment = Alignment.CenterEnd
 
     ){

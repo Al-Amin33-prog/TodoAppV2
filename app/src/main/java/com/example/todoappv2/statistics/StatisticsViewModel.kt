@@ -4,13 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.data.repository.AppRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import javax.inject.Inject
 
-class StatisticsViewModel (
+@HiltViewModel
+
+class StatisticsViewModel @Inject constructor (
     private val  repository: AppRepository
 ): ViewModel() {
     private  val _uiState = MutableStateFlow(StatisticsState())

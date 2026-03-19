@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +19,9 @@ import androidx.compose.ui.unit.dp
 fun SettingRow(item: SettingItem,
                onClick: () -> Unit) {
     ListItem(
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
         modifier = Modifier.clickable {
             onClick()
 
@@ -25,6 +29,7 @@ fun SettingRow(item: SettingItem,
         headlineContent = {
             Text(
                 item.title,
+                style = MaterialTheme.typography.labelLarge,
                 color = if (item.isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
         },

@@ -61,6 +61,9 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
+
     // Required for Material 3 components and pull-to-refresh
     implementation("androidx.compose.material3:material3:1.4.0")
 

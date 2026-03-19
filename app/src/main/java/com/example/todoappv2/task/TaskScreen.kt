@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todoappv2.core.notification.TaskReminderSchedule
 import com.example.todoappv2.data.repository.AppRepository
 import com.example.todoappv2.task.components.EmptyTaskState
@@ -36,21 +37,12 @@ import com.example.todoappv2.task.components.TaskSearchBar
 
 @Composable
 fun TaskScreen(
-
-    repository: AppRepository,
-    scheduler: TaskReminderSchedule,
     onAddTask: () -> Unit,
     onEditTask: (Long) -> Unit
 ){
 
 
-    val viewModel = remember {
-        TaskViewModel(
-            repository = repository,
-            scheduler = scheduler,
-
-        )
-    }
+   val viewModel: TaskViewModel = hiltViewModel()
     val state = viewModel.uiState.collectAsState().value
     val snackbarHostState = remember { SnackbarHostState() }
     var recentlyDeletedTask by remember { mutableStateOf<TaskEntity?>(null) }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -151,7 +152,10 @@ fun TaskAddEditScreen(
                         )
                     },
                     modifier = Modifier
-                        .menuAnchor()
+                        .menuAnchor(
+                            type = ExposedDropdownMenuAnchorType.PrimaryEditable,
+                            enabled = true
+                        )
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     textStyle = MaterialTheme.typography.bodyLarge
@@ -219,7 +223,10 @@ fun TaskAddEditScreen(
                     value = state.priority,
                     onValueChange = {},
                     modifier = Modifier
-                        .menuAnchor()
+                        .menuAnchor(
+                            type = ExposedDropdownMenuAnchorType.PrimaryEditable,
+                            enabled = true
+                        )
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     textStyle = MaterialTheme.typography.bodyLarge,

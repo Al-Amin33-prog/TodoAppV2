@@ -8,12 +8,15 @@ import com.example.todoappv2.data.repository.AppRepository
 
 import com.example.todoappv2.task.components.TaskFilterType
 import com.example.todoappv2.task.components.TaskSection
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TaskViewModel (
+@HiltViewModel
+class TaskViewModel @Inject constructor (
     private val repository: AppRepository,
     private val scheduler: TaskReminderSchedule
 
