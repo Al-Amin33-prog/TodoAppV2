@@ -8,7 +8,7 @@ TodoAppV2 helps users organize subjects and tasks efficiently. It emphasizes rea
 ## 🛠️ Tech Stack & Architecture
 - **Language:** Kotlin
 - **UI Framework:** Jetpack Compose (Declarative UI)
-- **Dependency Injection:** Manual dependency provision (Hilt planned)
+- **Dependency Injection:** Hilt 
 - **Local Database:** Room (Offline-first approach)
 - **Architecture:** MVVM with a single-source-of-truth Repository pattern
 - **Async Programming:** Kotlin Coroutines & Flow
