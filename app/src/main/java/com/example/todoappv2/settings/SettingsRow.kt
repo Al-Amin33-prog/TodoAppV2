@@ -1,7 +1,6 @@
 package com.example.todoappv2.settings
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -11,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+
 
 
 
@@ -22,10 +21,9 @@ fun SettingRow(item: SettingItem,
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        modifier = Modifier.clickable {
-            onClick()
+        modifier = Modifier.clickable{onClick()}
 
-        },
+        ,
         headlineContent = {
             Text(
                 item.title,
@@ -42,5 +40,5 @@ fun SettingRow(item: SettingItem,
             )
         }
     )
-    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp)
+    HorizontalDivider()
 }

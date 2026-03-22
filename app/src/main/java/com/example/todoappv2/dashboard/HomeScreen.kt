@@ -1,13 +1,15 @@
 package com.example.todoappv2.dashboard
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -19,16 +21,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.todoappv2.core.util.StringConstants
 import com.example.todoappv2.dashboard.components.CustomPullRefreshIndicator
-
 import com.example.todoappv2.dashboard.components.QuickActionButtons
 import com.example.todoappv2.dashboard.components.TodayOverviewCard
-import com.example.todoappv2.upcomingtasks.components.EmptyUpcomingState
-import com.example.todoappv2.upcomingtasks.components.UpcomingTaskItem
+import com.example.todoappv2.dashboard.components.UpcomingTasksSection
+
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModel = hiltViewModel(),
     onAddTaskClick: () -> Unit,
     onAddSubjectClick:() -> Unit,
     onTaskClick:(Long)-> Unit,
@@ -53,7 +56,19 @@ fun HomeScreen(
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ) {}
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        "Loading your tasks",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
 
 
         }else{
@@ -94,23 +109,17 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 item {
-                    Text("Upcoming Tasks", style = MaterialTheme.typography.titleMedium)
+                    Text(StringConstants.UPCOMING_TASKS, style = MaterialTheme.typography.titleMedium)
                 }
                 item{
-                    if (state.upComingTasks.isEmpty()){
-                        EmptyUpcomingState()
-                    }else{
-                        state.upComingTasks.forEach {task ->
-                            UpcomingTaskItem(
-                                task = task,
-                                onClick = onTaskClick
-                            )
-
-                        }
+                    UpcomingTasksSection(
+                        tasks = state.upComingTasks,
+                        onTaskClick = onTaskClick
+                    )
                     }
 
 
-                }
+
 
             }
         }
