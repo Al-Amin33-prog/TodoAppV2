@@ -10,8 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-
-
+import androidx.compose.ui.res.stringResource
 
 
 @Composable
@@ -26,12 +25,15 @@ fun SettingRow(item: SettingItem,
         ,
         headlineContent = {
             Text(
-                item.title,
+                text = stringResource(item.titleRes),
+
                 style = MaterialTheme.typography.labelLarge,
                 color = if (item.isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
             )
         },
-        supportingContent = { Text(item.subtitle) },
+        supportingContent = { Text(
+          text = stringResource(item.subtitleRes)
+        ) },
         leadingContent = {
             Icon(
                 painter = painterResource(id = item.icon),
