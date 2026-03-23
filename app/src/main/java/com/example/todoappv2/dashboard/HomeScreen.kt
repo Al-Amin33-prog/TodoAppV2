@@ -19,15 +19,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.todoappv2.core.util.StringConstants
+import com.example.todoappv2.R
 import com.example.todoappv2.dashboard.components.CustomPullRefreshIndicator
 import com.example.todoappv2.dashboard.components.QuickActionButtons
 import com.example.todoappv2.dashboard.components.TodayOverviewCard
 import com.example.todoappv2.dashboard.components.UpcomingTasksSection
-
 
 @Composable
 fun HomeScreen(
@@ -35,16 +35,17 @@ fun HomeScreen(
     onAddTaskClick: () -> Unit,
     onAddSubjectClick:() -> Unit,
     onTaskClick:(Long)-> Unit,
-
 ){
-
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val state by viewModel.uiState.collectAsState()
     val refreshState = rememberPullToRefreshState()
-    PullToRefreshBox(isRefreshing = isRefreshing,
-        onRefresh = {viewModel.refresh()},
+    
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { viewModel.refresh() },
         state = refreshState,
-        indicator = {}) {
+        indicator = {}
+    ) {
         CustomPullRefreshIndicator(
             isRefreshing = isRefreshing,
             Modifier
@@ -52,6 +53,7 @@ fun HomeScreen(
                 .zIndex(1f)
                 .offset(y = 16.dp)
         )
+        
         if (state.isLoading){
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -64,23 +66,20 @@ fun HomeScreen(
                     CircularProgressIndicator()
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        "Loading your tasks",
+                        text = stringResource(R.string.loading_tasks),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
-
-
-        }else{
-            LazyColumn (modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
+        } else {
+            LazyColumn (
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
             ){
-               item {
-                   GreetingHeader(
-                       userName = ""
-                   )
-               }
+                item {
+                    GreetingHeader(userName = "AL_Amin")
+                }
 
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -92,39 +91,36 @@ fun HomeScreen(
                         overDueCount = state.overDueTasks.size
                     )
                 }
+                
                 item {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
 
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
                 item {
                     QuickActionButtons(
                         onAddTask = onAddTaskClick,
                         onAddSubject = onAddSubjectClick
                     )
                 }
+                
                 item {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
+                
                 item {
-                    Text(StringConstants.UPCOMING_TASKS, style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = stringResource(R.string.upcoming_tasks), 
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
-                item{
+                
+                item {
                     UpcomingTasksSection(
                         tasks = state.upComingTasks,
                         onTaskClick = onTaskClick
                     )
-                    }
-
-
-
-
+                }
             }
         }
-
     }
-
-    }
-
+}

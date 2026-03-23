@@ -19,8 +19,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.todoappv2.subject.components.EmptySubjectState
 import com.example.todoappv2.subject.components.SubjectList
@@ -41,7 +41,7 @@ fun SubjectScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) {padding ->
+    ) { padding ->
         when{
             state.isLoading ->{
                 SubjectProgressBar()
@@ -67,10 +67,12 @@ fun SubjectScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp),
-                        placeholder = { Text(
-                            "search subjects...",
-                            style = MaterialTheme.typography.bodyMedium)
-                                      },
+                        placeholder = { 
+                            Text(
+                                text = stringResource(R.string.search_subjects),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
                         leadingIcon = {
                             Icon(
                            painter = painterResource(R.drawable.search_24px__1_),
@@ -93,19 +95,21 @@ fun SubjectScreen(
                    }else {
                        SubjectList(
                            subjects = state.subjects,
-                           onDelete = {subject ->
+                           onDelete = { subject ->
                                coroutineScope.launch {
-                                   val result = snackbarHostState.showSnackbar("Delete ${subject.name}?",
+                                   val result = snackbarHostState.showSnackbar(
+                                       message = "Delete ${subject.name}?",
                                        actionLabel = "Confirm",
-                                       withDismissAction = true)
+                                       withDismissAction = true
+                                   )
                                    if (result == SnackbarResult.ActionPerformed){
                                        viewModel.onEvent(SubjectEvent.DeleteSubject(subject))
                                    }
                                }
 
                            },
-                           onSubjectClick = {onOpenSubject(it.id)},
-                           onEditSubject = {onEditSubject(it.id)},
+                           onSubjectClick = { onOpenSubject(it.id) },
+                           onEditSubject = { onEditSubject(it.id) },
                            onAddSubject = onAddSubject
                        )
                    }
@@ -113,5 +117,4 @@ fun SubjectScreen(
             }
         }
     }
-
 }

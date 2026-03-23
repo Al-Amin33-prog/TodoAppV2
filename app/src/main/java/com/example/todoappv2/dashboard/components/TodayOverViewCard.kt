@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,38 +18,30 @@ fun TodayOverviewCard(
     todayCount: Int,
     overDueCount: Int
 ){
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
+
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 "Today's Overview ",
-                style = MaterialTheme
-                    .typography.titleMedium,
-
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(12.dp))
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Column {
-                    Text("Today")
-                    Text(
-                        text = todayCount.toString(),
-                        style  = MaterialTheme.typography.headlineMedium
-                    )
-                }
-                Column {
-                    Text("Overdue")
-                    Text(
-                        text = overDueCount.toString(),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                }
+               OverViewItemCard(
+                   title = "Today",
+                   count = todayCount,
+                   modifier = Modifier.weight(1f)
+               )
+                OverViewItemCard(
+                    title = "Overdue",
+                    count = overDueCount,
+                    isError = true,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
-    }
+
 }

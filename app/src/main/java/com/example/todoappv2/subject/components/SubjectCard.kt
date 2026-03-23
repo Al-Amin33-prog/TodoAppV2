@@ -44,7 +44,7 @@ fun SubjectCard(
             .padding(vertical = 6.dp)
             .clickable{onClick()},
         shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(2.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
             containerColor =  MaterialTheme.colorScheme.surface
         )
@@ -76,7 +76,7 @@ fun SubjectCard(
                     Icon(
                         painter = painterResource(R.drawable.edit_24px),
                         contentDescription = "Edit",
-                        tint = Color.LightGray
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -92,7 +92,7 @@ fun SubjectCard(
             Text(
                 text = "Tap to view tasks",
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(12.dp))
             Row(
