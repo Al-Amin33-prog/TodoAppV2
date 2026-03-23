@@ -1,29 +1,29 @@
 <resources>
     <string name="app_name">TodoAppV2</string>
-    <resources>
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
 
-        <!-- Settings -->
-        <string name="settings_title">Settings</string>
+    <!-- Sections -->
+    <string name="section_account">Account</string>
+    <string name="section_preferences">Preferences</string>
+    <string name="section_other">Other</string>
 
-        <!-- Sections -->
-        <string name="section_account">Account</string>
-        <string name="section_preferences">Preferences</string>
-        <string name="section_other">Other</string>
+    <!-- Account -->
+    <string name="profile">Profile</string>
+    <string name="profile_desc">View and edit your personal info</string>
+    <string name="security">Security</string>
+    <string name="security_desc">Password Management</string>
 
-        <!-- Account -->
-        <string name="profile">Profile</string>
-        <string name="profile_desc">View and edit your personal info</string>
-        <string name="security">Security</string>
-        <string name="security_desc">Password Management</string>
+    <!-- Logout -->
+    <string name="logout">Logout</string>
+    <string name="logout_desc">Sign out of your account</string>
+    <string name="confirm_logout">Confirm Logout</string>
+    <string name="logout_message">Are you sure you want to logout?</string>
+    <string name="cancel">Cancel</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_settings">Settings</string>
 
-        <!-- Logout -->
-        <string name="logout">Logout</string>
-        <string name="logout_desc">Sign out of your account</string>
-        <string name="confirm_logout">Confirm Logout</string>
-        <string name="logout_message">Are you sure you want to logout?</string>
-        <string name="cancel">Cancel</string>
-        <string name="cd_back">Back</string>
-        <string name="cd_settings">Settings</string>
 
-    </resources>
+
+
 </resources>
