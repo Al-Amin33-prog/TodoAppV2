@@ -1,29 +1,69 @@
 <resources>
     <string name="app_name">TodoAppV2</string>
+    
+    <!-- General -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="loading">Loading…</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+
     <!-- Settings -->
     <string name="settings_title">Settings</string>
-
-    <!-- Sections -->
     <string name="section_account">Account</string>
     <string name="section_preferences">Preferences</string>
     <string name="section_other">Other</string>
-
-    <!-- Account -->
     <string name="profile">Profile</string>
     <string name="profile_desc">View and edit your personal info</string>
     <string name="security">Security</string>
     <string name="security_desc">Password Management</string>
+    <string name="appearance">Appearance</string>
+    <string name="appearance_desc">Theme, colors, and layout</string>
+    <string name="notifications">Notifications</string>
+    <string name="notifications_desc">Manage your task reminders</string>
+    <string name="sync">Sync</string>
+    <string name="sync_desc">Cloud data synchronization</string>
+    <string name="about">About</string>
+    <string name="about_desc">App version and developer info</string>
+    <string name="help">Help</string>
+    <string name="help_desc">Help and Feedback</string>
 
     <!-- Logout -->
     <string name="logout">Logout</string>
     <string name="logout_desc">Sign out of your account</string>
     <string name="confirm_logout">Confirm Logout</string>
     <string name="logout_message">Are you sure you want to logout?</string>
-    <string name="cancel">Cancel</string>
     <string name="cd_back">Back</string>
     <string name="cd_settings">Settings</string>
 
+    <!-- Dashboard -->
+    <string name="greeting_format">Hello, %1$s!</string>
+    <string name="loading_tasks">Loading your tasks</string>
+    <string name="upcoming_tasks">Upcoming Tasks</string>
+    <string name="today_overview">Today\'s Overview</string>
+    <string name="tasks_today">Today</string>
+    <string name="tasks_overdue">Overdue</string>
+    <string name="quick_actions">Quick Actions</string>
 
+    <!-- Tasks -->
+    <string name="add_task">Add Task</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="task_title_label">Task Title</string>
+    <string name="task_title_placeholder">Enter task title</string>
+    <string name="task_description_label">Description (optional)</string>
+    <string name="task_description_placeholder">Enter description</string>
+    <string name="task_subject_label">Subject</string>
+    <string name="task_due_date_label">Due Date (optional)</string>
+    <string name="task_priority_label">Priority</string>
+    <string name="select_date_time">Select Date &amp; Time</string>
+    <string name="empty_tasks">No tasks found</string>
 
+    <!-- Subjects -->
+    <string name="subjects_title">Subjects</string>
+    <string name="add_subject">Add Subject</string>
+    <string name="edit_subject">Edit Subject</string>
+    <string name="subject_name_label">Subject Name</string>
+    <string name="search_subjects">Search subjects…</string>
+    <string name="empty_subjects">No subjects found</string>
 
 </resources>

@@ -35,7 +35,7 @@ fun StatsCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
 
 
@@ -60,7 +60,7 @@ fun StatsCard(
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = title,
                 style = MaterialTheme.typography.labelMedium,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -68,7 +68,7 @@ fun StatsCard(
                 text = value.toString(),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }

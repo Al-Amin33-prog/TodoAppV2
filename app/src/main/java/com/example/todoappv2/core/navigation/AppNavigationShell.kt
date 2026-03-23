@@ -52,7 +52,9 @@ fun AppNavigationShell(
         bottomBar = { AppBottomBar(appNavController) },
         topBar = { 
             AppTopBar(
-                title = title,
+                title = {
+                    title
+                },
                 showBackButton = false,
                 onBackClick = {},
                 onSettingClick = {
