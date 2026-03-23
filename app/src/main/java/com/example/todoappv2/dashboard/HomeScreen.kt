@@ -110,7 +110,8 @@ fun HomeScreen(
                 item {
                     Text(
                         text = stringResource(R.string.upcoming_tasks), 
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
+                        modifierf = Modifier.padding(bottom = 8.dp)
                     )
                 }
                 
