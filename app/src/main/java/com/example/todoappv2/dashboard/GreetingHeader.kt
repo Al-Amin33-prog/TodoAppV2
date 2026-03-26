@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.todoappv2.R
@@ -27,28 +28,26 @@ fun GreetingHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(top = 24.dp, bottom = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
             Text(
-                text = "Good Day, $userName!",
+                text = stringResource(R.string.greeting_format, userName),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Ready to mange your studies",
+                text = "Ready to manage your studies?",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.surface
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Icon(
-            painter = painterResource(
-                R.drawable.ic_notification
-            ),
+            painter = painterResource(R.drawable.ic_notification),
             contentDescription = null,
             tint = Color(0xfffdd835),
             modifier = Modifier.size(36.dp)

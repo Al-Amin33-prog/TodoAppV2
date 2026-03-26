@@ -19,11 +19,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.todoappv2.R
+
 import com.example.todoappv2.dashboard.components.CustomPullRefreshIndicator
 import com.example.todoappv2.dashboard.components.QuickActionButtons
 import com.example.todoappv2.dashboard.components.TodayOverviewCard
@@ -48,7 +48,7 @@ fun HomeScreen(
     ) {
         CustomPullRefreshIndicator(
             isRefreshing = isRefreshing,
-            Modifier
+            modifier = Modifier
                 .align(Alignment.TopCenter)
                 .zIndex(1f)
                 .offset(y = 16.dp)
@@ -66,7 +66,7 @@ fun HomeScreen(
                     CircularProgressIndicator()
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = stringResource(R.string.loading_tasks),
+                        text = " Loading Tasks",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -78,7 +78,8 @@ fun HomeScreen(
                     .padding(horizontal = 16.dp)
             ){
                 item {
-                    GreetingHeader(userName = "AL_Amin")
+                    // Using string format from strings.xml
+                    GreetingHeader(userName = "AL-Amin")
                 }
 
                 item {
@@ -109,9 +110,8 @@ fun HomeScreen(
                 
                 item {
                     Text(
-                        text = stringResource(R.string.upcoming_tasks), 
-                        style = MaterialTheme.typography.titleMedium,
-                        modifierf = Modifier.padding(bottom = 8.dp)
+                        text = "Upcoming Tasks",
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
                 
