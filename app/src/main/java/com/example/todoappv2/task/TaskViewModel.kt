@@ -24,7 +24,7 @@ class TaskViewModel @Inject constructor (
 ): ViewModel(){
     private val _uiState = MutableStateFlow(TaskUiState(isLoading = true))
     val uiState: StateFlow<TaskUiState> = _uiState.asStateFlow()
-    private var currentFilter: TaskFilterType = TaskFilterType.All
+
     private fun groupTasks(tasks: List<TaskEntity>): Map<TaskSection,List<TaskEntity>>{
         val now = System.currentTimeMillis()
         return tasks.groupBy { task ->
@@ -68,7 +68,7 @@ class TaskViewModel @Inject constructor (
        }
     }
     private fun updateStateWithTasks(tasks: List<TaskEntity>){
-        val filtered = applyFilterTasks(tasks, currentFilter)
+        val filtered = applyFilterTasks(tasks, _uiState.value.filter)
         _uiState.value =_uiState.value.copy(
             isLoading = false,
             allTasks = tasks,
@@ -132,14 +132,15 @@ class TaskViewModel @Inject constructor (
                 }
             }
             is TaskEvent.ChangeFilter -> {
-                currentFilter = event.filter
+
                 val filtered = applyFilterTasks(
                     _uiState.value.allTasks,
                     event.filter
                 )
                 _uiState.value = _uiState.value.copy(
                     filter = event.filter,
-                    visibleTasks = filtered
+                    visibleTasks = filtered,
+                    groupedTasks = groupTasks(filtered)
                 )
             }
             is TaskEvent.SearchTasks -> {
@@ -148,7 +149,8 @@ class TaskViewModel @Inject constructor (
                 )
                 val filtered = applyFilterTasks(
                     _uiState.value.allTasks,
-                    currentFilter
+                    _uiState.value.filter
+
                 ).filter {
                     it.title.contains(event.query,
                         ignoreCase = true

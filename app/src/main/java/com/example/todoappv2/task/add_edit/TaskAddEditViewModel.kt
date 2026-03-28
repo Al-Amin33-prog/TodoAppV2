@@ -49,6 +49,15 @@ class TaskAddEditViewModel @Inject constructor(
             loadSubject(subjectId)
         }
     }
+    private fun validate(state: TaskAddEditUiState): String?{
+        return when{
+            state.subjectId == null ->
+                "Please select a subject"
+            state.title.isBlank() ->
+                "Title cannot be blank"
+            else -> null
+        }
+    }
 
     private fun loadSubject(id: Long) {
         viewModelScope.launch {
@@ -114,42 +123,40 @@ class TaskAddEditViewModel @Inject constructor(
     @SuppressLint("SuspiciousIndentation")
     private fun saveTask(){
         viewModelScope.launch {
-            val state = _uiState.value
-
-            val realSubjectId = state.subjectId
-            if (realSubjectId == null){
-                _uiEvent.emit(UiEvent.ShowError("Please select a subject"))
+             val state = _uiState.value
+            val error = validate(state)
+            if (error != null){
+                _uiEvent.emit(UiEvent.ShowError(error))
                 return@launch
-            }
-            if (state.title.isBlank()){
-                _uiEvent.emit(UiEvent.ShowError("Title cannot be blank"))
-                return@launch
-            }
-            
-            _uiState.update { it.copy(isSaving = true) }
-            
-            val entity = TaskEntity(
-                id = if (state.isEditing) (taskId ?: 0) else 0,
-                subjectId = realSubjectId,
-                title = state.title,
-                description = state.description,
-                dueDate = state.dueDate,
-                isCompleted = state.isCompleted
-            )
-
-            val saveId = if (state.isEditing){
-                repository.updateTask(entity)
-                entity.id
-            } else {
-                repository.insertTask(entity)
-            }
-            val taskWithId = entity.copy(id = saveId)
-            if (!taskWithId.isCompleted && taskWithId.dueDate != null){
-                reminderSchedule.scheduleTaskReminder(taskWithId)
-            }
-
-            
-            _uiEvent.emit(UiEvent.SaveSuccess)
         }
+            _uiState.update{it.copy(isSaving = true)}
+            try {
+                val entity = TaskEntity(
+                    id = if (state.isEditing)
+                    requireNotNull(taskId) else 0,
+                    subjectId = state.subjectId!!,
+                    title = state.title.trim(),
+                    dueDate = state.dueDate,
+                    description = state.description,
+                    isCompleted = state.isCompleted
+                )
+                val savedId: Long = if(state.isEditing){
+                    repository.updateTask(entity)
+                    entity.id
+                }else{
+                    repository.insertTask(entity)
+                }
+                val taskWithId = entity.copy(id = savedId)
+                if (!taskWithId.isCompleted && taskWithId.dueDate != null){
+                    reminderSchedule.scheduleTaskReminder(taskWithId)
+                }
+                _uiEvent.emit(UiEvent.SaveSuccess)
+
+            } catch (e: Exception){
+                _uiEvent.emit(UiEvent.ShowError("Failed to save task"))
+            }finally {
+                _uiState.update { it.copy(isSaving = false) }
+            }
+ }
     }
 }
