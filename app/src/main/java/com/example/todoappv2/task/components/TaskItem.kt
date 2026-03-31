@@ -2,12 +2,13 @@
 
 package com.example.todoappv2.task.components
 
+
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -20,14 +21,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.example.todoappv2.core.util.formatDueDateLabel
 import com.example.todoappv2.data.local.entity.TaskEntity
 
 @Composable
 fun TaskItem(
     task: TaskEntity,
     onToggleCompleted: (Boolean) -> Unit,
-    onClick: () -> Unit
+
 ){
+
     val statusColor = when{
         task.isCompleted -> Color.Gray
         task.dueDate?.let {
@@ -38,9 +41,9 @@ fun TaskItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable{onClick()}
             .background(MaterialTheme.colorScheme.surface)
     ) {
+        val dueLabel = formatDueDateLabel(task.dueDate)
         Row(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -70,11 +73,36 @@ fun TaskItem(
                         )  else MaterialTheme.colorScheme.onSurface
                     )
                 )
-                Text(
-                    text = task.description ?: "No description",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = statusColor
+                if (!task.description.isNullOrBlank()){
+                    Text(
+                        text = task.description,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = statusColor
+                        )
                     )
+                }
+            }
+            val bargeColor = when(dueLabel){
+                "Overdue" -> MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
+                "Today" -> MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                else -> MaterialTheme.colorScheme.surfaceVariant
+            }
+            val textColor = when(dueLabel) {
+                "Overdue" -> MaterialTheme.colorScheme.error
+                "Today" -> MaterialTheme.colorScheme.primary
+                else -> MaterialTheme.colorScheme.surfaceVariant
+            }
+            if (dueLabel != null){
+                Text(
+                    text = dueLabel,
+                    modifier = Modifier.background(
+                        color = bargeColor,
+                        shape = RoundedCornerShape(50.dp)
+                    )
+                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = textColor
+
                 )
             }
         }

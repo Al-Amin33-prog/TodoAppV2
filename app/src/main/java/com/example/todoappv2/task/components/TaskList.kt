@@ -6,7 +6,6 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import com.example.todoappv2.data.local.entity.TaskEntity
 
 @Composable
@@ -21,26 +20,19 @@ fun TaskList(
         groupedTasks.forEach { (_, tasks) ->
 
             items(
-                items = tasks,
+                items = tasks.filter { it.id !=taskBeingDeleted?.id },
                 key = {it.id}
             ){task ->
-                val dismissSate = rememberSwipeToDismissBoxState(
-                    confirmValueChange = { value ->
-                        if (value == SwipeToDismissBoxValue.EndToStart){
-                            onDelete(task)
-                            false
-                        }else{
-                            false
-                        }
-                    }
-                )
-                LaunchedEffect(dismissSate.currentValue) {
-                    if (
-                        dismissSate.currentValue != SwipeToDismissBoxValue.Settled
-                        ){
-                        dismissSate.reset()
-                    }
-                }
+               val dismissSate = rememberSwipeToDismissBoxState(
+                   confirmValueChange = { value ->
+                       if (value == SwipeToDismissBoxValue.EndToStart){
+                           onDelete(task)
+                           true
+                       } else false
+
+                   }
+               )
+
                 SwipeToDismissBox(
                     state = dismissSate,
                     backgroundContent = {
@@ -52,9 +44,7 @@ fun TaskList(
                         onToggleCompleted = {
                             onToggleCompleted(task)
                         },
-                        onClick = {
-                            onEditTask(task)
-                        }
+
                     )
                 }
 

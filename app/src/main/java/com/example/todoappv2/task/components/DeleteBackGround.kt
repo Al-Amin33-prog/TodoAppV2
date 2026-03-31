@@ -1,5 +1,5 @@
 package com.example.todoappv2.task.components
-import androidx.compose.animation.core.animateFloatAsState
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBoxState
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,11 +18,8 @@ import com.example.todoappv2.R
 
 @Composable
 fun DeleteBackground(dismissState: SwipeToDismissBoxState){
-    val isDismissed = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
-    val animatedAlpha = animateFloatAsState(
-        targetValue = if (isDismissed) 1f else 0f,
-        label = ""
-    )
+
+
 
     val progress = dismissState.progress.coerceIn(0f, 1f)
 
@@ -31,7 +27,7 @@ fun DeleteBackground(dismissState: SwipeToDismissBoxState){
         modifier = Modifier
         .fillMaxSize()
         .padding(horizontal = 20.dp)
-        .background(MaterialTheme.colorScheme.error),
+        .background(MaterialTheme.colorScheme.error.copy(alpha = progress)),
         contentAlignment = Alignment.CenterEnd
 
     ){

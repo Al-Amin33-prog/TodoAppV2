@@ -54,7 +54,10 @@ fun TaskAddEditScreen(
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     val calendar = remember { Calendar.getInstance() }
-    state.dueDate?.let { calendar.timeInMillis = it }
+    LaunchedEffect(state.dueDate) {
+        state.dueDate?.let { calendar.timeInMillis = it }
+    }
+
     
     var subjectExpanded by remember { mutableStateOf(false) }
     var priorityExpanded by remember { mutableStateOf(false) }
@@ -264,11 +267,12 @@ fun TaskAddEditScreen(
                 }
                 Button(
                     onClick = { viewModel.onEvent(TaskAddEditEvent.SaveTask) },
+                    enabled = !state.isSaving,
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(50)
                 ) {
                     Text(
-                        text = stringResource(R.string.save),
+                        text = if (state.isSaving)"Saving..." else stringResource(R.string.save),
                         style = MaterialTheme.typography.labelLarge
                     )
                 }

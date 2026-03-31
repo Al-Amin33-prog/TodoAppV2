@@ -116,7 +116,7 @@ fun TaskScreen(
                             onEditTask(task.id)
 
                         },
-                        taskBeingDeleted = null
+                        taskBeingDeleted = recentlyDeletedTask
                     )
                 }
             }
