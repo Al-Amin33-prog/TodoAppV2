@@ -17,4 +17,8 @@ sealed class TaskEvent {
     data class SearchTasks(val query: String): TaskEvent()
     data class ToggleTaskCompletion(val task: TaskEntity): TaskEvent()
     data class RestoreTask(val task: TaskEntity): TaskEvent()
+    object ToggleSelectionMode : TaskEvent()
+    data class ToggleTaskSelection(val taskId: Long): TaskEvent()
+    object DeleteSelectedTasks : TaskEvent()
+    object ClearSelection: TaskEvent()
 }
