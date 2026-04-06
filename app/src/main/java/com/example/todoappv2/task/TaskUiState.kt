@@ -11,5 +11,7 @@ data class TaskUiState(
     val filter: TaskFilterType = TaskFilterType.All,
     val searchQuery: String = "",
     val groupedTasks: Map<TaskSection, List<TaskEntity>> = emptyMap(),
-    val error: String? = null
+    val error: String? = null,
+    val isSelectionMode: Boolean = false,
+    val selectedTaskIds: Set<Long> = emptySet()
 )

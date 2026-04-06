@@ -5,15 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -65,11 +62,27 @@ fun TaskScreen(
 
 
         floatingActionButton = {
-            FloatingActionButton(onClick = {onAddTask()}) {
-                Icon(painter = painterResource(R.drawable.add_task_24px),
-                    contentDescription = "add task"
-                )
-            }
+           if (state.isSelectionMode){
+               FloatingActionButton(
+                   onClick = {
+                       viewModel.onEvent(TaskEvent.DeleteSelectedTasks)
+                   }
+               ) {
+                   Icon(
+                       painter = painterResource(R.drawable.ic_delete_24px),
+                       contentDescription = "Delete Selected"
+                   )
+               }
+
+           }else{
+               FloatingActionButton(onClick =
+                   {onAddTask()}) {
+                   Icon(
+                       painter = painterResource(R.drawable.add_task_24px),
+                       contentDescription = "Add task"
+                   )
+               }
+           }
         }
     ) { padding->
         Column(
@@ -116,7 +129,17 @@ fun TaskScreen(
                             onEditTask(task.id)
 
                         },
-                        taskBeingDeleted = recentlyDeletedTask
+                        taskBeingDeleted = recentlyDeletedTask,
+                        isSelectionMode = state.isSelectionMode,
+                        selectedTaskIds = state.selectedTaskIds,
+                        onToggleSelectionMode = {
+                            viewModel.onEvent(TaskEvent.ToggleSelectionMode)
+                        },
+                        onToggleSelection = { id ->
+                            viewModel.onEvent(TaskEvent.ToggleTaskSelection(id))
+                        }
+
+
                     )
                 }
             }

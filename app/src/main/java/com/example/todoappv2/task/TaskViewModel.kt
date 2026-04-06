@@ -179,6 +179,48 @@ class TaskViewModel @Inject constructor (
                     repository.insertTask(event.task)
                 }
             }
+            is TaskEvent.ToggleSelectionMode  ->{
+                _uiState.value = _uiState.value.copy(
+                    isSelectionMode = true,
+                    selectedTaskIds = emptySet()
+                )
+
+            }
+            is TaskEvent.ToggleTaskSelection ->{
+                val current = _uiState.value.selectedTaskIds.toMutableSet()
+                if(current.contains(event.taskId)){
+                    current.remove(event.taskId)
+                }else{
+                    current.add(event.taskId)
+                }
+               _uiState.value = _uiState.value.copy(
+                    selectedTaskIds = current,
+                   isSelectionMode = current.isNotEmpty()
+                )
+            }
+            is TaskEvent.ClearSelection ->{
+                _uiState.value = _uiState.value.copy(
+                    isSelectionMode = false,
+                    selectedTaskIds = emptySet()
+                )
+            }
+            is TaskEvent.DeleteSelectedTasks -> {
+                viewModelScope.launch {
+                    val selectedIds = _uiState.value.selectedTaskIds
+                    _uiState.value.allTasks.filter {
+                        it.id in  selectedIds
+                    }
+                        .forEach { task ->
+                            repository.deleteTask(task)
+                            scheduler.cancelTaskReminder(task.id)
+                        }
+                    _uiState.value = _uiState.value.copy(
+                        selectedTaskIds = emptySet(),
+                        isSelectionMode = false
+
+                    )
+                }
+            }
         }
     }
 }

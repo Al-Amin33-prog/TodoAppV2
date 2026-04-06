@@ -4,6 +4,7 @@ package com.example.todoappv2.task.components
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,11 @@ import com.example.todoappv2.data.local.entity.TaskEntity
 fun TaskItem(
     task: TaskEntity,
     onToggleCompleted: (Boolean) -> Unit,
+    onEdit: () -> Unit,
+    isSelected: Boolean,
+    isSelectionMode: Boolean,
+    onLongPress: () -> Unit,
+    onSelect: () -> Unit
 
 ){
 
@@ -46,16 +52,31 @@ fun TaskItem(
         val dueLabel = formatDueDateLabel(task.dueDate)
         Row(
             modifier = Modifier
+                .combinedClickable(
+                    onClick = {
+                        if (isSelectionMode) onSelect()
+                        else onEdit()
+                    },
+                    onLongClick = onLongPress
+
+                )
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Checkbox(
-                checked = task.isCompleted,
-                onCheckedChange = {onToggleCompleted(it)},
-                colors = CheckboxDefaults.colors(
-                    checkmarkColor = Color(0xff4a90e2)
+            if (isSelectionMode){
+                Checkbox(
+                    checked = isSelected,
+                    onCheckedChange = {onSelect()}
                 )
-            )
+            }else
+                Checkbox(
+                    checked = task.isCompleted,
+                    onCheckedChange = {onToggleCompleted(it)},
+                    colors = CheckboxDefaults.colors(
+                        checkmarkColor = Color(0xff4a90e2)
+                    )
+                )
+
             Column(
                 modifier = Modifier
                     .padding(start = 12.dp)
