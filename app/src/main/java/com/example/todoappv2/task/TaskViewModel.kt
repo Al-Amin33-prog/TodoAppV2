@@ -221,6 +221,13 @@ class TaskViewModel @Inject constructor (
                     )
                 }
             }
+            is TaskEvent.SelectAll -> {
+                val allIds = _uiState.value.visibleTasks.map { it.id }.toSet()
+                _uiState.value = _uiState.value.copy(
+                    selectedTaskIds = allIds,
+                    isSelectionMode = allIds.isNotEmpty()
+                )
+            }
         }
     }
 }

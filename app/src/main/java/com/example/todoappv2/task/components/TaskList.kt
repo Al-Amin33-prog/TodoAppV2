@@ -47,32 +47,35 @@ fun TaskList(
 
                    }
                )
+                if (!isSelectionMode){
+                    SwipeToDismissBox(
+                        state = dismissSate,
+                        backgroundContent = {
+                            DeleteBackground(dismissState = dismissSate)
+                        }
+                    ) {
+                        TaskItem(
+                            task = task,
+                            onToggleCompleted = {
+                                onToggleCompleted(task)
+                            },
+                            onEdit = {onEditTask(task)},
+                            isSelected = selectedTaskIds.contains(task.id),
+                            isSelectionMode = isSelectionMode,
+                            onLongPress = {
+                                onToggleSelectionMode()
+                                onToggleSelection(task.id)
+                            },
+                            onSelect = {
+                                onToggleSelection(task.id)
+                            },
 
-                SwipeToDismissBox(
-                    state = dismissSate,
-                    backgroundContent = {
-                        DeleteBackground(dismissState = dismissSate)
+
+                            )
                     }
-                ) {
-                    TaskItem(
-                        task = task,
-                        onToggleCompleted = {
-                            onToggleCompleted(task)
-                        },
-                        onEdit = {onEditTask(task)},
-                        isSelected = selectedTaskIds.contains(task.id),
-                        isSelectionMode = isSelectionMode,
-                        onLongPress = {
-                            onToggleSelectionMode()
-                            onToggleSelection(task.id)
-                        },
-                        onSelect = {
-                          onToggleSelection(task.id)
-                        },
-
-
-                    )
                 }
+
+
 
             }
 

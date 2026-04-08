@@ -1,6 +1,13 @@
 package com.example.todoappv2.task
 
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -30,6 +37,8 @@ import com.example.todoappv2.task.components.TaskList
 import com.example.todoappv2.task.components.TaskProgressBar
 import com.example.todoappv2.R
 import com.example.todoappv2.data.local.entity.TaskEntity
+import com.example.todoappv2.task.components.DefaultTopBar
+import com.example.todoappv2.task.components.SelectionTopBar
 import com.example.todoappv2.task.components.TaskSearchBar
 
 @Composable
@@ -58,11 +67,46 @@ fun TaskScreen(
 
 
     Scaffold(
+        topBar = {
+            AnimatedContent(
+                targetState = state.isSelectionMode,
+                transitionSpec = {
+                    if (targetState){
+                        slideInVertically { -it } + fadeIn(tween(150)) togetherWith
+                                slideOutVertically { it } + fadeOut(tween(220))
+                    }else{
+                      slideInVertically  {it} + fadeIn(tween(220)) togetherWith
+                              slideOutVertically { -it } + fadeOut(tween(150))
+                    }
+                },
+                label = "TopBarAnimation"
+            ) { isSelectionMode ->
+                if (isSelectionMode){
+                    SelectionTopBar(
+                        selectedCount = state.selectedTaskIds.size,
+                        onClearSelection = {
+                            viewModel.onEvent(TaskEvent.ClearSelection)
+                        },
+                        onDeleteSelected = {
+                            viewModel.onEvent(TaskEvent.DeleteSelectedTasks)
+                        },
+                        onSelectAll = {
+                            viewModel.onEvent(TaskEvent.SelectAll)
+                        },
+                        isAllSelected = state.selectedTaskIds.size == state.visibleTasks.size
+                    )
+                }else{
+                    DefaultTopBar()
+                }
+
+            }
+
+        },
         snackbarHost = { SnackbarHost(snackbarHostState) },
 
 
         floatingActionButton = {
-           if (state.isSelectionMode){
+           if (!state.isSelectionMode){
                FloatingActionButton(
                    onClick = {
                        viewModel.onEvent(TaskEvent.DeleteSelectedTasks)

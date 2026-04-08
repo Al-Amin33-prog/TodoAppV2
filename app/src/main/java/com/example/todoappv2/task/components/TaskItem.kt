@@ -47,7 +47,10 @@ fun TaskItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(
+                if(isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                        else
+                    MaterialTheme.colorScheme.surface)
     ) {
         val dueLabel = formatDueDateLabel(task.dueDate)
         Row(

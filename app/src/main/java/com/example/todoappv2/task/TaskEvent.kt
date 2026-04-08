@@ -21,4 +21,5 @@ sealed class TaskEvent {
     data class ToggleTaskSelection(val taskId: Long): TaskEvent()
     object DeleteSelectedTasks : TaskEvent()
     object ClearSelection: TaskEvent()
+    object SelectAll: TaskEvent()
 }
