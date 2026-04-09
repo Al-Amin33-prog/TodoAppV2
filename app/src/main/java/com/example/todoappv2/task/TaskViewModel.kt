@@ -1,5 +1,7 @@
 package com.example.todoappv2.task
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoappv2.core.notification.TaskReminderSchedule
@@ -40,6 +42,7 @@ class TaskViewModel @Inject constructor (
             }
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun isToday(time: Long): Boolean{
         val todayStart = java.time.LocalDate.now()
             .atStartOfDay(java.time.ZoneId.systemDefault())

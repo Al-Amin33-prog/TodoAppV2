@@ -3,6 +3,7 @@ package com.example.todoappv2.subject.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,14 +38,35 @@ fun SubjectCard(
     subject: SubjectEntity,
     onClick: () -> Unit,
     onDelete: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    isSelected: Boolean,
+    isSelectionMode: Boolean,
+    onLongPress: () -> Unit,
+    onSelect: () -> Unit
+
 ){
+    val haptic = LocalHapticFeedback.current
     val accentColor = Color(subject.colorHex)
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
-            .clickable{onClick()},
+            .background(
+                if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                else MaterialTheme.colorScheme.surface
+            )
+            . combinedClickable(
+                onClick = {
+                    if (isSelectionMode) onSelect()
+                    else onClick()
+                },
+        onLongClick ={
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            onLongPress()
+
+        }
+
+    ),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(

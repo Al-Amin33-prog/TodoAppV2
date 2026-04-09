@@ -27,6 +27,7 @@ import com.example.todoappv2.subject.components.SubjectList
 import com.example.todoappv2.subject.components.SubjectProgressBar
 import kotlinx.coroutines.launch
 import com.example.todoappv2.R
+import com.example.todoappv2.subject.components.SubjectTopBar
 
 @Composable
 fun SubjectScreen(
@@ -54,8 +55,23 @@ fun SubjectScreen(
             }
             else ->{
                 Column(
+
                     modifier = Modifier.padding(padding)
                 ){
+                    SubjectTopBar(
+                        isSelectionMode = state.isSelectionMode,
+                        selectedCount = state.selectedSubjectIds.size,
+                        onClearSelection = {
+                            viewModel.onEvent(SubjectEvent.ClearSelection)
+                        },
+                        onSelectAll = {
+                            viewModel.onEvent(SubjectEvent.SelectAllSubjects)
+                        },
+                        onDeleteSelected = {
+                            viewModel.onEvent(SubjectEvent.DelectedSelectedSubjects)
+                        },
+                        totalCount = state.selectedSubjectIds.size
+                    )
                     OutlinedTextField(
                         value = state.searchQuery,
                         shape = RoundedCornerShape(24.dp),
@@ -110,7 +126,17 @@ fun SubjectScreen(
                            },
                            onSubjectClick = { onOpenSubject(it.id) },
                            onEditSubject = { onEditSubject(it.id) },
-                           onAddSubject = onAddSubject
+                           onAddSubject = onAddSubject,
+                           isSelectionMode = state.isSelectionMode,
+                           selectedSubjectId = state.selectedSubjectIds,
+                           onToggleSelectionMode = {
+                               viewModel.onEvent(SubjectEvent.ToggleSelectionMode)
+                           },
+                           onToggleSelection = {id ->
+                               viewModel.onEvent(
+                                   SubjectEvent.ToggleSubjectSelection(id)
+                               )
+                           }
                        )
                    }
                 }

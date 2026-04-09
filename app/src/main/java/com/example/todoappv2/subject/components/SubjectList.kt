@@ -16,7 +16,12 @@ fun SubjectList(
     onDelete: (SubjectEntity) -> Unit,
     onSubjectClick: (SubjectEntity) -> Unit,
     onAddSubject: () -> Unit,
-    onEditSubject: (SubjectEntity) -> Unit
+    onEditSubject: (SubjectEntity) -> Unit,
+    isSelectionMode: Boolean,
+    selectedSubjectId: Set<Long>,
+    onToggleSelectionMode: () -> Unit,
+    onToggleSelection: (Long) -> Unit
+
 ){
     LazyVerticalGrid(columns = GridCells.Fixed(2),
         modifier = Modifier
@@ -29,7 +34,17 @@ fun SubjectList(
                 subject = subject,
                 onClick = {onSubjectClick(subject)},
                 onDelete = {onDelete(subject)},
-                onEdit = {onEditSubject(subject)}
+                onEdit = {onEditSubject(subject)},
+                isSelected = selectedSubjectId.contains(subject.id),
+                isSelectionMode = isSelectionMode,
+                onLongPress = {
+                    onToggleSelectionMode()
+                    onToggleSelection(subject.id)
+                },
+                onSelect = {
+                    onToggleSelection(subject.id)
+                }
+
             )
 
         }

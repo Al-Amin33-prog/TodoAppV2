@@ -8,4 +8,9 @@ sealed class SubjectEvent{
     data class DeleteSubject(val subject: SubjectEntity): SubjectEvent()
     data class UpdateSubject(val subject: SubjectEntity): SubjectEvent()
     data class SearchQueryChange(val query: String): SubjectEvent()
+    object ToggleSelectionMode: SubjectEvent()
+    data class ToggleSubjectSelection(val subjectId: Long) : SubjectEvent()
+    object ClearSelection:  SubjectEvent()
+    object DelectedSelectedSubjects: SubjectEvent()
+    object SelectAllSubjects: SubjectEvent()
 }

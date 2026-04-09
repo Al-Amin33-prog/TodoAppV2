@@ -95,6 +95,49 @@ class SubjectViewModel @Inject constructor(
                 }
                 filterSubjects()
             }
+            is SubjectEvent.ToggleSelectionMode -> {
+                _uiState.value = _uiState.value.copy(
+                    isSelectionMode = ! _uiState.value.isSelectionMode,
+                    selectedSubjectIds = emptySet()
+                )
+            }
+            is SubjectEvent.ToggleSubjectSelection -> {
+                val current = _uiState.value.selectedSubjectIds.toMutableSet()
+                if (current.contains(event.subjectId)){
+                    current.remove(event.subjectId)
+                }else{
+                    current.add(event.subjectId)
+                }
+                _uiState.value = _uiState.value.copy(
+                    selectedSubjectIds = current
+                )
+            }
+            is SubjectEvent.ClearSelection -> {
+                _uiState.value = _uiState.value.copy(
+                    isSelectionMode = false,
+                    selectedSubjectIds = emptySet()
+                )
+            }
+            is SubjectEvent.DelectedSelectedSubjects -> {
+                viewModelScope.launch {
+                    val selectedIds = _uiState.value.selectedSubjectIds
+                    allSubjects.filter {
+                       it.id in selectedIds
+                    }.forEach { subject ->
+                        repository.deleteSubject(subject)
+                    }
+                    _uiState.value = _uiState.value.copy(
+                        isSelectionMode = false,
+                        selectedSubjectIds = emptySet()
+                    )
+                }
+            }
+            is SubjectEvent.SelectAllSubjects -> {
+                val allIds = _uiState.value.subjects.map { it.id }.toSet()
+                _uiState.value = _uiState.value.copy(
+                    selectedSubjectIds = allIds
+                )
+            }
         }
     }
 }

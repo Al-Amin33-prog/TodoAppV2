@@ -19,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -44,6 +46,7 @@ fun TaskItem(
         } == true -> Color(0xffd32f2f)
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
+    val haptic = LocalHapticFeedback.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -60,7 +63,11 @@ fun TaskItem(
                         if (isSelectionMode) onSelect()
                         else onEdit()
                     },
-                    onLongClick = onLongPress
+                    onLongClick ={
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onLongPress()
+
+                    }
 
                 )
                 .padding(horizontal = 16.dp, vertical = 12.dp),
