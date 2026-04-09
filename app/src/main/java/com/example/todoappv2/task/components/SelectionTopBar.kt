@@ -35,7 +35,7 @@ fun SelectionTopBar(
             navigationIcon = {
                 IconButton(onClick = onClearSelection) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_close_24),
+                        painter = painterResource(R.drawable.close_small_24px),
                         contentDescription = "Close"
                     )
                 }
@@ -45,7 +45,7 @@ fun SelectionTopBar(
                     Icon(
                         painter = painterResource(
                             if (isAllSelected) R.drawable.ic_delete_24px
-                            else R.drawable.ic_select_all_24px
+                            else R.drawable.select_all_24px
                         ),
                         contentDescription = "Select All"
                     )

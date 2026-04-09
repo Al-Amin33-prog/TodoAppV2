@@ -56,16 +56,16 @@ class TaskViewModel @Inject constructor (
 
 
     init {
-       observeTasks()
+        observeTasks()
     }
 
     private fun observeTasks(){
-       viewModelScope.launch {
-           repository.getAllTasks().collect { tasks ->
-             updateStateWithTasks(tasks)
+        viewModelScope.launch {
+            repository.getAllTasks().collect { tasks ->
+                updateStateWithTasks(tasks)
 
-           }
-       }
+            }
+        }
     }
     private fun updateStateWithTasks(tasks: List<TaskEntity>){
         val filtered = applyFilterTasks(tasks, _uiState.value.filter)
@@ -93,8 +93,8 @@ class TaskViewModel @Inject constructor (
                             !it.isCompleted
                 }
             is
-                    TaskFilterType.BySubject -> tasks.filter {
-                        it.subjectId == filter.subjectId
+            TaskFilterType.BySubject -> tasks.filter {
+                it.subjectId == filter.subjectId
             }
         }
     }
@@ -103,14 +103,14 @@ class TaskViewModel @Inject constructor (
         when(event){
             is TaskEvent.AddTask -> {
                 viewModelScope.launch {
-                   val task =      TaskEntity(
-                            subjectId = event.subjectId,
-                            title = event.title,
-                            description = event.description,
-                            dueDate = event.dueDate,
-                            createdAt = System.currentTimeMillis()
-                        )
-                  val id =  repository.insertTask(task)
+                    val task =      TaskEntity(
+                        subjectId = event.subjectId,
+                        title = event.title,
+                        description = event.description,
+                        dueDate = event.dueDate,
+                        createdAt = System.currentTimeMillis()
+                    )
+                    val id =  repository.insertTask(task)
                     val tasksWithId = task.copy(id = id)
                     scheduler.scheduleTaskReminder(tasksWithId)
 
@@ -157,10 +157,10 @@ class TaskViewModel @Inject constructor (
                     )
 
                 }
-               _uiState.value =  _uiState.value.copy(
-                   searchQuery = event.query,
+                _uiState.value =  _uiState.value.copy(
+                    searchQuery = event.query,
                     visibleTasks = filtered,
-                   groupedTasks = groupTasks(filtered)
+                    groupedTasks = groupTasks(filtered)
                 )
             }
             is TaskEvent.ToggleTaskCompletion -> {
@@ -193,9 +193,9 @@ class TaskViewModel @Inject constructor (
                 }else{
                     current.add(event.taskId)
                 }
-               _uiState.value = _uiState.value.copy(
+                _uiState.value = _uiState.value.copy(
                     selectedTaskIds = current,
-                   isSelectionMode = current.isNotEmpty()
+                    isSelectionMode = current.isNotEmpty()
                 )
             }
             is TaskEvent.ClearSelection ->{
