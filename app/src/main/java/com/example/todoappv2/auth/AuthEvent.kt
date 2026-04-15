@@ -15,4 +15,5 @@ sealed class AuthEvent {
         val email: String,
 
     ): AuthEvent()
+    object ResendVerificationEmail : AuthEvent()
 }
