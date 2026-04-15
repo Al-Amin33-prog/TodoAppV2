@@ -76,4 +76,17 @@ class AuthRepositoryImplementation(
             Result.failure(Exception("Reset failed: ${e.message}", e))
         }
     }
+
+    override suspend fun sendEmailVerification(): Result<Unit> {
+        return try {
+            auth.currentUser?.sendEmailVerification()?.await()
+            Result.success(Unit)
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    override fun isEmailVerified(): Boolean {
+        return auth.currentUser?.isEmailVerified?: false
+    }
 }
