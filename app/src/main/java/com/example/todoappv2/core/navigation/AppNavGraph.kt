@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import com.example.todoappv2.auth.AuthEvent
 import com.example.todoappv2.auth.AuthGateScreen
 import com.example.todoappv2.auth.AuthViewModel
+import com.example.todoappv2.auth.components.EmailVerificationPendingScreen
 import com.example.todoappv2.auth.components.login.LoginScreen
 import com.example.todoappv2.auth.components.register.RegisterScreen
 import com.example.todoappv2.auth.components.resetpassword.ResetPasswordScreen
@@ -76,6 +77,9 @@ fun AppNavGraph(
                authViewModel = authViewModel,
                onBackToLogin = {
                    rootNavController.popBackStack()
+               },
+               onRegisterSuccess = {
+                   rootNavController.navigate("email_verification")
                }
            )
         }
@@ -185,6 +189,16 @@ fun AppNavGraph(
                 onDone = {
                     rootNavController.popBackStack()
                 }
+            )
+        }
+        composable(Routes.EMAIL_VERIFICATION){
+            val authViewModel: AuthViewModel = hiltViewModel()
+            EmailVerificationPendingScreen(
+                authViewModel = authViewModel,
+                onBackToLogin = {
+                    rootNavController.popBackStack()
+                }
+
             )
         }
     }

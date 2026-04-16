@@ -7,6 +7,7 @@ object Routes {
 
     const val REGISTER ="register"
     const val APP_SHELL ="app_shell"
+    const val EMAIL_VERIFICATION = "email_verification_pending"
 
 
     const val HOME = "home"
