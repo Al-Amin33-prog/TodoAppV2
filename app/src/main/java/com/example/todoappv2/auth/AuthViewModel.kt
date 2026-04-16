@@ -28,6 +28,7 @@ class AuthViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     user = user,
                     isLoggedIn = user!= null,
+                    isEmailVerified = user?.isEmailVerified ?: false,
                     isLoading = false,
                     error = null
 
@@ -54,6 +55,7 @@ class AuthViewModel @Inject constructor(
             is AuthEvent.ResetPassword -> {
                 resetPassword(event.email)
             }
+           AuthEvent.ResendVerificationEmail -> resendVerificationEmail()
         }
     }
 
@@ -65,6 +67,16 @@ class AuthViewModel @Inject constructor(
 
              result.fold(
                 onSuccess = {
+                    val isVerified = repository.isEmailVerified()
+                    if (!isVerified){
+                        repository.logout()
+                        _uiState.value =_uiState.value.copy(
+                            isLoading = false,
+                            isLoggedIn = false,
+                            isEmailVerified = false,
+                            error = "Please verify your email before logging in. Check your inbox"
+                        )
+                    }
 
                 },
                 onFailure = { error ->
@@ -79,12 +91,20 @@ class AuthViewModel @Inject constructor(
 
     private fun register(name: String,email: String,  password: String) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(isLoading = true, error =  null)
 
             val result = repository.register(name, email, password)
 
              result.fold(
                 onSuccess = {
+                    repository.sendEmailVerification()
+                    repository.logout()
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        isLoggedIn = false,
+                        emailVerificationSent = true,
+                        error = null
+                    )
                 },
                 onFailure = { error ->
                     _uiState.value = _uiState.value.copy(
@@ -115,6 +135,30 @@ class AuthViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     _uiState.value.copy(isLoading = false, error = error.message)
+                }
+            )
+        }
+    }
+    private fun resendVerificationEmail(){
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                error = null
+            )
+            val result = repository.sendEmailVerification()
+            _uiState.value = result.fold(
+                onSuccess ={
+                    _uiState.value.copy(
+                        isLoading = false,
+                        emailVerificationSent = true
+                    )
+                },
+                onFailure = {error ->
+                    _uiState.value.copy(
+                        isLoading = false,
+                        error = error.message
+                    )
+
                 }
             )
         }

@@ -1,7 +1,7 @@
 package com.example.todoappv2.auth
 
 import com.example.todoappv2.domain.UserModel
-import com.google.firebase.auth.FirebaseUser
+
 
 
 data class AuthUiState(
@@ -9,6 +9,8 @@ data class AuthUiState(
     val user: UserModel? = null,
     val error: String? = null,
     val isLoggedIn: Boolean = false,
-    val isLoggedOut: Boolean = false
+    val isLoggedOut: Boolean = false,
+    val isEmailVerified: Boolean = false,
+    val emailVerificationSent: Boolean = false
 
 )
