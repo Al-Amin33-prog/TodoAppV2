@@ -6,21 +6,25 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todoappv2.data.local.entity.TaskEntity
+import com.example.todoappv2.task.TaskUiModel
+import com.example.todoappv2.task.TaskViewModel
 
 
 @Composable
 fun TaskList(
-    groupedTasks: Map<TaskSection, List<TaskEntity>>,
-    onToggleCompleted: (TaskEntity) -> Unit,
-    onDelete: (TaskEntity) -> Unit,
-    onEditTask: (TaskEntity) -> Unit,
+    groupedTasks: Map<TaskSection, List<TaskUiModel>>,
+    onToggleCompleted: (TaskUiModel) -> Unit,
+    onDelete: (TaskUiModel) -> Unit,
+    onEditTask: (TaskUiModel) -> Unit,
     taskBeingDeleted: TaskEntity?,
     isSelectionMode: Boolean,
     selectedTaskIds: Set<Long>,
-    onToggleSelectionMode: () -> Unit,
+    onStartSelection: (Long) -> Unit,
     onToggleSelection: (Long) -> Unit
 ){
+
     LazyColumn {
         groupedTasks.forEach { (section, tasks) ->
             item {
@@ -47,9 +51,11 @@ fun TaskList(
 
                    }
                )
-                if (!isSelectionMode){
+
                     SwipeToDismissBox(
                         state = dismissSate,
+                        enableDismissFromStartToEnd = !isSelectionMode,
+                        enableDismissFromEndToStart = !isSelectionMode,
                         backgroundContent = {
                             DeleteBackground(dismissState = dismissSate)
                         }
@@ -63,8 +69,7 @@ fun TaskList(
                             isSelected = selectedTaskIds.contains(task.id),
                             isSelectionMode = isSelectionMode,
                             onLongPress = {
-                                onToggleSelectionMode()
-                                onToggleSelection(task.id)
+                               onStartSelection(task.id)
                             },
                             onSelect = {
                                 onToggleSelection(task.id)
@@ -73,7 +78,7 @@ fun TaskList(
 
                             )
                     }
-                }
+
 
 
 

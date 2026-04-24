@@ -15,6 +15,7 @@ import com.example.todoappv2.ui.theme.TodoAppV2Theme
 fun RegisterScreen(
     authViewModel: AuthViewModel,
     onBackToLogin: () -> Unit,
+    onRegisterSuccess: () -> Unit
 
 ){
     val state by authViewModel.uiState.collectAsState()
@@ -23,7 +24,7 @@ fun RegisterScreen(
         state = state,
         onEvent = { authViewModel.onEvent(it) },
         onBackToLogin = onBackToLogin,
-        onRegisterSuccess = onBackToLogin
+        onRegisterSuccess = onRegisterSuccess
 
     )
 }

@@ -29,14 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.todoappv2.core.notification.TaskReminderSchedule
-import com.example.todoappv2.data.repository.AppRepository
 import com.example.todoappv2.task.components.EmptyTaskState
 import com.example.todoappv2.task.components.TaskFilter
 import com.example.todoappv2.task.components.TaskList
 import com.example.todoappv2.task.components.TaskProgressBar
 import com.example.todoappv2.R
 import com.example.todoappv2.data.local.entity.TaskEntity
+import com.example.todoappv2.domain.usecases.toEntity
 import com.example.todoappv2.task.components.DefaultTopBar
 import com.example.todoappv2.task.components.SelectionTopBar
 import com.example.todoappv2.task.components.TaskSearchBar
@@ -106,7 +105,7 @@ fun TaskScreen(
 
 
         floatingActionButton = {
-           if (!state.isSelectionMode){
+           if (state.isSelectionMode){
                FloatingActionButton(
                    onClick = {
                        viewModel.onEvent(TaskEvent.DeleteSelectedTasks)
@@ -159,25 +158,25 @@ fun TaskScreen(
                 else -> {
                     TaskList(
                      groupedTasks = state.groupedTasks,
-                        onToggleCompleted = {task ->
+                        onToggleCompleted = { task ->
                             viewModel.onEvent(
-                                TaskEvent.ToggleTaskCompletion(task)
+                                TaskEvent.ToggleTaskCompletion(task.id)
                             )
                         },
-                        onDelete = {task ->
-                          viewModel.onEvent(TaskEvent.DeleteTask(task))
-                            recentlyDeletedTask = task
+                        onDelete = { task ->
+                          viewModel.onEvent(TaskEvent.DeleteTask(task.id))
+                            recentlyDeletedTask = task.toEntity()
 
                         },
-                        onEditTask = {task ->
+                        onEditTask = { task ->
                             onEditTask(task.id)
 
                         },
                         taskBeingDeleted = recentlyDeletedTask,
                         isSelectionMode = state.isSelectionMode,
                         selectedTaskIds = state.selectedTaskIds,
-                        onToggleSelectionMode = {
-                            viewModel.onEvent(TaskEvent.ToggleSelectionMode)
+                        onStartSelection = { id ->
+                           viewModel.onEvent(TaskEvent.StartSelection(id))
                         },
                         onToggleSelection = { id ->
                             viewModel.onEvent(TaskEvent.ToggleTaskSelection(id))

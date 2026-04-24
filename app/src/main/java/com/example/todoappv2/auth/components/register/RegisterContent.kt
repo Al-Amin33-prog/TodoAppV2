@@ -46,8 +46,8 @@ fun RegisterContent(
     var passwordVisible by remember{mutableStateOf(false)}
 
 
-    LaunchedEffect(state.isLoggedIn) {
-        if (state.isLoggedIn){
+    LaunchedEffect(state.emailVerificationSent) {
+        if (state.emailVerificationSent){
             onRegisterSuccess()
         }
     }

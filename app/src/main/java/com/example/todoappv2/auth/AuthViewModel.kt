@@ -67,16 +67,10 @@ class AuthViewModel @Inject constructor(
 
              result.fold(
                 onSuccess = {
-                    val isVerified = repository.isEmailVerified()
-                    if (!isVerified){
-                        repository.logout()
-                        _uiState.value =_uiState.value.copy(
-                            isLoading = false,
-                            isLoggedIn = false,
-                            isEmailVerified = false,
-                            error = "Please verify your email before logging in. Check your inbox"
-                        )
-                    }
+                    _uiState.value =  _uiState.value.copy(
+                        isLoading = true,
+                        isLoggedIn = true
+                    )
 
                 },
                 onFailure = { error ->

@@ -25,11 +25,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.example.todoappv2.core.util.formatDueDateLabel
-import com.example.todoappv2.data.local.entity.TaskEntity
+import com.example.todoappv2.task.TaskUiModel
 
 @Composable
 fun TaskItem(
-    task: TaskEntity,
+    task: TaskUiModel,
     onToggleCompleted: (Boolean) -> Unit,
     onEdit: () -> Unit,
     isSelected: Boolean,

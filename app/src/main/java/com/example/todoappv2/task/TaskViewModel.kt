@@ -1,15 +1,15 @@
 package com.example.todoappv2.task
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoappv2.core.notification.TaskReminderSchedule
 import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.data.repository.AppRepository
+import com.example.todoappv2.domain.usecases.FilterTaskUseCases
+import com.example.todoappv2.domain.usecases.GetTaskUseCases
+import com.example.todoappv2.domain.usecases.GroupTaskUseCases
+import com.example.todoappv2.domain.usecases.UiModelUseCase
 
-import com.example.todoappv2.task.components.TaskFilterType
-import com.example.todoappv2.task.components.TaskSection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,42 +20,19 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskViewModel @Inject constructor (
     private val repository: AppRepository,
-    private val scheduler: TaskReminderSchedule
-
+    private val scheduler: TaskReminderSchedule,
+    private val getTasks: GetTaskUseCases,
+    private val filterTasks: FilterTaskUseCases,
+    private val groupTasks: GroupTaskUseCases,
+    private val mapToUi: UiModelUseCase
 
 ): ViewModel(){
+
     private val _uiState = MutableStateFlow(TaskUiState(isLoading = true))
     val uiState: StateFlow<TaskUiState> = _uiState.asStateFlow()
 
-    private fun groupTasks(tasks: List<TaskEntity>): Map<TaskSection,List<TaskEntity>>{
-        val now = System.currentTimeMillis()
-        return tasks.groupBy { task ->
-            when{
-                task.dueDate == null ->
-                    TaskSection.NoDate
-                task.dueDate < now && !task.isCompleted ->
-                    TaskSection.Overdue
-                isToday(task.dueDate) ->
-                    TaskSection.Today
-                else ->
-                    TaskSection.Upcoming
-            }
-        }
-    }
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun isToday(time: Long): Boolean{
-        val todayStart = java.time.LocalDate.now()
-            .atStartOfDay(java.time.ZoneId.systemDefault())
-            .toInstant()
-            .toEpochMilli()
 
-        val tomorrowStart = java.time.LocalDate.now()
-            .plusDays(1)
-            .atStartOfDay(java.time.ZoneId.systemDefault())
-            .toInstant()
-            .toEpochMilli()
-        return time in todayStart until tomorrowStart
-    }
+
 
 
     init {
@@ -64,42 +41,27 @@ class TaskViewModel @Inject constructor (
 
     private fun observeTasks(){
         viewModelScope.launch {
-            repository.getAllTasks().collect { tasks ->
-                updateStateWithTasks(tasks)
+        getTasks().collect { tasks ->
+          val filtered = filterTasks(tasks,_uiState.value.filter)
+                val uiTasks = filtered.map{mapToUi(it)}
+                val grouped = groupTasks(uiTasks)
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    allTasks = tasks,
+                    visibleTasks =uiTasks,
+                    groupedTasks = grouped
+                )
 
             }
         }
     }
-    private fun updateStateWithTasks(tasks: List<TaskEntity>){
-        val filtered = applyFilterTasks(tasks, _uiState.value.filter)
-        _uiState.value =_uiState.value.copy(
-            isLoading = false,
-            allTasks = tasks,
-            visibleTasks = filtered,
-            groupedTasks = groupTasks(filtered)
 
+
+    fun startSelection(taskId: Long){
+        _uiState.value = _uiState.value.copy(
+            isSelectionMode = true,
+            selectedTaskIds = setOf(taskId)
         )
-
-    }
-    private fun applyFilterTasks(
-        tasks: List<TaskEntity>,
-        filter: TaskFilterType
-    ): List<TaskEntity>{
-        return when(filter){
-            TaskFilterType.All -> tasks
-            TaskFilterType.Completed -> tasks.filter { it.isCompleted }
-            TaskFilterType.Pending -> tasks.filter { !it.isCompleted }
-            TaskFilterType.Overdue ->
-                tasks.filter {
-                    it.dueDate != null &&
-                            it.dueDate < System.currentTimeMillis() &&
-                            !it.isCompleted
-                }
-            is
-            TaskFilterType.BySubject -> tasks.filter {
-                it.subjectId == filter.subjectId
-            }
-        }
     }
 
     fun onEvent(event: TaskEvent){
@@ -123,34 +85,41 @@ class TaskViewModel @Inject constructor (
             }
             is TaskEvent.DeleteTask -> {
                 viewModelScope.launch {
-                    repository.deleteTask(event.task)
-                    scheduler.cancelTaskReminder(event.task.id)
+                    val task = _uiState.value.allTasks.find { it.id == event.taskId }
+                   task?.let {
+                       repository.deleteTask(it)
+                       scheduler.cancelTaskReminder(it.id)
+                   }
                 }
             }
             is TaskEvent.UpdateTask -> {
                 viewModelScope.launch {
-                    repository.updateTask(event.task)
-                    scheduler.cancelTaskReminder(event.task.id)
-                    scheduler.scheduleTaskReminder(event.task)
+                    val task = _uiState.value.allTasks.find { it.id == event.taskId }
+                    task?.let {
+                        repository.updateTask(it)
+                        scheduler.cancelTaskReminder(it.id)
+                        scheduler.scheduleTaskReminder(it)
+                    }
                 }
             }
             is TaskEvent.ChangeFilter -> {
 
-                val filtered = applyFilterTasks(
+                val filtered = filterTasks(
                     _uiState.value.allTasks,
                     event.filter
                 )
+                val uiTasks = filtered.map{mapToUi(it)}
                 _uiState.value = _uiState.value.copy(
                     filter = event.filter,
-                    visibleTasks = filtered,
-                    groupedTasks = groupTasks(filtered)
+                    visibleTasks = uiTasks,
+                    groupedTasks = groupTasks(uiTasks)
                 )
             }
             is TaskEvent.SearchTasks -> {
                 _uiState.value = _uiState.value.copy(
                     searchQuery = event.query
                 )
-                val filtered = applyFilterTasks(
+                val filtered = filterTasks(
                     _uiState.value.allTasks,
                     _uiState.value.filter
 
@@ -160,20 +129,22 @@ class TaskViewModel @Inject constructor (
                     )
 
                 }
+                val uiTasks = filtered.map { mapToUi(it) }
                 _uiState.value =  _uiState.value.copy(
                     searchQuery = event.query,
-                    visibleTasks = filtered,
-                    groupedTasks = groupTasks(filtered)
+                    visibleTasks = uiTasks,
+                    groupedTasks = groupTasks(uiTasks)
                 )
             }
             is TaskEvent.ToggleTaskCompletion -> {
                 viewModelScope.launch {
-                    val updatedTask = event.task.copy(
-                        isCompleted = ! event.task.isCompleted
-                    )
-                    repository.updateTask(updatedTask)
-                    if (updatedTask.isCompleted){
-                        scheduler.cancelTaskReminder(updatedTask.id)
+                    val task = _uiState.value.allTasks.find { it.id == event.taskId }
+                    task?.let {
+                        val updatedTask = it.copy(isCompleted = !it.isCompleted)
+                        repository.updateTask(updatedTask)
+                        if (updatedTask.isCompleted){
+                            scheduler.cancelTaskReminder(updatedTask.id)
+                        }
                     }
                 }
             }
@@ -182,24 +153,19 @@ class TaskViewModel @Inject constructor (
                     repository.insertTask(event.task)
                 }
             }
-            is TaskEvent.ToggleSelectionMode  ->{
-                _uiState.value = _uiState.value.copy(
-                    isSelectionMode = true,
-                    selectedTaskIds = emptySet()
-                )
 
-            }
             is TaskEvent.ToggleTaskSelection ->{
-                val current = _uiState.value.selectedTaskIds.toMutableSet()
-                if(current.contains(event.taskId)){
-                    current.remove(event.taskId)
+                val current = _uiState.value.selectedTaskIds
+                val newSelection = if (event.taskId in current){
+                    current - event.taskId
                 }else{
-                    current.add(event.taskId)
+                    current + event.taskId
                 }
                 _uiState.value = _uiState.value.copy(
-                    selectedTaskIds = current,
-                    isSelectionMode = current.isNotEmpty()
+                    selectedTaskIds = newSelection,
+                    isSelectionMode = newSelection.isNotEmpty()
                 )
+
             }
             is TaskEvent.ClearSelection ->{
                 _uiState.value = _uiState.value.copy(
@@ -229,6 +195,12 @@ class TaskViewModel @Inject constructor (
                 _uiState.value = _uiState.value.copy(
                     selectedTaskIds = allIds,
                     isSelectionMode = allIds.isNotEmpty()
+                )
+            }
+            is TaskEvent.StartSelection -> {
+                _uiState.value = _uiState.value.copy(
+                    isSelectionMode = true,
+                    selectedTaskIds = setOf(event.taskId)
                 )
             }
         }

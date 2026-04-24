@@ -64,10 +64,19 @@ fun AppNavGraph(
                     rootNavController.navigate(Routes.REGISTER)
                 },
                 onLoginSuccess = {
-
+                    rootNavController.navigate(
+                        Routes.APP_SHELL
+                    ){
+                        popUpTo(Routes.LOGIN) {
+                            inclusive = true
+                        }
+                    }
                 },
-                onForgotPassword = {
 
+
+
+                onForgotPassword = {
+                    rootNavController.navigate(Routes.RESET_PASSWORD)
                 }
             )
         }

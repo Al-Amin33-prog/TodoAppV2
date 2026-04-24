@@ -11,8 +11,9 @@ fun AuthGateScreen(
     onUnAuthenticated: () -> Unit
 ){
    val state = authViewModel.uiState.collectAsState().value
-    LaunchedEffect(state.isLoggedIn, state.isEmailVerified) {
-      if (state.isLoggedIn &&  state.isEmailVerified) onAuthenticated()
+    LaunchedEffect(state.isLoggedIn) {
+
+      if (state.user != null) onAuthenticated()
       else onUnAuthenticated()
     }
 }
