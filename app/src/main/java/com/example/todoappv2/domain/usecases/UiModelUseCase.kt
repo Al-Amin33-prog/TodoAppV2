@@ -27,6 +27,8 @@ class UiModelUseCase @Inject constructor() {
             isCompleted = task.isCompleted,
             dueLabel =dueLabel,
             dueDate = task.dueDate,
+            subjectId = task.subjectId,
+            createdAt = task.createdAt
         )
     }
 }
