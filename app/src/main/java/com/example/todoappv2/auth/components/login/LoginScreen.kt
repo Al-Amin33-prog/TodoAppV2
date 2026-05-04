@@ -3,6 +3,7 @@ package com.example.todoappv2.auth.components.login
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,6 +20,11 @@ fun LoginScreen(
     onForgotPassword: () -> Unit
 ){
     val state = authViewModel.uiState.collectAsState().value
+    LaunchedEffect(state.isLoggedIn) {
+        if (state.isLoggedIn){
+            onLoginSuccess()
+        }
+    }
 
     LoginContent(
         state = state,

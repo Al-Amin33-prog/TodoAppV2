@@ -2,6 +2,7 @@ package com.example.todoappv2.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todoappv2.core.session.SessionManager
 import com.example.todoappv2.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -24,9 +26,9 @@ class AuthViewModel @Inject constructor(
 
     private fun observeAuthState() {
         viewModelScope.launch {
-            repository.observeAuthState().collect { user ->
+            sessionManager.userFlow.collect { user ->
                 _uiState.value = _uiState.value.copy(
-                    user = user,
+
                     isLoggedIn = user!= null,
                     isEmailVerified = user?.isEmailVerified ?: false,
                     isLoading = false,
@@ -66,10 +68,15 @@ class AuthViewModel @Inject constructor(
             val result = repository.login(email, password)
 
              result.fold(
-                onSuccess = {
+                onSuccess = { user->
+
+                        sessionManager.saveUser(user)
+
                     _uiState.value =  _uiState.value.copy(
-                        isLoading = true,
-                        isLoggedIn = true
+                        isLoading = false,
+                        isLoggedIn = true,
+                        user = user,
+
                     )
 
                 },
@@ -90,7 +97,8 @@ class AuthViewModel @Inject constructor(
             val result = repository.register(name, email, password)
 
              result.fold(
-                onSuccess = {
+                onSuccess = { user ->
+                    sessionManager.saveUser(user)
                     repository.sendEmailVerification()
                     repository.logout()
                     _uiState.value = _uiState.value.copy(
@@ -113,6 +121,7 @@ class AuthViewModel @Inject constructor(
     private fun logout() {
         viewModelScope.launch {
             repository.logout()
+            sessionManager.clearUser()
             _uiState.value = AuthUiState()
         }
     }
