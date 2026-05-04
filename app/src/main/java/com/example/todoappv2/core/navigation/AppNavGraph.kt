@@ -77,7 +77,8 @@ fun AppNavGraph(
 
                 onForgotPassword = {
                     rootNavController.navigate(Routes.RESET_PASSWORD)
-                }
+                },
+
             )
         }
         composable(Routes.REGISTER){
@@ -88,7 +89,7 @@ fun AppNavGraph(
                    rootNavController.popBackStack()
                },
                onRegisterSuccess = {
-                   rootNavController.navigate("email_verification")
+                   rootNavController.navigate(Routes.EMAIL_VERIFICATION)
                }
            )
         }
