@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoappv2.core.session.SessionManager
 import com.example.todoappv2.data.repository.AuthRepository
+import com.google.firebase.FirebaseNetworkException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,8 +30,9 @@ class AuthViewModel @Inject constructor(
     private fun observeAuthState() {
         viewModelScope.launch {
             sessionManager.userFlow.collect { user ->
+                println("DEBUG USER: $user")
                 _uiState.value = _uiState.value.copy(
-
+                    user = user,
                     isLoggedIn = user!= null,
                     isEmailVerified = user?.isEmailVerified ?: false,
                     isLoading = false,
@@ -63,30 +67,46 @@ class AuthViewModel @Inject constructor(
 
     private fun login(email: String, password: String) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            viewModelScope.launch {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = true,
+                    error = null
+                )
+                try {
+                    val result = repository.login(email,password)
+                    result.fold(
+                        onSuccess = {user ->
+                            sessionManager.saveUser(user)
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                isLoggedIn = true,
+                                user = user
+                            )
+                        },
+                        onFailure = {error ->
+                            val message = when(error){
+                                is FirebaseAuthInvalidCredentialsException ->
+                                    "Incorrect password"
+                                is FirebaseAuthInvalidUserException ->
+                                    "User not found"
+                                is FirebaseNetworkException ->
+                                    "No internet connection"
+                                else -> error.message?: "Something went wrong"
+                            }
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                error = message
+                            )
 
-            val result = repository.login(email, password)
-
-             result.fold(
-                onSuccess = { user->
-
-                        sessionManager.saveUser(user)
-
-                    _uiState.value =  _uiState.value.copy(
-                        isLoading = false,
-                        isLoggedIn = true,
-                        user = user,
-
+                        }
                     )
-
-                },
-                onFailure = { error ->
-                    _uiState.value =  _uiState.value.copy(
+                }catch (e: Exception){
+                    _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = error.message
+                        error = e.message ?: "Unexpected error occurred"
                     )
                 }
-            )
+            }
         }
     }
 
@@ -128,16 +148,23 @@ class AuthViewModel @Inject constructor(
 
     private fun resetPassword(email: String) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                passwordResetSent = false,
+                error = null
+            )
             val result = repository.resetPassword(email)
 
             _uiState.value = result.fold(
                 onSuccess = {
-                    _uiState.value.copy(isLoading = false, error = null)
+                    _uiState.value.copy(isLoading = false,
+                        passwordResetSent = true,
+                        error = null)
                 },
                 onFailure = { error ->
-                    _uiState.value.copy(isLoading = false, error = error.message)
+                    _uiState.value.copy(isLoading = false,
+                        passwordResetSent = false,
+                        error = error.message)
                 }
             )
         }

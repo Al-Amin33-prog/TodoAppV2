@@ -63,7 +63,7 @@ fun ResetPasswordContent(
     var email by remember { mutableStateOf("") }
     var resetSent by remember { mutableStateOf(false) }
 
-    LaunchedEffect( state.error) {
+    LaunchedEffect( state.passwordResetSent) {
         if (state.error == null && email.isNotBlank()){
             resetSent = true
         }
