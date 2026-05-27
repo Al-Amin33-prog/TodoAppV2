@@ -42,10 +42,11 @@ class TaskViewModel @Inject constructor (
         }
     }
 
+    // SINGLE SOURCE OF TRUTH FOR UI UPDATES
     private fun refreshUiState() {
         val currentState = _uiState.value
         
-        // 1. Filter by status (Active/Completed/All)
+        // 1. Filter by status
         val filteredByStatus = filterTasks(currentState.allTasks, currentState.filter)
         
         // 2. Filter by search query
@@ -93,16 +94,12 @@ class TaskViewModel @Inject constructor (
                     task?.let {
                         val updatedTask = it.copy(isCompleted = !it.isCompleted)
                         repository.updateTask(updatedTask)
-                        if (updatedTask.isCompleted) {
-                            scheduler.cancelTaskReminder(updatedTask.id)
-                        }
+                        if (updatedTask.isCompleted) scheduler.cancelTaskReminder(updatedTask.id)
                     }
                 }
             }
             is TaskEvent.RestoreTask -> {
-                viewModelScope.launch {
-                    repository.insertTask(event.task)
-                }
+                viewModelScope.launch { repository.insertTask(event.task) }
             }
             is TaskEvent.ToggleTaskSelection -> {
                 val current = _uiState.value.selectedTaskIds
@@ -132,7 +129,7 @@ class TaskViewModel @Inject constructor (
             is TaskEvent.StartSelection -> {
                 _uiState.update { it.copy(isSelectionMode = true, selectedTaskIds = setOf(event.taskId)) }
             }
-            else -> Unit // AddTask/UpdateTask handled in AddEditViewModel
+            else -> Unit
         }
     }
 }
