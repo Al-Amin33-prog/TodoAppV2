@@ -1,4 +1,4 @@
-# TodoAppV2 - Production-Ready Task Management App
+# TodoAppV2 - Modern Android Task Management App
 
 A **modern, production-grade** Android todo management application built with **Kotlin** and **Jetpack Compose**. This project demonstrates industry best practices in architecture, reactive programming, and user-centric design.
 
