@@ -1,3 +1,6 @@
+![Kotlin](https://img.shields.io/badge/Kotlin-2.0-blue)
+![Compose](https://img.shields.io/badge/Jetpack%20Compose-Material3-brightgreen)
+![Architecture](https://img.shields.io/badge/Architecture-MVVM-orange)
 # TodoAppV2 - Modern Android Task Management App
 
 A **modern, production-grade** Android todo management application built with **Kotlin** and **Jetpack Compose**. This project demonstrates industry best practices in architecture, reactive programming, and user-centric design.
@@ -80,5 +83,66 @@ Some notable engineering challenges solved during development:
 - Designing reusable Compose UI components
 - Handling task restoration with Snackbar undo flows
 - Synchronizing reactive UI state with Room + Flow
+
+  ## 🚀 Getting Started
+
+### Prerequisites
+
+Before running the project, make sure you have:
+
+- Android Studio Hedgehog or newer
+- Android SDK 24+
+- Kotlin support enabled
+- A Firebase project configured
+
+---
+
+### Installation
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/TodoAppV2.git
+```
+
+2. Open the project in Android Studio
+
+3. Create a Firebase project from Firebase Console
+
+4. Add an Android app to Firebase using your package name:
+
+```text
+com.example.todoappv2
+```
+
+5. Download the `google-services.json` file
+
+6. Place the file inside the app module:
+
+```text
+app/google-services.json
+```
+
+7. Sync Gradle and run the app
+
+---
+
+### Firebase Features Used
+
+- Firebase Authentication
+- Cloud Firestore
+
+---
+
+### Build Configuration
+
+```gradle
+minSdk = 24
+targetSdk = 35
+```
+
+## 📦 APK
+
+If you'd like to test the app quickly without building from source, install the latest APK from the releases section.
 
 ## 📁 Project Structure
