@@ -12,6 +12,7 @@ data class AuthUiState(
     val isLoggedOut: Boolean = false,
     val isEmailVerified: Boolean = false,
     val emailVerificationSent: Boolean = false,
+    val isCheckingAuth: Boolean = true,
     val passwordResetSent: Boolean = false
 
 )

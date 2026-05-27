@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,109 +31,68 @@ class AuthViewModel @Inject constructor(
     private fun observeAuthState() {
         viewModelScope.launch {
             sessionManager.userFlow.collect { user ->
-                println("DEBUG USER: $user")
-                _uiState.value = _uiState.value.copy(
+                _uiState.update { it.copy(
                     user = user,
-                    isLoggedIn = user!= null,
+                    isLoggedIn = user != null,
                     isEmailVerified = user?.isEmailVerified ?: false,
                     isLoading = false,
+                    isCheckingAuth = false,
                     error = null
-
-                )
+                )}
             }
         }
     }
 
     fun onEvent(event: AuthEvent) {
         when (event) {
-
-            is AuthEvent.Login -> {
-                login(event.email, event.password)
-            }
-
-            is AuthEvent.Register -> {
-                register(event.name, event.email, event.password)
-            }
-
-            AuthEvent.Logout -> {
-                logout()
-            }
-
-            is AuthEvent.ResetPassword -> {
-                resetPassword(event.email)
-            }
-           AuthEvent.ResendVerificationEmail -> resendVerificationEmail()
+            is AuthEvent.Login -> login(event.email, event.password)
+            is AuthEvent.Register -> register(event.name, event.email, event.password)
+            AuthEvent.Logout -> logout()
+            is AuthEvent.ResetPassword -> resetPassword(event.email)
+            AuthEvent.ResendVerificationEmail -> resendVerificationEmail()
         }
     }
 
     private fun login(email: String, password: String) {
         viewModelScope.launch {
-            viewModelScope.launch {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = true,
-                    error = null
-                )
-                try {
-                    val result = repository.login(email,password)
-                    result.fold(
-                        onSuccess = {user ->
-                            sessionManager.saveUser(user)
-                            _uiState.value = _uiState.value.copy(
-                                isLoading = false,
-                                isLoggedIn = true,
-                                user = user
-                            )
-                        },
-                        onFailure = {error ->
-                            val message = when(error){
-                                is FirebaseAuthInvalidCredentialsException ->
-                                    "Incorrect password"
-                                is FirebaseAuthInvalidUserException ->
-                                    "User not found"
-                                is FirebaseNetworkException ->
-                                    "No internet connection"
-                                else -> error.message?: "Something went wrong"
-                            }
-                            _uiState.value = _uiState.value.copy(
-                                isLoading = false,
-                                error = message
-                            )
-
-                        }
-                    )
-                }catch (e: Exception){
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = e.message ?: "Unexpected error occurred"
-                    )
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            
+            repository.login(email, password).fold(
+                onSuccess = { user ->
+                    // Saving the user will trigger the observeAuthState collection
+                    sessionManager.saveUser(user)
+                },
+                onFailure = { error ->
+                    val message = when(error) {
+                        is FirebaseAuthInvalidCredentialsException -> "Incorrect password"
+                        is FirebaseAuthInvalidUserException -> "User not found"
+                        is FirebaseNetworkException -> "No internet connection"
+                        else -> error.message ?: "Something went wrong"
+                    }
+                    _uiState.update { it.copy(isLoading = false, error = message) }
                 }
-            }
+            )
         }
     }
 
-    private fun register(name: String,email: String,  password: String) {
+    private fun register(name: String, email: String, password: String) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error =  null)
+            _uiState.update { it.copy(isLoading = true, error = null) }
 
-            val result = repository.register(name, email, password)
-
-             result.fold(
+            repository.register(name, email, password).fold(
                 onSuccess = { user ->
                     sessionManager.saveUser(user)
                     repository.sendEmailVerification()
                     repository.logout()
-                    _uiState.value = _uiState.value.copy(
+                    // Clear user from session as they need to verify first
+                    sessionManager.clearUser() 
+                    _uiState.update { it.copy(
                         isLoading = false,
-                        isLoggedIn = false,
-                        emailVerificationSent = true,
-                        error = null
-                    )
+                        emailVerificationSent = true
+                    )}
                 },
                 onFailure = { error ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = error.message
-                    )
+                    _uiState.update { it.copy(isLoading = false, error = error.message) }
                 }
             )
         }
@@ -148,47 +108,29 @@ class AuthViewModel @Inject constructor(
 
     private fun resetPassword(email: String) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                passwordResetSent = false,
-                error = null
-            )
-            val result = repository.resetPassword(email)
-
-            _uiState.value = result.fold(
+            _uiState.update { it.copy(isLoading = true, passwordResetSent = false, error = null) }
+            
+            repository.resetPassword(email).fold(
                 onSuccess = {
-                    _uiState.value.copy(isLoading = false,
-                        passwordResetSent = true,
-                        error = null)
+                    _uiState.update { it.copy(isLoading = false, passwordResetSent = true) }
                 },
                 onFailure = { error ->
-                    _uiState.value.copy(isLoading = false,
-                        passwordResetSent = false,
-                        error = error.message)
+                    _uiState.update { it.copy(isLoading = false, error = error.message) }
                 }
             )
         }
     }
-    private fun resendVerificationEmail(){
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                error = null
-            )
-            val result = repository.sendEmailVerification()
-            _uiState.value = result.fold(
-                onSuccess ={
-                    _uiState.value.copy(
-                        isLoading = false,
-                        emailVerificationSent = true
-                    )
-                },
-                onFailure = {error ->
-                    _uiState.value.copy(
-                        isLoading = false,
-                        error = error.message
-                    )
 
+    private fun resendVerificationEmail() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            
+            repository.sendEmailVerification().fold(
+                onSuccess = {
+                    _uiState.update { it.copy(isLoading = false, emailVerificationSent = true) }
+                },
+                onFailure = { error ->
+                    _uiState.update { it.copy(isLoading = false, error = error.message) }
                 }
             )
         }
