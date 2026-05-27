@@ -56,4 +56,29 @@ A **modern, production-grade** Android todo management application built with **
 - Material Design 3 components
 - Loading states & error handling
 
+  ## 💡 Why I Built This
+
+I built TodoAppV2 to deepen my understanding of modern Android development practices beyond basic CRUD applications.
+
+The project helped me explore:
+- scalable MVVM architecture
+- reactive state management with StateFlow
+- navigation complexity in Jetpack Compose
+- offline-first data handling
+- Firebase authentication workflows
+- clean dependency injection with Hilt
+
+A major focus of the project was learning how to structure Android applications in a way that remains maintainable as features grow.
+
+## ⚡ Challenges Faced
+
+Some notable engineering challenges solved during development:
+
+- Refactoring nested navigation graphs between root and app shell navigation
+- Managing selection state and batch task deletion
+- Preventing recomposition-related UI inconsistencies
+- Designing reusable Compose UI components
+- Handling task restoration with Snackbar undo flows
+- Synchronizing reactive UI state with Room + Flow
+
 ## 📁 Project Structure
