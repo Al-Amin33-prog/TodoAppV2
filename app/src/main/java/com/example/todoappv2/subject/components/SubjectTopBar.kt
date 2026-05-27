@@ -1,11 +1,10 @@
 package com.example.todoappv2.subject.components
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,60 +24,55 @@ import com.example.todoappv2.R
 fun SubjectTopBar(
     isSelectionMode: Boolean,
     selectedCount: Int,
-    totalCount: Int,
+    isAllSelected: Boolean,
     onClearSelection: () -> Unit,
     onSelectAll: () -> Unit,
     onDeleteSelected: () -> Unit
 ){
-    AnimatedContent(
-        targetState = isSelectionMode,
-        transitionSpec = {
-            slideInVertically { -it  } + fadeIn() togetherWith
-                    slideOutVertically {it} + fadeOut()
-        },
-        label = "TopBarAnimation"
-    ) { isSelecting ->
-        if (isSelecting){
-            Row(
-                modifier = Modifier.
-                fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(horizontal = 16.dp,
-                        vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onClearSelection) {
-                    Icon(
-                        painter = painterResource(R.drawable.close_small_24px),
-                        contentDescription = "Close"
-                    )
-                }
-                Text(
-                    text = "$selectedCount selected",
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleMedium
+    // This bar ONLY shows during selection mode. 
+    // The "Subjects" title is handled by the AppNavigationShell.
+    AnimatedVisibility(
+        visible = isSelectionMode,
+        enter = expandVertically() + fadeIn(),
+        exit = shrinkVertically() + fadeOut()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onClearSelection) {
+                Icon(
+                    painter = painterResource(R.drawable.close_small_24px),
+                    contentDescription = "Close",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-                IconButton(onClick = onSelectAll) {
-                    Icon(
-                        painter = painterResource(R.drawable.select_all_24px),
-                        contentDescription = "Select All"
-                    )
-                }
-                IconButton(onClick = onDeleteSelected) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_delete_24px),
-                        contentDescription = "Delete"
-                    )
-                }
             }
-        }else{
             Text(
-                text = "Subjects",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                style = MaterialTheme.typography.headlineLarge
+                text = "$selectedCount selected",
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
+            IconButton(onClick = onSelectAll) {
+                Icon(
+                    painter = painterResource(
+                        if (isAllSelected) R.drawable.ic_delete_24px // Replace with an unselect icon if you have one
+                        else R.drawable.select_all_24px
+                    ),
+                    contentDescription = "Select All",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            IconButton(onClick = onDeleteSelected) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_delete_24px),
+                    contentDescription = "Delete Selected",
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
         }
     }
 }

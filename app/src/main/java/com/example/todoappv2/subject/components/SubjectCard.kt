@@ -1,8 +1,6 @@
 package com.example.todoappv2.subject.components
 
-
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,98 +42,109 @@ fun SubjectCard(
     isSelectionMode: Boolean,
     onLongPress: () -> Unit,
     onSelect: () -> Unit
-
-){
+) {
     val haptic = LocalHapticFeedback.current
     val accentColor = Color(subject.colorHex)
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
-            .background(
-                if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                else MaterialTheme.colorScheme.surface
-            )
-            . combinedClickable(
+            .combinedClickable(
                 onClick = {
                     if (isSelectionMode) onSelect()
                     else onClick()
                 },
-        onLongClick ={
-            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            onLongPress()
-
-        }
-
-    ),
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onLongPress()
+                }
+            ),
         shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
+        elevation = CardDefaults.cardElevation(if (isSelected) 0.dp else 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor =  MaterialTheme.colorScheme.surface
+            containerColor = if (isSelected) 
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f) 
+            else 
+                MaterialTheme.colorScheme.surface
         )
-
     ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
-                Box(modifier = Modifier
-                    .size(42.dp)
-                    .background(accentColor.copy(alpha = 0.15f), CircleShape),
+                // Circular Initial
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .background(
+                            if (isSelected) Color.White.copy(alpha = 0.3f) 
+                            else accentColor.copy(alpha = 0.15f), 
+                            CircleShape
+                        ),
                     contentAlignment = Alignment.Center
-                ){
+                ) {
                     Text(
-                        subject.name.take(1).uppercase(),
-                        color = accentColor,
+                        text = subject.name.take(1).uppercase(),
+                        color = if (isSelected) Color.White else accentColor,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                 }
-                IconButton(onClick = onEdit) {
-                    Icon(
-                        painter = painterResource(R.drawable.edit_24px),
-                        contentDescription = "Edit",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
 
+                // Action Buttons or Selection Checkbox
+                if (isSelectionMode) {
+                    Checkbox(
+                        checked = isSelected,
+                        onCheckedChange = { onSelect() }
+                    )
+                } else {
+                    IconButton(onClick = onEdit) {
+                        Icon(
+                            painter = painterResource(R.drawable.edit_24px),
+                            contentDescription = "Edit",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
-            // here
+            
             Spacer(modifier = Modifier.height(20.dp))
+            
             Text(
                 text = subject.name,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
                 maxLines = 1
             )
             Text(
                 text = "Tap to view tasks",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f) 
+                        else MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                IconButton(onClick = onDelete,
-                    modifier = Modifier.size(20.dp)) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_delete_24px),
-                        contentDescription = null,
-                        tint = Color.Red.copy(alpha = 0.6f)
-                    )
+            
+            if (!isSelectionMode) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(
+                        onClick = onDelete,
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_delete_24px),
+                            contentDescription = "Delete",
+                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
+                        )
+                    }
                 }
             }
         }
-
-
-        }
-   }
+    }
+}
