@@ -3,6 +3,7 @@ package com.example.todoappv2.task
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todoappv2.task.components.EmptyTaskState
 import com.example.todoappv2.task.components.TaskFilter
@@ -59,26 +61,7 @@ fun TaskScreen(
         }
     }
 
-    // We keep the Scaffold here because TaskScreen has unique FAB and TopBar requirements
-    // but we will fix the Shell to not show its bar when this is active.
     Scaffold(
-        topBar = {
-            // Only show the SelectionTopBar here. 
-            // The regular "Tasks" title will be handled by the AppTopBar in the Shell.
-            AnimatedVisibility(
-                visible = state.isSelectionMode,
-                enter = expandVertically(),
-                exit = shrinkVertically()
-            ) {
-                SelectionTopBar(
-                    selectedCount = state.selectedTaskIds.size,
-                    onClearSelection = { viewModel.onEvent(TaskEvent.ClearSelection) },
-                    onDeleteSelected = { viewModel.onEvent(TaskEvent.DeleteSelectedTasks) },
-                    onSelectAll = { viewModel.onEvent(TaskEvent.SelectAll) },
-                    isAllSelected = state.selectedTaskIds.size == state.visibleTasks.size && state.visibleTasks.isNotEmpty()
-                )
-            }
-        },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
            if (state.isSelectionMode){
@@ -106,57 +89,75 @@ fun TaskScreen(
            }
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            TaskSearchBar(
-                query = state.searchQuery,
-                onQueryChanged = { viewModel.onEvent(TaskEvent.SearchTasks(it)) }
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            TaskFilter(
-                selectedFilter = state.filter,
-                onFilterSelected = { filter ->
-                    viewModel.onEvent(TaskEvent.ChangeFilter(filter))
-                }
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            when {
-                state.isLoading -> {
-                    TaskProgressBar()
-                }
-                state.groupedTasks.isEmpty() -> {
-                    EmptyTaskState()
-                }
-                else -> {
-                    TaskList(
-                        groupedTasks = state.groupedTasks,
-                        onToggleCompleted = { task ->
-                            viewModel.onEvent(TaskEvent.ToggleTaskCompletion(task.id))
-                        },
-                        onDelete = { task ->
-                            viewModel.onEvent(TaskEvent.DeleteTask(task.id))
-                            recentlyDeletedTask = task.toEntity()
-                        },
-                        onEditTask = { task ->
-                            onEditTask(task.id)
-                        },
-                        taskBeingDeleted = recentlyDeletedTask,
-                        isSelectionMode = state.isSelectionMode,
-                        selectedTaskIds = state.selectedTaskIds,
-                        onStartSelection = { id ->
-                           viewModel.onEvent(TaskEvent.StartSelection(id))
-                        },
-                        onToggleSelection = { id ->
-                            viewModel.onEvent(TaskEvent.ToggleTaskSelection(id))
-                        }
-                    )
+        Box(modifier = Modifier.fillMaxSize()) {
+            // 1. Unified Selection Bar (Floating overlay to avoid "Double Bar" visual)
+            AnimatedVisibility(
+                visible = state.isSelectionMode,
+                enter = expandVertically(),
+                exit = shrinkVertically(),
+                modifier = Modifier.zIndex(2f) // Ensure it stays on top of everything
+            ) {
+                SelectionTopBar(
+                    selectedCount = state.selectedTaskIds.size,
+                    onClearSelection = { viewModel.onEvent(TaskEvent.ClearSelection) },
+                    onDeleteSelected = { viewModel.onEvent(TaskEvent.DeleteSelectedTasks) },
+                    onSelectAll = { viewModel.onEvent(TaskEvent.SelectAll) },
+                    isAllSelected = state.selectedTaskIds.size == state.visibleTasks.size && state.visibleTasks.isNotEmpty()
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                TaskSearchBar(
+                    query = state.searchQuery,
+                    onQueryChanged = { viewModel.onEvent(TaskEvent.SearchTasks(it)) }
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                TaskFilter(
+                    selectedFilter = state.filter,
+                    onFilterSelected = { filter ->
+                        viewModel.onEvent(TaskEvent.ChangeFilter(filter))
+                    }
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                when {
+                    state.isLoading -> {
+                        TaskProgressBar()
+                    }
+                    state.groupedTasks.isEmpty() -> {
+                        EmptyTaskState()
+                    }
+                    else -> {
+                        TaskList(
+                            groupedTasks = state.groupedTasks,
+                            onToggleCompleted = { task ->
+                                viewModel.onEvent(TaskEvent.ToggleTaskCompletion(task.id))
+                            },
+                            onDelete = { task ->
+                                viewModel.onEvent(TaskEvent.DeleteTask(task.id))
+                                recentlyDeletedTask = task.toEntity()
+                            },
+                            onEditTask = { task ->
+                                onEditTask(task.id)
+                            },
+                            taskBeingDeletedId = recentlyDeletedTask?.id,
+                            isSelectionMode = state.isSelectionMode,
+                            selectedTaskIds = state.selectedTaskIds,
+                            onStartSelection = { id ->
+                               viewModel.onEvent(TaskEvent.StartSelection(id))
+                            },
+                            onToggleSelection = { id ->
+                                viewModel.onEvent(TaskEvent.ToggleTaskSelection(id))
+                            }
+                        )
+                    }
                 }
             }
         }

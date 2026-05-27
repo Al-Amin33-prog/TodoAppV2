@@ -3,6 +3,7 @@ package com.example.todoappv2.core.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -13,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.todoappv2.auth.AuthViewModel
 import com.example.todoappv2.core.components.AppBottomBar
 import com.example.todoappv2.core.components.AppTopBar
 import com.example.todoappv2.dashboard.HomeScreen
@@ -33,9 +35,12 @@ fun AppNavigationShell(
     navController: NavHostController,
 
 ) {
+    val authViewModel: AuthViewModel = hiltViewModel()
     val appNavController = rememberNavController()
     val navBackStackEntry by appNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val authState by authViewModel.uiState.collectAsState()
+
     
     val title = when {
         currentRoute?.startsWith(Routes.TASKS_ROOT) == true -> "Tasks"
@@ -71,63 +76,42 @@ fun AppNavigationShell(
         ) {
 
             composable(Routes.HOME) {
-                // Now using hiltViewModel() instead of manual creation
+
                 val homeViewModel: HomeViewModel = hiltViewModel()
                 HomeScreen(
+                    userName = authState.user?.name?: "User",
                     viewModel = homeViewModel,
                     onAddTaskClick = {
-                        appNavController.navigate(Routes.addTask(0L))
+                        navController.navigate(Routes.addTask(0L))
                     },
                     onAddSubjectClick = {
-                        appNavController.navigate(Routes.ADD_SUBJECT)
+                        navController.navigate(Routes.ADD_SUBJECT)
                     },
                     onTaskClick = { taskId ->
-                        appNavController.navigate(Routes.addTask(taskId))
+                        navController.navigate(Routes.editTask(taskId, 0L))
                     },
                 )
             }
 
             composable(Routes.SUBJECTS) {
-                // Update this to use hiltViewModel() once SubjectViewModel is refactored
+
                 val subjectViewModel: SubjectViewModel = hiltViewModel()
                 SubjectScreen(
                     viewModel = subjectViewModel,
                     onAddSubject = {
-                        appNavController.navigate(Routes.ADD_SUBJECT)
+                       navController.navigate(Routes.ADD_SUBJECT)
                     },
                     onOpenSubject = { subjectId ->
                         appNavController.navigate(Routes.tasksWithId(subjectId))
                     },
                     onEditSubject = { subjectId ->
-                        appNavController.navigate(Routes.editSubject(subjectId))
+                       navController.navigate(Routes.editSubject(subjectId))
                     }
                 )
             }
             
-            composable(Routes.ADD_SUBJECT){
-                val viewModel: SubjectAddEditViewModel = hiltViewModel()
-                SubjectAddEditScreen(
-                    viewModel = viewModel,
-                    onDone = {
-                        appNavController.popBackStack()
-                    }
-                )
-            }
-            
-            composable(
-                Routes.EDIT_SUBJECT,
-                arguments = listOf(
-                    navArgument("subjectId"){ type = NavType.LongType }
-                )
-            ){ backStackEntry ->
-                val viewModel: SubjectAddEditViewModel = hiltViewModel()
-                SubjectAddEditScreen(
-                    viewModel = viewModel,
-                    onDone = {
-                        appNavController.popBackStack()
-                    }
-                )
-            }
+
+
             
             composable(
                 Routes.TASKS_BY_SUBJECT,
@@ -139,56 +123,33 @@ fun AppNavigationShell(
                 TaskScreen(
 
                     onAddTask = {
-                        appNavController.navigate(Routes.addTask(subjectId))
+                        navController.navigate(Routes.addTask(subjectId))
                     },
                     onEditTask = { taskId ->
-                       appNavController.navigate(Routes.editTask(taskId, subjectId))
+                       navController.navigate(Routes.editTask(taskId, subjectId))
                     }
                 )
             }
 
-            composable(
-                Routes.ADD_EDIT_TASK,
-                arguments = listOf(
-                    navArgument("taskId"){
-                        type = NavType.LongType
-                        defaultValue = -1L
-                    },
-                    navArgument("subjectId"){
-                        type = NavType.LongType
-                        defaultValue = -1L
-                    }
-                )
-            ){
-                val viewModel: TaskAddEditViewModel = hiltViewModel()
-                TaskAddEditScreen(
-                    viewModel = viewModel,
-                    onDone = {
-                        appNavController.popBackStack()
-                    },
-                    onCancel = {
-                        appNavController.popBackStack()
-                    }
-                )
-            }
-
-            composable(Routes.STATS) {
-                StatisticScreen(
-
-                )
-            }
 
             composable(Routes.TASKS_ROOT){
                 TaskScreen(
 
                     onAddTask = {
-                        appNavController.navigate(Routes.addTask(0L))
+                        navController.navigate(Routes.addTask(0L))
                     },
                     onEditTask = { taskId ->
-                        appNavController.navigate("edit_task/$taskId")
+                       navController.navigate(
+                           Routes.editTask(taskId,0L)
+                       )
                     }
                 )
             }
+            composable(Routes.STATS){
+                StatisticScreen()
+            }
+
+
         }
     }
 }

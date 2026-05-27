@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.todoappv2.auth.AuthViewModel
+
 
 import com.example.todoappv2.dashboard.components.CustomPullRefreshIndicator
 import com.example.todoappv2.dashboard.components.QuickActionButtons
@@ -32,17 +32,18 @@ import com.example.todoappv2.dashboard.components.UpcomingTasksSection
 
 @Composable
 fun HomeScreen(
+    userName: String,
     viewModel: HomeViewModel = hiltViewModel(),
     onAddTaskClick: () -> Unit,
     onAddSubjectClick:() -> Unit,
     onTaskClick:(Long)-> Unit,
 ){
     val isRefreshing by viewModel.isRefreshing.collectAsState()
-    val authViewModel: AuthViewModel = hiltViewModel()
-    val authState by authViewModel.uiState.collectAsState()
     val state by viewModel.uiState.collectAsState()
 
+
     val refreshState = rememberPullToRefreshState()
+
     
     PullToRefreshBox(
         isRefreshing = isRefreshing,
@@ -82,8 +83,8 @@ fun HomeScreen(
                     .padding(horizontal = 16.dp)
             ){
                 item {
-                    // Using string format from strings.xml
-                    GreetingHeader(userName =authState.user?.name ?: "User" )
+
+                    GreetingHeader(userName = userName )
                 }
 
                 item {
