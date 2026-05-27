@@ -23,7 +23,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,12 +31,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.todoappv2.R
 import com.example.todoappv2.auth.AuthEvent
 import com.example.todoappv2.auth.AuthUiState
-import com.example.todoappv2.R
 
 @Composable
 fun LoginContent(
@@ -49,13 +49,12 @@ fun LoginContent(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var passwordIsVisible by remember{mutableStateOf(false)}
-
+    var passwordIsVisible by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xfff5f6fa))
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
@@ -63,40 +62,43 @@ fun LoginContent(
                 .padding(horizontal = 24.dp, vertical = 40.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
-
         ) {
             Text(
-                text = "Welcome Back",
+                text = stringResource(R.string.login_welcome),
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "We've missed you ,Please sign in to continue",
+                text = stringResource(R.string.login_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-
             Spacer(modifier = Modifier.height(32.dp))
+            
             OutlinedTextField(
                 shape = RoundedCornerShape(16.dp),
                 value = email,
-                onValueChange = {email = it},
+                onValueChange = { email = it },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.mail_24px),
                         contentDescription = null
                     )
                 },
-                label = {Text("Email", style= MaterialTheme.typography.labelMedium)},
+                label = { 
+                    Text(
+                        text = stringResource(R.string.email_label), 
+                        style = MaterialTheme.typography.labelMedium
+                    ) 
+                },
                 modifier = Modifier.fillMaxWidth(),
-
                 singleLine = true
-
-
             )
+            
             Spacer(modifier = Modifier.height(16.dp))
+            
             OutlinedTextField(
                 leadingIcon = {
                     Icon(
@@ -106,25 +108,26 @@ fun LoginContent(
                 },
                 shape = RoundedCornerShape(16.dp),
                 value = password,
-                onValueChange = {password = it},
-                label = {Text("Password", style= MaterialTheme.typography.labelMedium)},
-
+                onValueChange = { password = it },
+                label = { 
+                    Text(
+                        text = stringResource(R.string.password_label), 
+                        style = MaterialTheme.typography.labelMedium
+                    ) 
+                },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-
-
-
                 visualTransformation = if (passwordIsVisible)
                     VisualTransformation.None
                 else
                     PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(
-                        onClick = {passwordIsVisible = !passwordIsVisible}
+                        onClick = { passwordIsVisible = !passwordIsVisible }
                     ) {
                         Icon(
                             painter = painterResource(
-                                id = if (passwordIsVisible)R.drawable.visibility_off_24px
+                                id = if (passwordIsVisible) R.drawable.visibility_off_24px
                                 else R.drawable.visibility_24px
                             ),
                             contentDescription = "Toggle Password Visibility"
@@ -132,21 +135,19 @@ fun LoginContent(
                     }
                 }
             )
+            
             Spacer(modifier = Modifier.height(8.dp))
+            
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = onForgotPassword) {
-                    Text("Forgot Password?", style = MaterialTheme
-                        .typography.bodyMedium,
-                        color = Color.Blue,
-                        modifier = Modifier
-                            .padding(8.dp)
-
-
-                        )
+                    Text(
+                        text = stringResource(R.string.forgot_password), 
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
             }
-
-
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -154,7 +155,6 @@ fun LoginContent(
                 onClick = {
                     onEvent(
                         AuthEvent.Login(
-
                             email = email.trim(),
                             password = password.trim()
                         )
@@ -167,15 +167,28 @@ fun LoginContent(
                     .fillMaxWidth(),
                 elevation = ButtonDefaults.buttonElevation(8.dp)
             ) {
-                Text("Login",style = MaterialTheme.typography.labelMedium)
+                Text(
+                    text = stringResource(R.string.login_button),
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
 
-            TextButton(onClick = onNavigateToRegister) {
-                Text("Don't have an account? Register",style = MaterialTheme.typography.bodyMedium )
+            TextButton(
+                onClick = onNavigateToRegister,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = stringResource(R.string.register_prompt),
+                    style = MaterialTheme.typography.bodyMedium 
+                )
             }
 
             if (state.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
             }
 
             state.error?.let {
@@ -191,12 +204,10 @@ fun LoginContent(
                         text = it,
                         color = MaterialTheme.colorScheme.onErrorContainer,
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 8.dp)
+                        modifier = Modifier.padding(16.dp)
                     )
                 }
-
             }
         }
     }
-
 }

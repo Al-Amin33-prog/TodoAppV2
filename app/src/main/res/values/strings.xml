@@ -8,6 +8,23 @@
     <string name="loading">Loading…</string>
     <string name="error_generic">Something went wrong. Please try again.</string>
 
+    <!-- Auth -->
+    <string name="login_welcome">Welcome Back</string>
+    <string name="login_subtitle">We\'ve missed you, Please sign in to continue</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="login_button">Login</string>
+    <string name="register_prompt">Don\'t have an account? Register</string>
+    <string name="create_account">Create Account</string>
+    <string name="full_name_label">Full Name</string>
+    <string name="register_button">Register</string>
+    <string name="login_prompt">Already have an account? Back To Login</string>
+    <string name="reset_password_title">Reset Password</string>
+    <string name="reset_password_subtitle">Enter your email to receive a reset link.</string>
+    <string name="send_reset_link">Send Reset Link</string>
+    <string name="back_to_login">Back to Login</string>
+
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="section_account">Account</string>
