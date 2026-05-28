@@ -28,10 +28,13 @@ class UiModelUseCase @Inject constructor() {
             dueLabel =dueLabel,
             dueDate = task.dueDate,
             subjectId = task.subjectId,
-            createdAt = task.createdAt
+            createdAt = task.createdAt,
+            predictedPriority = "Medium",
+            priorityConfidence = 0.5f
         )
     }
 }
+
 private fun isToday(time:Long):
         Boolean{
     val todayStart = LocalDate.now()

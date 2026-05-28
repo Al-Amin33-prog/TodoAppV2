@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.example.todoappv2.core.util.formatDueDateLabel
 import com.example.todoappv2.task.TaskUiModel
+import com.example.todoappv2.ml.component.PriorityBadge
 
 @Composable
 fun TaskItem(
@@ -113,6 +114,11 @@ fun TaskItem(
                     )
                 }
             }
+            PriorityBadge(
+                priority = task.predictedPriority,
+                confidence = task.priorityConfidence,
+                modifier = Modifier.padding(end = 8.dp)
+            )
             val bargeColor = when(dueLabel){
                 "Overdue" -> MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
                 "Today" -> MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)

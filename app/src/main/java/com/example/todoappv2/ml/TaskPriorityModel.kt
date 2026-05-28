@@ -2,7 +2,7 @@ package com.example.todoappv2.ml
 
 import android.content.Context
 import com.example.todoappv2.data.local.entity.TaskEntity
-import kotlin.math.sqrt
+
 
 /**
  * TaskPriorityModel - ML model for predicting task priority
