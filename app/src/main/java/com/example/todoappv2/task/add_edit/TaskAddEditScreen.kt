@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +39,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.todoappv2.R
+import com.example.todoappv2.ml.component.MLPredictionCard
+import com.example.todoappv2.ml.component.PriorityOverrideSection
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -60,7 +64,7 @@ fun TaskAddEditScreen(
 
     
     var subjectExpanded by remember { mutableStateOf(false) }
-    var priorityExpanded by remember { mutableStateOf(false) }
+
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
@@ -78,6 +82,7 @@ fun TaskAddEditScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(padding)
                 .padding(20.dp)
         ) {
@@ -202,51 +207,41 @@ fun TaskAddEditScreen(
             }
 
             Spacer(Modifier.height(16.dp))
-            
+
             Text(
-                text = stringResource(R.string.task_priority_label),
+                text = "AI Task Priority",
                 style = MaterialTheme.typography.titleMedium
             )
-            Spacer(Modifier.height(8.dp))
-            ExposedDropdownMenuBox(
-                expanded = priorityExpanded,
-                onExpandedChange = { priorityExpanded = it }
-            ) {
-                OutlinedTextField(
-                    readOnly = true,
-                    value = state.priority,
-                    onValueChange = {},
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    trailingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.keyboard_arrow_down_24px),
-                            contentDescription = null
-                        )
-                    }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (state.isPredictionLoading) {
+
+                Text(
+                    text = "Analyzing task priority...",
+                    style = MaterialTheme.typography.bodyMedium
                 )
-                ExposedDropdownMenu(
-                    expanded = priorityExpanded,
-                    onDismissRequest = { priorityExpanded = false }
-                ) {
-                    listOf("Low", "Medium", "High").forEach { priority ->
-                        DropdownMenuItem(
-                            text = { 
-                                Text(
-                                    text = priority,
-                                    style = MaterialTheme.typography.bodyLarge
-                                ) 
-                            },
-                            onClick = {
-                                viewModel.onEvent(TaskAddEditEvent.PriorityChanged(priority))
-                                priorityExpanded = false
-                            }
+
+            } else {
+
+                MLPredictionCard(
+
+                    predictedPriority = state.predictedPriority,
+                    confidence = state.predictionConfidence,
+
+                )
+
+                PriorityOverrideSection(
+                    selectedPriority = state.priority,
+                    onPriorityChange = {
+                        viewModel.onEvent(
+                            TaskAddEditEvent.PriorityChanged(it)
                         )
-                    }
-                }
+                    },
+                    mlPredictedPriority = state.predictedPriority,
+                    taskId = 0L,
+                    onPriorityOverride = {}
+                )
             }
 
             Spacer(Modifier.weight(1f))
@@ -257,7 +252,7 @@ fun TaskAddEditScreen(
             ) {
                 OutlinedButton(
                     onClick = onCancel,
-                    modifier = Modifier.weight(1f),
+
                     shape = RoundedCornerShape(50)
                 ) {
                     Text(

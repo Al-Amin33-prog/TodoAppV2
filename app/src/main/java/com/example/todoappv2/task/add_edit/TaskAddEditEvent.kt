@@ -9,5 +9,6 @@ sealed class TaskAddEditEvent {
     data class CompletionToggled(val value: Boolean): TaskAddEditEvent()
 
     object SaveTask : TaskAddEditEvent()
+    data class  PriorityFeedback(val priorityLevel: Int) : TaskAddEditEvent()
 
 }

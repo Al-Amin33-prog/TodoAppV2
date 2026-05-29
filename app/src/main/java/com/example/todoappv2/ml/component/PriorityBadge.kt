@@ -32,7 +32,7 @@ fun PriorityBadge(
         modifier = modifier
     ) {
         Text(
-            text = "$priority/n$confidencePercent%",
+            text = "$priority\n$confidencePercent%",
             style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 8.sp,
                 fontWeight = FontWeight.SemiBold,

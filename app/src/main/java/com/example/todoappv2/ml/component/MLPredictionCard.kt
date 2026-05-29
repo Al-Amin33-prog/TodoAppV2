@@ -20,60 +20,75 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-// MLPredictionCard.kt
 @Composable
 fun MLPredictionCard(
-    taskTitle: String,
     predictedPriority: String,
-    confidence: Float,
-    onConfidenceShow: (String) -> Unit
+    confidence: Float
 ) {
-    Card (
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp),
-        shape = RoundedCornerShape(12.dp),
+            .padding(vertical = 8.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
+                alpha = 0.6f
+            )
         )
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                "🤖 AI Prediction",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Column {
-                    Text("Predicted Priority:", style = MaterialTheme.typography.labelSmall)
-                    Text(
-                        predictedPriority,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Confidence:", style = MaterialTheme.typography.labelSmall)
-                    CircularProgressIndicator(
-                        progress = { confidence },
-                        modifier = Modifier.size(48.dp),
-                        strokeWidth = 4.dp
-                    )
-                    Text("${(confidence * 100).toInt()}%", fontSize = 10.sp)
-                }
+                Text(
+                    text = "Smart Priority Suggestion",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Text(
+                    text = predictedPriority,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = when {
+                        confidence >= 0.8f -> "High confidence"
+                        confidence >= 0.5f -> "Moderate confidence"
+                        else -> "Learning from your habits"
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                CircularProgressIndicator(
+                    progress = { confidence },
+                    modifier = Modifier.size(44.dp),
+                    strokeWidth = 4.dp
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "${(confidence * 100).toInt()}%",
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
         }
     }
