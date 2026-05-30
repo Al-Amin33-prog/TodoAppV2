@@ -102,6 +102,7 @@ class TaskAddEditViewModel @Inject constructor(
             }
             is TaskAddEditEvent.DescriptionChanged -> {
                 _uiState.value = _uiState.value.copy(description = event.value)
+                predictPriority()
             }
             is TaskAddEditEvent.DueDateChanged -> {
                 _uiState.value = _uiState.value.copy(dueDate = event.value )
@@ -223,11 +224,17 @@ class TaskAddEditViewModel @Inject constructor(
             val state = _uiState.value
 
             if (state.title.isBlank() || state.subjectId == null) {
-                return@launch
-            }
+                _uiState.update {
+                    it.copy(
+                        predictedPriority = "Medium",
+                        predictionConfidence = 0.3f,
+                        isPredictionLoading = true
+                    )
 
-            _uiState.update {
-                it.copy(isPredictionLoading = true)
+            }
+                return@launch
+
+
             }
 
             val allTasks = repository.getAllTasks().first()

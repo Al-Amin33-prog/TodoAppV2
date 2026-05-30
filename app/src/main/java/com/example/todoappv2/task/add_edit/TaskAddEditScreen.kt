@@ -244,7 +244,7 @@ fun TaskAddEditScreen(
                 )
             }
 
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.height(24.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -276,33 +276,64 @@ fun TaskAddEditScreen(
     }
 
     if (showDatePicker) {
+
         DatePickerDialog(
             context,
             { _, year, month, day ->
+
                 calendar.set(Calendar.YEAR, year)
                 calendar.set(Calendar.MONTH, month)
                 calendar.set(Calendar.DAY_OF_MONTH, day)
+
                 showDatePicker = false
                 showTimePicker = true
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        ).apply {
+
+            setOnCancelListener {
+                showDatePicker = false
+            }
+
+            setOnDismissListener {
+                showDatePicker = false
+            }
+
+        }.show()
     }
 
     if (showTimePicker) {
+
         TimePickerDialog(
             context,
             { _, hour, minute ->
+
                 calendar.set(Calendar.HOUR_OF_DAY, hour)
                 calendar.set(Calendar.MINUTE, minute)
-                viewModel.onEvent(TaskAddEditEvent.DueDateChanged(calendar.timeInMillis))
+
+                viewModel.onEvent(
+                    TaskAddEditEvent.DueDateChanged(
+                        calendar.timeInMillis
+                    )
+                )
+
                 showTimePicker = false
             },
             calendar.get(Calendar.HOUR_OF_DAY),
             calendar.get(Calendar.MINUTE),
             false
-        ).show()
+        ).apply {
+
+            setOnCancelListener {
+                showTimePicker = false
+            }
+
+            setOnDismissListener {
+                showTimePicker = false
+            }
+
+        }.show()
     }
 }

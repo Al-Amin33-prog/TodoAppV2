@@ -105,9 +105,24 @@ class TaskPriorityModel(private val context: Context) {
         task: TaskEntity,
         subjectCompletionRate: Float = 0.5f
     ): PriorityLevel {
+
         if (trainingData.values.all { it.isEmpty() }) {
-            // No training data - return default Medium
-            return PriorityLevel.MEDIUM
+
+            val features = extractFeatures(task, subjectCompletionRate)
+
+            return when {
+                features.isOverdue ->
+                    PriorityLevel.URGENT
+
+                features.hasKeywords ->
+                    PriorityLevel.HIGH
+
+                features.daysToDeadline <= 1 ->
+                    PriorityLevel.HIGH
+
+                else ->
+                    PriorityLevel.MEDIUM
+            }
         }
 
         val features = extractFeatures(task, subjectCompletionRate)
@@ -182,14 +197,27 @@ class TaskPriorityModel(private val context: Context) {
         task: TaskEntity,
         subjectCompletionRate: Float = 0.5f
     ): Float {
-        if (trainingData.values.all { it.isEmpty() }) return 0.3f // Low confidence without training
-        
+
+        if (trainingData.values.all { it.isEmpty() }) {
+            return 0.30f
+        }
+
         val features = extractFeatures(task, subjectCompletionRate)
-        val scores = (0..3).map { calculateProbability(features, it) }
+
+        val scores = (0..3).map {
+            calculateProbability(features, it)
+        }
+
         val maxScore = scores.maxOrNull() ?: 0.0
         val sumScores = scores.sum()
-        
-        return if (sumScores > 0) (maxScore / sumScores).toFloat() else 0.3f
+
+        if (sumScores <= 0.0) {
+            return 0.30f
+        }
+
+        return ((maxScore / sumScores) * 0.85)
+            .coerceIn(0.30, 0.95)
+            .toFloat()
     }
 
     /**
@@ -199,7 +227,7 @@ class TaskPriorityModel(private val context: Context) {
         return mapOf(
             "totalTrainingSamples" to trainingData.values.sumOf { it.size },
             "samplesPerPriority" to trainingData.mapKeys { (k, _) -> 
-                PriorityLevel.values().find { it.value == k }?.label ?: "Unknown"
+                PriorityLevel. values().find { it.value == k }?.label ?: "Unknown"
             }.mapValues { it.value.size },
             "isModelTrained" to (trainingData.values.any { it.isNotEmpty() })
         )
