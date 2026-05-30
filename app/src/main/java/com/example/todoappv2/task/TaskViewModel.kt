@@ -26,7 +26,7 @@ class TaskViewModel @Inject constructor (
     private val filterTasks: FilterTaskUseCases,
     private val groupTasks: GroupTaskUseCases,
     private val mapToUi: UiModelUseCase,
-
+    private val mlHelper: MLHelper
 ): ViewModel(){
 
     private val _uiState = MutableStateFlow(TaskUiState(isLoading = true))
@@ -34,14 +34,9 @@ class TaskViewModel @Inject constructor (
 
     init {
         observeTasks()
-        trainModel()
+
     }
-    private fun trainModel(){
-      viewModelScope.launch {
-          val allTasks = _uiState.value.allTasks
-        //  mlHelper.trainModelWithHistoricalData(allTasks,emptyMap())
-      }
-    }
+
 
     private fun observeTasks(){
         viewModelScope.launch {
@@ -68,11 +63,17 @@ class TaskViewModel @Inject constructor (
         
         // 3. Map to UI Model and Group
         val uiTasks = filteredBySearch.map {task->
-          //  val predictedPriority = mlHelper.predictTaskPriority(task,currentState.allTasks)
-         //   val confidence = mlHelper.getPredictionConfidence(task, currentState.allTasks)
+         val prediction = mlHelper.predictTaskPriority(
+             task,
+             currentState.allTasks
+         )
+            val confidence = mlHelper.getPredictionConfidence(
+                task,
+                currentState.allTasks
+            )
             mapToUi(task).copy(
-           //     predictedPriority = predictedPriority.label,
-          //      priorityConfidence = confidence
+                predictedPriority = prediction.label,
+                priorityConfidence = confidence
             )
         }
         val grouped = groupTasks(uiTasks)

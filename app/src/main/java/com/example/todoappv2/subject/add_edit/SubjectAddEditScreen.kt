@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,11 +42,13 @@ fun SubjectAddEditScreen(
         }
     }
     val state = viewModel.uiState.collectAsState().value
-    Column {
-
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) {padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(padding)
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
 
@@ -119,5 +122,7 @@ fun SubjectAddEditScreen(
                 )
             }
         }
+
     }
+
 }

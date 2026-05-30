@@ -35,11 +35,14 @@ fun TaskList(
             item {
                 TaskSectionHeader(
                     title = when (section) {
+                        TaskSection.Completed -> "Completed"
                         TaskSection.Today -> "Today"
                         TaskSection.Overdue -> "Overdue"
                         TaskSection.Upcoming -> "Upcoming"
                         TaskSection.NoDate -> "No Date"
-                    }
+                    },
+                    count = tasks.size
+
                 )
             }
 

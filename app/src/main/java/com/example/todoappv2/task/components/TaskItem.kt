@@ -56,7 +56,10 @@ fun TaskItem(
                         else
                     MaterialTheme.colorScheme.surface)
     ) {
-        val dueLabel = formatDueDateLabel(task.dueDate)
+        val dueLabel =when{
+            task.isCompleted -> "Completed"
+            else -> formatDueDateLabel(task.dueDate)
+        }
         Row(
             modifier = Modifier
                 .combinedClickable(
@@ -119,21 +122,37 @@ fun TaskItem(
                 confidence = task.priorityConfidence,
                 modifier = Modifier.padding(end = 8.dp)
             )
-            val bargeColor = when(dueLabel){
-                "Overdue" -> MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
-                "Today" -> MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                else -> MaterialTheme.colorScheme.surfaceVariant
+            val badgeColor = when {
+                task.isCompleted ->
+                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
+
+                dueLabel == "Overdue" ->
+                    MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
+
+                dueLabel == "Today" ->
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+
+                else ->
+                    MaterialTheme.colorScheme.surfaceVariant
             }
-            val textColor = when(dueLabel) {
-                "Overdue" -> MaterialTheme.colorScheme.error
-                "Today" -> MaterialTheme.colorScheme.primary
-                else -> MaterialTheme.colorScheme.surfaceVariant
+            val textColor = when {
+                task.isCompleted ->
+                    MaterialTheme.colorScheme.secondary
+
+                dueLabel == "Overdue" ->
+                    MaterialTheme.colorScheme.error
+
+                dueLabel == "Today" ->
+                    MaterialTheme.colorScheme.primary
+
+                else ->
+                    MaterialTheme.colorScheme.onSurfaceVariant
             }
             if (dueLabel != null){
                 Text(
                     text = dueLabel,
                     modifier = Modifier.background(
-                        color = bargeColor,
+                        color = badgeColor,
                         shape = RoundedCornerShape(50.dp)
                     )
                         .padding(horizontal = 10.dp, vertical = 4.dp),
