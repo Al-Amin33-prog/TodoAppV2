@@ -30,7 +30,7 @@ fun AppTopBar(
                IconButton(onClick = onBackClick) {
                    Icon(
                        painter = painterResource(R.drawable.arrow_back_24px__1_),
-                       contentDescription = "Back"
+                       contentDescription = "back"
                    )
                }
            }
