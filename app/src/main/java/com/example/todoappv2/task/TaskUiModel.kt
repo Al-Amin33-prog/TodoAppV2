@@ -12,5 +12,24 @@ class TaskUiModel (
     val dueDate: Long?,
     val dueLabel: String?,
     val isOverDue: Boolean,
-    val createdAt: Long
+    val createdAt: Long,
+    val predictedPriority: String = "Medium",
+    val priorityConfidence: Float = 0.5f
+)
+fun TaskUiModel.copy(
+    id: Long = this.id,
+    predictedPriority: String = this.predictedPriority,
+    priorityConfidence: Float = this.priorityConfidence
+) = TaskUiModel(
+    id = id,
+    predictedPriority = predictedPriority,
+    priorityConfidence = priorityConfidence,
+    subjectId = subjectId,
+    title = title,
+    description = description,
+    isCompleted = isCompleted,
+    dueDate = dueDate,
+    dueLabel = dueLabel,
+    isOverDue = isOverDue,
+    createdAt = createdAt
 )

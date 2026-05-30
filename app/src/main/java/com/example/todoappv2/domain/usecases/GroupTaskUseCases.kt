@@ -3,6 +3,7 @@ package com.example.todoappv2.domain.usecases
 
 import com.example.todoappv2.task.TaskUiModel
 import com.example.todoappv2.task.components.TaskSection
+
 import javax.inject.Inject
 
 class GroupTaskUseCases  @Inject
@@ -12,6 +13,7 @@ constructor(){
         val now = System.currentTimeMillis()
         return tasks.groupBy { task ->
             when{
+                task.isCompleted -> TaskSection.Completed
                 task.dueDate == null ->
                     TaskSection.NoDate
                 task.dueDate < now && !task.isCompleted ->

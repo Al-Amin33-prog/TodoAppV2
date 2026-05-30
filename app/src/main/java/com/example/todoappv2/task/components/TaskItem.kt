@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.example.todoappv2.core.util.formatDueDateLabel
 import com.example.todoappv2.task.TaskUiModel
+import com.example.todoappv2.ml.component.PriorityBadge
 
 @Composable
 fun TaskItem(
@@ -55,7 +56,10 @@ fun TaskItem(
                         else
                     MaterialTheme.colorScheme.surface)
     ) {
-        val dueLabel = formatDueDateLabel(task.dueDate)
+        val dueLabel =when{
+            task.isCompleted -> "Completed"
+            else -> formatDueDateLabel(task.dueDate)
+        }
         Row(
             modifier = Modifier
                 .combinedClickable(
@@ -113,21 +117,42 @@ fun TaskItem(
                     )
                 }
             }
-            val bargeColor = when(dueLabel){
-                "Overdue" -> MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
-                "Today" -> MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                else -> MaterialTheme.colorScheme.surfaceVariant
+            PriorityBadge(
+                priority = task.predictedPriority,
+                confidence = task.priorityConfidence,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            val badgeColor = when {
+                task.isCompleted ->
+                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
+
+                dueLabel == "Overdue" ->
+                    MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
+
+                dueLabel == "Today" ->
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+
+                else ->
+                    MaterialTheme.colorScheme.surfaceVariant
             }
-            val textColor = when(dueLabel) {
-                "Overdue" -> MaterialTheme.colorScheme.error
-                "Today" -> MaterialTheme.colorScheme.primary
-                else -> MaterialTheme.colorScheme.surfaceVariant
+            val textColor = when {
+                task.isCompleted ->
+                    MaterialTheme.colorScheme.secondary
+
+                dueLabel == "Overdue" ->
+                    MaterialTheme.colorScheme.error
+
+                dueLabel == "Today" ->
+                    MaterialTheme.colorScheme.primary
+
+                else ->
+                    MaterialTheme.colorScheme.onSurfaceVariant
             }
             if (dueLabel != null){
                 Text(
                     text = dueLabel,
                     modifier = Modifier.background(
-                        color = bargeColor,
+                        color = badgeColor,
                         shape = RoundedCornerShape(50.dp)
                     )
                         .padding(horizontal = 10.dp, vertical = 4.dp),

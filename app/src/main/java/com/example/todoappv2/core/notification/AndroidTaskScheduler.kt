@@ -5,33 +5,29 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import com.example.todoappv2.data.local.entity.TaskEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class TaskReminderSchedule @Inject constructor (
-   @ApplicationContext private val context: Context
-){
-    private val alarmManager =
-        context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+class AndroidTaskScheduler @Inject constructor(
+    @ApplicationContext private val context: Context
+) : TaskScheduler {
 
-    fun scheduleTaskReminder(task: TaskEntity){
+    private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+    override fun schedule(task: TaskEntity) {
         if (task.dueDate == null) return
 
         // Android 12+ Exact Alarm check
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (!alarmManager.canScheduleExactAlarms()) {
-                Log.e("TaskReminderSchedule", "Permission not granted to schedule exact alarms")
                 return
             }
         }
 
-        val intent = Intent(context, TaskReminderReceiver::class.java).apply{
-            putExtra("task_title", task.title)
-            putExtra("task_id", task.id)
+        val intent = Intent(context, TaskReminderReceiver::class.java).apply {
+            putExtra(EXTRA_TASK_TITLE, task.title)
+            putExtra(EXTRA_TASK_ID, task.id)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -41,18 +37,14 @@ class TaskReminderSchedule @Inject constructor (
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        try {
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                task.dueDate,
-                pendingIntent
-            )
-        } catch (e: SecurityException) {
-            Log.e("TaskReminderSchedule", "SecurityException while scheduling alarm", e)
-        }
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            task.dueDate,
+            pendingIntent
+        )
     }
 
-    fun cancelTaskReminder(taskId: Long){
+    override fun cancel(taskId: Long) {
         val intent = Intent(context, TaskReminderReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -61,5 +53,10 @@ class TaskReminderSchedule @Inject constructor (
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(pendingIntent)
+    }
+
+    companion object {
+        const val EXTRA_TASK_TITLE = "extra_task_title"
+        const val EXTRA_TASK_ID = "extra_task_id"
     }
 }

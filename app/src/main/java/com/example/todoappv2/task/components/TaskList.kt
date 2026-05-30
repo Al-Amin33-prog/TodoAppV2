@@ -1,12 +1,18 @@
 package com.example.todoappv2.task.components
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import com.example.todoappv2.task.TaskUiModel
 
 @Composable
@@ -21,6 +27,7 @@ fun TaskList(
     onStartSelection: (Long) -> Unit,
     onToggleSelection: (Long) -> Unit
 ) {
+
     val scope = rememberCoroutineScope()
 
     LazyColumn {
@@ -28,11 +35,14 @@ fun TaskList(
             item {
                 TaskSectionHeader(
                     title = when (section) {
+                        TaskSection.Completed -> "Completed"
                         TaskSection.Today -> "Today"
                         TaskSection.Overdue -> "Overdue"
                         TaskSection.Upcoming -> "Upcoming"
                         TaskSection.NoDate -> "No Date"
-                    }
+                    },
+                    count = tasks.size
+
                 )
             }
 

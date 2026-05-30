@@ -3,11 +3,13 @@ package com.example.todoappv2.task
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoappv2.core.notification.TaskReminderSchedule
+import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.data.repository.AppRepository
 import com.example.todoappv2.domain.usecases.FilterTaskUseCases
 import com.example.todoappv2.domain.usecases.GetTaskUseCases
 import com.example.todoappv2.domain.usecases.GroupTaskUseCases
 import com.example.todoappv2.domain.usecases.UiModelUseCase
+import com.example.todoappv2.ml.MLHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +25,8 @@ class TaskViewModel @Inject constructor (
     private val getTasks: GetTaskUseCases,
     private val filterTasks: FilterTaskUseCases,
     private val groupTasks: GroupTaskUseCases,
-    private val mapToUi: UiModelUseCase
+    private val mapToUi: UiModelUseCase,
+    private val mlHelper: MLHelper
 ): ViewModel(){
 
     private val _uiState = MutableStateFlow(TaskUiState(isLoading = true))
@@ -31,7 +34,9 @@ class TaskViewModel @Inject constructor (
 
     init {
         observeTasks()
+
     }
+
 
     private fun observeTasks(){
         viewModelScope.launch {
@@ -57,7 +62,20 @@ class TaskViewModel @Inject constructor (
         }
         
         // 3. Map to UI Model and Group
-        val uiTasks = filteredBySearch.map { mapToUi(it) }
+        val uiTasks = filteredBySearch.map {task->
+         val prediction = mlHelper.predictTaskPriority(
+             task,
+             currentState.allTasks
+         )
+            val confidence = mlHelper.getPredictionConfidence(
+                task,
+                currentState.allTasks
+            )
+            mapToUi(task).copy(
+                predictedPriority = prediction.label,
+                priorityConfidence = confidence
+            )
+        }
         val grouped = groupTasks(uiTasks)
         
         _uiState.update { 
@@ -66,6 +84,20 @@ class TaskViewModel @Inject constructor (
                 visibleTasks = uiTasks,
                 groupedTasks = grouped
             )
+        }
+    }
+    fun onTaskSaved(task: TaskEntity){
+        viewModelScope.launch {
+            refreshUiState()
+        }
+    }
+    fun onUserSetPriority(taskId: Long,priorityLevel: Int){
+        viewModelScope.launch {
+            val task = _uiState.value.allTasks.find { it.id == taskId }
+            task?.let{
+           //     mlHelper.feedbackTask(task,priorityLevel,_uiState.value.allTasks)
+                refreshUiState()
+            }
         }
     }
 

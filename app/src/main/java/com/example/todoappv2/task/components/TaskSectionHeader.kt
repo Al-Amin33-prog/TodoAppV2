@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TaskSectionHeader(
     title: String,
+    count: Int
 ){
     Text(
         text = title,
