@@ -70,7 +70,7 @@ fun SubjectScreen(
             Column(modifier = Modifier.fillMaxSize().padding(padding)) {
                 OutlinedTextField(
                     value = state.searchQuery,
-                    shape = RoundedCornerShape(24.dp),
+                    shape = RoundedCornerShape(16.dp),
                     onValueChange = { viewModel.onEvent(SubjectEvent.SearchQueryChange(it)) },
                     modifier = Modifier
                         .fillMaxWidth()
