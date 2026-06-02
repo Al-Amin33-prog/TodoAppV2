@@ -41,6 +41,7 @@ class TaskViewModel @Inject constructor (
     private fun observeTasks(){
         viewModelScope.launch {
             getTasks().collect { tasks ->
+                mlHelper.initializeModel(tasks)
                 _uiState.update { it.copy(allTasks = tasks) }
                 refreshUiState()
             }
@@ -62,15 +63,10 @@ class TaskViewModel @Inject constructor (
         }
         
         // 3. Map to UI Model and Group
-        val uiTasks = filteredBySearch.map {task->
-         val prediction = mlHelper.predictTaskPriority(
-             task,
-             currentState.allTasks
-         )
-            val confidence = mlHelper.getPredictionConfidence(
-                task,
-                currentState.allTasks
-            )
+        val uiTasks = filteredBySearch.map { task ->
+            val prediction = mlHelper.predictTaskPriority(task, currentState.allTasks)
+            val confidence = mlHelper.getPredictionConfidence(task, currentState.allTasks)
+
             mapToUi(task).copy(
                 predictedPriority = prediction.label,
                 priorityConfidence = confidence
@@ -95,7 +91,7 @@ class TaskViewModel @Inject constructor (
         viewModelScope.launch {
             val task = _uiState.value.allTasks.find { it.id == taskId }
             task?.let{
-           //     mlHelper.feedbackTask(task,priorityLevel,_uiState.value.allTasks)
+              mlHelper.feedbackTask(task,priorityLevel,_uiState.value.allTasks)
                 refreshUiState()
             }
         }
