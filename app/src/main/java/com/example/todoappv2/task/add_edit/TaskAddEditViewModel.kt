@@ -56,6 +56,10 @@ class TaskAddEditViewModel @Inject constructor(
         } else if (subjectId != null) {
             loadSubject(subjectId)
         }
+        viewModelScope.launch {
+            val allTasks = repository.getAllTasks().first()
+            mlHelper.initializeModel(allTasks)
+        }
     }
     private fun validate(state: TaskAddEditUiState): String?{
         return when{
@@ -159,7 +163,8 @@ class TaskAddEditViewModel @Inject constructor(
                     title = state.title.trim(),
                     dueDate = state.dueDate,
                     description = state.description,
-                    isCompleted = state.isCompleted
+                    isCompleted = state.isCompleted,
+                    priority = state.priority
                 )
                 val savedId: Long = if (state.isEditing) {
                     repository.updateTask(entity)

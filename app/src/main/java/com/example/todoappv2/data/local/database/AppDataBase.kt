@@ -16,7 +16,7 @@ import com.example.todoappv2.data.local.entity.TaskEntity
         SubjectEntity::class,
         TaskEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 
 )
