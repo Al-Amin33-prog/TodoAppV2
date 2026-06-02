@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -53,6 +54,19 @@ fun SubjectScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     var recentlyDeletedSubject by remember { mutableStateOf<SubjectEntity?>(null) }
+    LaunchedEffect(recentlyDeletedSubject) {
+        recentlyDeletedSubject?.let { subject ->
+            val result = snackbarHostState.showSnackbar(
+                message = "Subject deleted",
+                actionLabel = "Undo",
+                duration = SnackbarDuration.Short
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                viewModel.onEvent(SubjectEvent.RestoreSubject(subject))
+            }
+            recentlyDeletedSubject = null
+        }
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -117,26 +131,10 @@ fun SubjectScreen(
                     else -> {
                         SubjectList(
                             subjects = state.subjects,
-                            onDelete = {subject->
+                            onDelete = { subject ->
 
-                                      recentlyDeletedSubject = subject
-                                coroutineScope.launch {
-                                    var result =   snackbarHostState.showSnackbar(
-                                        "deleted",
-                                        actionLabel = "Undo"
-                                    )
-                                    if (result == SnackbarResult.ActionPerformed){
-                                        viewModel.onEvent(
-                                            SubjectEvent.RestoreSubject(subject)
-                                        )
-                                    }
-                                }
-                                viewModel.onEvent(
-                                    SubjectEvent.DeleteSubject(subject)
-                                )
-
-
-
+                                recentlyDeletedSubject = subject
+                                viewModel.onEvent(SubjectEvent.DeleteSubject(subject))
                             },
                             onSubjectClick = { onOpenSubject(it.id) },
                             onEditSubject = { onEditSubject(it.id) },
