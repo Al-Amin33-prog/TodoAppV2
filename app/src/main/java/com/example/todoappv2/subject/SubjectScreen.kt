@@ -54,19 +54,26 @@ fun SubjectScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     var recentlyDeletedSubject by remember { mutableStateOf<SubjectEntity?>(null) }
+
     LaunchedEffect(recentlyDeletedSubject) {
         recentlyDeletedSubject?.let { subject ->
+            // Wait a bit for deletion to complete
             val result = snackbarHostState.showSnackbar(
                 message = "Subject deleted",
                 actionLabel = "Undo",
-                duration = SnackbarDuration.Short
+                duration = SnackbarDuration.Long  // Give user more time
             )
+
             if (result == SnackbarResult.ActionPerformed) {
+                // User clicked Undo
                 viewModel.onEvent(SubjectEvent.RestoreSubject(subject))
             }
+
+            // Reset the state
             recentlyDeletedSubject = null
         }
     }
+
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }

@@ -9,6 +9,8 @@ import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.data.repository.AppRepository
 import com.example.todoappv2.ml.MLHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +26,7 @@ class TaskAddEditViewModel @Inject constructor(
     private val repository: AppRepository,
     private val reminderSchedule: TaskReminderSchedule,
     private val mlHelper: MLHelper,
+    private var predictionJob: Job? = null,
     savedStateHandle: SavedStateHandle
 ): ViewModel(){
 
@@ -98,7 +101,11 @@ class TaskAddEditViewModel @Inject constructor(
         when(event){
             is TaskAddEditEvent.TitleChanged -> {
                 _uiState.value = _uiState.value.copy(title = event.value)
-                predictPriority()
+                predictionJob?.cancel()
+                predictionJob = viewModelScope.launch {
+                    delay(500)  // Wait 500ms for user to stop typing
+                    predictPriority()
+                }
             }
             is TaskAddEditEvent.DescriptionChanged -> {
                 _uiState.value = _uiState.value.copy(description = event.value)
@@ -220,54 +227,72 @@ class TaskAddEditViewModel @Inject constructor(
     }
     private fun predictPriority() {
         viewModelScope.launch {
-
             val state = _uiState.value
 
+            // ✅ FIXED: Set loading state properly
+            _uiState.update {
+                it.copy(isPredictionLoading = true)
+            }
+
+            // Check if we have enough data to predict
             if (state.title.isBlank() || state.subjectId == null) {
+                // ✅ FIXED: Reset to default when conditions aren't met
                 _uiState.update {
                     it.copy(
                         predictedPriority = "Medium",
                         predictionConfidence = 0.3f,
-                        isPredictionLoading = true
+                        isPredictionLoading = false,  // ✅ Set to FALSE
+
+                        // Reset priority only if NOT overridden
+                        priority = if (!it.isPriorityOverridden) "Medium" else it.priority
                     )
-
-            }
+                }
                 return@launch
-
-
             }
 
-            val allTasks = repository.getAllTasks().first()
+            try {
+                // Get all tasks for training context
+                val allTasks = repository.getAllTasks().first()
 
-            val tempTask = TaskEntity(
-                id = 0,
-                subjectId = state.subjectId,
-                title = state.title,
-                description = state.description,
-                dueDate = state.dueDate,
-                isCompleted = false,
-                createdAt = System.currentTimeMillis()
-            )
-
-            val prediction =
-                mlHelper.predictTaskPriority(tempTask, allTasks)
-
-            val confidence =
-                mlHelper.getPredictionConfidence(tempTask, allTasks)
-
-            _uiState.update {
-                it.copy(
-                    predictedPriority = prediction.label,
-                    predictionConfidence = confidence,
-                    isPredictionLoading = false,
-
-                    // only auto-fill if user has NOT overridden
-                    priority =
-                        if (!it.isPriorityOverridden)
-                            prediction.label
-                        else
-                            it.priority
+                // Create temporary task with current form values
+                val tempTask = TaskEntity(
+                    id = 0,
+                    subjectId = state.subjectId,
+                    title = state.title,
+                    description = state.description,
+                    dueDate = state.dueDate,
+                    isCompleted = false,
+                    createdAt = System.currentTimeMillis()
                 )
+
+                // Get prediction from ML model
+                val prediction = mlHelper.predictTaskPriority(tempTask, allTasks)
+                val confidence = mlHelper.getPredictionConfidence(tempTask, allTasks)
+
+                // ✅ FIXED: Update UI with new prediction
+                _uiState.update {
+                    it.copy(
+                        predictedPriority = prediction.label,
+                        predictionConfidence = confidence,
+                        isPredictionLoading = false,  // ✅ Set to FALSE after prediction
+
+                        // Only auto-fill priority if user hasn't overridden
+                        priority = if (!it.isPriorityOverridden) {
+                            prediction.label
+                        } else {
+                            it.priority
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                // Handle error gracefully
+                _uiState.update {
+                    it.copy(
+                        isPredictionLoading = false,
+                        predictedPriority = "Medium",
+                        predictionConfidence = 0.3f
+                    )
+                }
             }
         }
     }
