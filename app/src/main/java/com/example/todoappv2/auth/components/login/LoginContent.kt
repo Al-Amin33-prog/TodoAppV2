@@ -208,7 +208,7 @@ fun LoginContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.Center
             ) {
                 TextButton(
                     onClick = onNavigateToRegister,
