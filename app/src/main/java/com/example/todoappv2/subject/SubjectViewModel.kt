@@ -50,6 +50,7 @@ class SubjectViewModel @Inject constructor(
             )
         }
     }
+
     
     fun onEvent(event: SubjectEvent){
         when(event){
@@ -100,6 +101,16 @@ class SubjectViewModel @Inject constructor(
             is SubjectEvent.SelectAllSubjects -> {
                 val allIds = _uiState.value.subjects.map { it.id }.toSet()
                 _uiState.update { it.copy(selectedSubjectIds = allIds) }
+            }
+            is SubjectEvent.DeselectAllSubjects -> {
+                _uiState.update {
+                    it.copy(
+                        selectedSubjectIds = emptySet()
+                    )
+                }
+            }
+            is SubjectEvent.RestoreSubject -> {
+               viewModelScope.launch { repository.insertSubject(event.subject) }
             }
         }
     }
