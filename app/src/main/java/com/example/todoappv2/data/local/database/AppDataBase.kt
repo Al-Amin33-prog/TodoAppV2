@@ -28,9 +28,9 @@ abstract class AppDataBase : RoomDatabase(){
 
     companion object {
         private val MIGRATION_1_TO_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 // Add the new priority column with default value "Medium"
-                database.execSQL("ALTER TABLE tasks ADD COLUMN priority TEXT NOT NULL DEFAULT 'Medium'")
+                db.execSQL("ALTER TABLE tasks ADD COLUMN priority TEXT NOT NULL DEFAULT 'Medium'")
             }
         }
 

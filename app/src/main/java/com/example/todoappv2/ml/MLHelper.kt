@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.data.repository.AppRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,9 +23,21 @@ class MLHelper @Inject constructor(
     suspend fun initializeModel(allTasks: List<TaskEntity>) {
         if (isModelInitialized) return
 
-        trainModelWithHistoricalData(allTasks,
-            allTasks.associate { it.id to getPriorityValue(it) }
-        )
+        try {
+            val previousTasks = repository.getAllTasks().first()
+
+            trainModelWithHistoricalData(
+                previousTasks,
+                previousTasks.associate { it.id to getPriorityValue(it) }
+            )
+        } catch (e: Exception) {
+            // If loading fails, train with current tasks only
+            trainModelWithHistoricalData(
+                allTasks,
+                allTasks.associate { it.id to getPriorityValue(it) }
+            )
+        }
+
         isModelInitialized = true
     }
 
