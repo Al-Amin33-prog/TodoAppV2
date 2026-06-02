@@ -26,7 +26,7 @@ class TaskAddEditViewModel @Inject constructor(
     private val repository: AppRepository,
     private val reminderSchedule: TaskReminderSchedule,
     private val mlHelper: MLHelper,
-    private var predictionJob: Job? = null,
+   // private var predictionJob: Job? = null,
     savedStateHandle: SavedStateHandle
 ): ViewModel(){
 
@@ -35,6 +35,8 @@ class TaskAddEditViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(TaskAddEditUiState())
     val uiState: StateFlow<TaskAddEditUiState> = _uiState.asStateFlow()
+    // ✅ CORRECT - Job is created internally
+    private var predictionJob: Job? = null
     
     val subjects = repository.getSubjects()
     
