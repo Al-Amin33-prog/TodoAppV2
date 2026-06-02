@@ -62,11 +62,12 @@ fun AppNavGraph(
                 authViewModel = authViewModel,
                 onNavigateToRegister = {
                     rootNavController.navigate(Routes.REGISTER)
+
                 },
                 onLoginSuccess = {
                     rootNavController.navigate(
                         Routes.APP_SHELL
-                    ){
+                    ) {
                         popUpTo(Routes.LOGIN) {
                             inclusive = true
                         }
@@ -74,11 +75,13 @@ fun AppNavGraph(
                 },
 
 
-
                 onForgotPassword = {
                     rootNavController.navigate(Routes.RESET_PASSWORD)
                 },
-
+                isDarkMode = isDarkMode,
+                onThemeChange = {
+                    onThemeChange(!isDarkMode)
+                },
             )
         }
         composable(Routes.REGISTER){
@@ -86,13 +89,17 @@ fun AppNavGraph(
            RegisterScreen(
                authViewModel = authViewModel,
                onBackToLogin = {
-                   rootNavController.popBackStack()
+                   rootNavController.navigate(Routes.LOGIN){
+                       popUpTo(Routes.LOGIN)
+                       launchSingleTop = true
+                   }
                },
                onRegisterSuccess = {
                    rootNavController.navigate(Routes.EMAIL_VERIFICATION)
                }
            )
         }
+
         composable(Routes.LOGOUT){
             val authViewModel: AuthViewModel = hiltViewModel()
             LaunchedEffect(Unit) {
