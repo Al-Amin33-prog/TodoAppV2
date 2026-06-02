@@ -27,7 +27,8 @@ fun SubjectTopBar(
     isAllSelected: Boolean,
     onClearSelection: () -> Unit,
     onSelectAll: () -> Unit,
-    onDeleteSelected: () -> Unit
+    onDeleteSelected: () -> Unit,
+    onDeselectedSubject: () -> Unit
 ){
     // This bar ONLY shows during selection mode. 
     // The "Subjects" title is handled by the AppNavigationShell.
@@ -56,13 +57,22 @@ fun SubjectTopBar(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
-            IconButton(onClick = onSelectAll) {
+            IconButton(onClick = {
+                if (isAllSelected)
+                    onDeselectedSubject()
+                else onSelectAll()
+            }) {
                 Icon(
+
                     painter = painterResource(
-                        if (isAllSelected) R.drawable.ic_delete_24px // Replace with an unselect icon if you have one
-                        else R.drawable.select_all_24px
+                        if (isAllSelected)
+                     R.drawable.select_all_24px
+                        else R.drawable.deselect_24px
                     ),
-                    contentDescription = "Select All",
+                    contentDescription =
+                        if (isAllSelected)
+                        "DeSelect All"
+                    else "Select All",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }

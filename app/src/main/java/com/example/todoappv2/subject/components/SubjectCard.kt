@@ -135,7 +135,7 @@ fun SubjectCard(
                 ) {
                     IconButton(
                         onClick = onDelete,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(48.dp)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_delete_24px),

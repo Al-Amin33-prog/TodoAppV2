@@ -250,9 +250,13 @@ fun TaskAddEditScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                OutlinedButton(
-                    onClick = onCancel,
 
+                OutlinedButton(
+                    enabled = !state.isSaving,
+                    onClick = onCancel,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(52.dp),
                     shape = RoundedCornerShape(50)
                 ) {
                     Text(
@@ -260,14 +264,23 @@ fun TaskAddEditScreen(
                         style = MaterialTheme.typography.labelLarge
                     )
                 }
+
                 Button(
-                    onClick = { viewModel.onEvent(TaskAddEditEvent.SaveTask) },
+                    onClick = {
+                        viewModel.onEvent(TaskAddEditEvent.SaveTask)
+                    },
                     enabled = !state.isSaving,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(52.dp),
                     shape = RoundedCornerShape(50)
                 ) {
                     Text(
-                        text = if (state.isSaving)"Saving..." else stringResource(R.string.save),
+                        text =
+                            if (state.isSaving)
+                                "Saving..."
+                            else
+                                stringResource(R.string.save),
                         style = MaterialTheme.typography.labelLarge
                     )
                 }

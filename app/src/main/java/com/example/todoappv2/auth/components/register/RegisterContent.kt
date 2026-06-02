@@ -14,6 +14,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,113 +52,119 @@ fun RegisterContent(
             onRegisterSuccess()
         }
     }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Create Account",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        OutlinedTextField(
-            shape = RoundedCornerShape(16.dp),
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Full Name", style= MaterialTheme.typography.labelLarge) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            shape = RoundedCornerShape(16.dp),
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email", style= MaterialTheme.typography.labelLarge) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            shape = RoundedCornerShape(16.dp),
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password", style= MaterialTheme.typography.labelLarge) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = if (passwordVisible)
-                VisualTransformation.None
-            else
-                PasswordVisualTransformation(),
-            trailingIcon = {
-                TextButton(
-                    onClick = {passwordVisible = !passwordVisible}
-                ) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (passwordVisible)R.drawable.visibility_off_24px
-                            else R.drawable.visibility_24px
-                        ),
-                        contentDescription = "Toggle Password Visibility"
-                    )
-                }
-            }
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = {
-               if (
-                   name.isNotBlank() &&
-                   email.isNotBlank() &&
-                   password.isNotBlank()
-               ){
-                   onEvent(
-                       AuthEvent.Register(
-                           name = name.trim(),
-                           email = email.trim(),
-                           password = password.trim()
-                       )
-                   )
-               }
-            },
-            enabled = !state.isLoading,
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) {innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text("Sign Up")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextButton(onClick = onBackToLogin) {
-            Text("Already have an account? Back To Login")
-        }
-
-        if (state.isLoading) {
-            Spacer(modifier = Modifier.height(8.dp))
-            CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
-        }
-
-        state.error?.let {
             Text(
-                text = it,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 16.dp)
+                text = "Create Account",
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.primary
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            OutlinedTextField(
+                shape = RoundedCornerShape(16.dp),
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Full Name", style= MaterialTheme.typography.labelLarge) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                shape = RoundedCornerShape(16.dp),
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email", style= MaterialTheme.typography.labelLarge) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                shape = RoundedCornerShape(16.dp),
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password", style= MaterialTheme.typography.labelLarge) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                visualTransformation = if (passwordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
+                trailingIcon = {
+                    TextButton(
+                        onClick = {passwordVisible = !passwordVisible}
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id = if (passwordVisible)R.drawable.visibility_off_24px
+                                else R.drawable.visibility_24px
+                            ),
+                            contentDescription = "Toggle Password Visibility"
+                        )
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    if (
+                        name.isNotBlank() &&
+                        email.isNotBlank() &&
+                        password.isNotBlank()
+                    ){
+                        onEvent(
+                            AuthEvent.Register(
+                                name = name.trim(),
+                                email = email.trim(),
+                                password = password.trim()
+                            )
+                        )
+                    }
+                },
+                enabled = !state.isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+
+                ) {
+                Text("Sign Up")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            TextButton(onClick = onBackToLogin) {
+                Text("Already have an account? Back To Login")
+            }
+
+            if (state.isLoading) {
+                Spacer(modifier = Modifier.height(8.dp))
+                CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+            }
+
+            state.error?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
         }
     }
+
+
 }

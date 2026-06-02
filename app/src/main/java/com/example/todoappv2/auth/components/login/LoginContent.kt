@@ -29,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -41,6 +40,8 @@ import com.example.todoappv2.auth.AuthUiState
 
 @Composable
 fun LoginContent(
+    isDarkMode: Boolean,
+    onThemeChange:(Boolean) -> Unit,
     state: AuthUiState,
     onEvent: (AuthEvent) -> Unit,
     onNavigateToRegister: () -> Unit,
@@ -63,6 +64,30 @@ fun LoginContent(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(
+                    onClick = {
+                        onThemeChange(isDarkMode)
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            if (isDarkMode)
+                            R.drawable.brightness_7_24px
+                            else
+                            R.drawable.dark_mode_24px
+                        ),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "Theme",
+
+
+                    )
+                }
+            }
             Text(
                 text = stringResource(R.string.login_welcome),
                 style = MaterialTheme.typography.headlineLarge,
@@ -80,7 +105,13 @@ fun LoginContent(
             OutlinedTextField(
                 shape = RoundedCornerShape(16.dp),
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    email = it
+                    if (state.error != null){
+                        onEvent(AuthEvent.ClearError)
+                    }
+                                },
+
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.mail_24px),
@@ -172,16 +203,23 @@ fun LoginContent(
                     style = MaterialTheme.typography.labelLarge
                 )
             }
-
-            TextButton(
-                onClick = onNavigateToRegister,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
             ) {
-                Text(
-                    text = stringResource(R.string.register_prompt),
-                    style = MaterialTheme.typography.bodyMedium 
-                )
+                TextButton(
+                    onClick = onNavigateToRegister,
+                ) {
+                    Text(
+                        text = stringResource(R.string.register_prompt),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
             }
+
+
 
             if (state.isLoading) {
                 CircularProgressIndicator(

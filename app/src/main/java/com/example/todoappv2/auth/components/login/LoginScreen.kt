@@ -17,7 +17,10 @@ fun LoginScreen(
     authViewModel: AuthViewModel,
     onNavigateToRegister: () -> Unit,
     onLoginSuccess: () -> Unit,
-    onForgotPassword: () -> Unit
+    onForgotPassword: () -> Unit,
+    isDarkMode: Boolean,
+    onThemeChange:(Boolean) -> Unit
+
 ){
     val state = authViewModel.uiState.collectAsState().value
     LaunchedEffect(state.isLoggedIn) {
@@ -31,7 +34,9 @@ fun LoginScreen(
         onEvent = { authViewModel.onEvent(it) },
         onNavigateToRegister = onNavigateToRegister,
         onLoginSuccess = onLoginSuccess,
-        onForgotPassword = onForgotPassword
+        onForgotPassword = onForgotPassword,
+        isDarkMode = isDarkMode,
+        onThemeChange = onThemeChange,
     )
 }
 
@@ -46,7 +51,9 @@ fun LoginScreenPreview() {
             onEvent = {},
             onNavigateToRegister = {},
             onLoginSuccess = {},
-            onForgotPassword = {}
+            onForgotPassword = {},
+            isDarkMode = false,
+            onThemeChange = {}
         )
     }
 }

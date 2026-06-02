@@ -99,7 +99,7 @@ fun HomeScreen(
                 }
                 
                 item {
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
 
                 item {
@@ -110,14 +110,19 @@ fun HomeScreen(
                 }
                 
                 item {
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
                 
                 item {
                     Text(
                         text = "Upcoming Tasks",
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(bottom = 12.dp)
+
                     )
+                }
+                item {
+                    Spacer(modifier =Modifier.height(8.dp))
                 }
                 
                 item {

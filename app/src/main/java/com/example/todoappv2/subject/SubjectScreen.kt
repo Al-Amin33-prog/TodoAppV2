@@ -1,5 +1,6 @@
 package com.example.todoappv2.subject
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -19,9 +20,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,7 +38,9 @@ import com.example.todoappv2.subject.components.SubjectList
 import com.example.todoappv2.subject.components.SubjectProgressBar
 import kotlinx.coroutines.launch
 import com.example.todoappv2.R
+import com.example.todoappv2.data.local.entity.SubjectEntity
 import com.example.todoappv2.subject.components.SubjectTopBar
+import com.example.todoappv2.task.TaskEvent
 
 @Composable
 fun SubjectScreen(
@@ -44,6 +52,7 @@ fun SubjectScreen(
     val state = viewModel.uiState.collectAsState().value
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    var recentlyDeletedSubject by remember { mutableStateOf<SubjectEntity?>(null) }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -62,7 +71,8 @@ fun SubjectScreen(
                     isAllSelected = state.selectedSubjectIds.size == state.subjects.size && state.subjects.isNotEmpty(),
                     onClearSelection = { viewModel.onEvent(SubjectEvent.ClearSelection) },
                     onSelectAll = { viewModel.onEvent(SubjectEvent.SelectAllSubjects) },
-                    onDeleteSelected = { viewModel.onEvent(SubjectEvent.DeleteSelectedSubjects) }
+                    onDeleteSelected = { viewModel.onEvent(SubjectEvent.DeleteSelectedSubjects) },
+                    onDeselectedSubject = {viewModel.onEvent(SubjectEvent.DeselectAllSubjects)}
                 )
             }
 
@@ -107,17 +117,26 @@ fun SubjectScreen(
                     else -> {
                         SubjectList(
                             subjects = state.subjects,
-                            onDelete = { subject ->
+                            onDelete = {subject->
+
+                                      recentlyDeletedSubject = subject
                                 coroutineScope.launch {
-                                    val result = snackbarHostState.showSnackbar(
-                                        message = "Delete ${subject.name}?",
-                                        actionLabel = "Confirm",
-                                        withDismissAction = true
+                                    var result =   snackbarHostState.showSnackbar(
+                                        "deleted",
+                                        actionLabel = "Undo"
                                     )
-                                    if (result == SnackbarResult.ActionPerformed) {
-                                        viewModel.onEvent(SubjectEvent.DeleteSubject(subject))
+                                    if (result == SnackbarResult.ActionPerformed){
+                                        viewModel.onEvent(
+                                            SubjectEvent.RestoreSubject(subject)
+                                        )
                                     }
                                 }
+                                viewModel.onEvent(
+                                    SubjectEvent.DeleteSubject(subject)
+                                )
+
+
+
                             },
                             onSubjectClick = { onOpenSubject(it.id) },
                             onEditSubject = { onEditSubject(it.id) },

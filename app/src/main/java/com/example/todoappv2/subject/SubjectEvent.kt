@@ -14,4 +14,6 @@ sealed class SubjectEvent {
     object ClearSelection : SubjectEvent()
     object DeleteSelectedSubjects : SubjectEvent()
     object SelectAllSubjects : SubjectEvent()
+    data object DeselectAllSubjects:  SubjectEvent()
+    data class RestoreSubject(val subject: SubjectEntity):SubjectEvent()
 }
