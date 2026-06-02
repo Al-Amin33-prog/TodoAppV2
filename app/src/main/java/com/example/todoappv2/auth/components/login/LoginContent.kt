@@ -105,6 +105,7 @@ fun LoginContent(
             OutlinedTextField(
                 shape = RoundedCornerShape(16.dp),
                 value = email,
+                placeholder = {Text(stringResource(R.string.example_email))},
                 onValueChange = {
                     email = it
                     if (state.error != null){
@@ -140,6 +141,7 @@ fun LoginContent(
                 shape = RoundedCornerShape(16.dp),
                 value = password,
                 onValueChange = { password = it },
+                placeholder = {Text(stringResource(R.string._required))},
                 label = { 
                     Text(
                         text = stringResource(R.string.password_label), 

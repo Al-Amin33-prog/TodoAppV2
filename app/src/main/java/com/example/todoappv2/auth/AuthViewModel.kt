@@ -161,6 +161,7 @@ class AuthViewModel @Inject constructor(
             repository.logout()
             sessionManager.clearUser()
             _uiState.value = AuthUiState()
+            _uiState.update { it.copy(isLoggedIn = false) }
         }
     }
 

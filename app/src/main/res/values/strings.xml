@@ -24,6 +24,8 @@
     <string name="reset_password_subtitle">Enter your email to receive a reset link.</string>
     <string name="send_reset_link">Send Reset Link</string>
     <string name="back_to_login">Back to Login</string>
+    <string name="example_email">Example@gmail.com</string>"
+    <string name="_required">*******</string>"
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

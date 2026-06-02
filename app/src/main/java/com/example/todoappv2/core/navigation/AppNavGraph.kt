@@ -22,6 +22,8 @@ import com.example.todoappv2.subject.add_edit.SubjectAddEditViewModel
 import com.example.todoappv2.task.TaskScreen
 import com.example.todoappv2.task.add_edit.TaskAddEditScreen
 import com.example.todoappv2.task.add_edit.TaskAddEditViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.time.delay
 
 @Composable
 fun AppNavGraph(
@@ -103,9 +105,18 @@ fun AppNavGraph(
         composable(Routes.LOGOUT){
             val authViewModel: AuthViewModel = hiltViewModel()
             LaunchedEffect(Unit) {
+                // ✅ FIXED: First trigger logout
                 authViewModel.onEvent(AuthEvent.Logout)
-                rootNavController.navigate(Routes.LOGIN) {
-                    popUpTo(0) { inclusive = true }
+                delay(500)
+                // ✅ FIXED: Listen to logout completion
+                authViewModel.uiState.collect { state ->
+                    // When user is actually cleared, navigate
+                    if (state.user == null && !state.isLoggedIn) {
+                        rootNavController.navigate(Routes.LOGIN) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                        return@collect
+                    }
                 }
             }
         }
