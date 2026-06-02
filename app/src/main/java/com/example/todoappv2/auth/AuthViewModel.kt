@@ -50,26 +50,84 @@ class AuthViewModel @Inject constructor(
             AuthEvent.Logout -> logout()
             is AuthEvent.ResetPassword -> resetPassword(event.email)
             AuthEvent.ResendVerificationEmail -> resendVerificationEmail()
+            AuthEvent.ClearError -> {
+                _uiState.update {
+                    it.copy(error = null)
+                }
+            }
+
         }
     }
 
     private fun login(email: String, password: String) {
+
+        when {
+            email.isBlank() && password.isBlank() -> {
+                _uiState.update {
+                    it.copy(
+                        error = "Email and password cannot be empty"
+                    )
+                }
+                return
+            }
+
+            email.isBlank() -> {
+                _uiState.update {
+                    it.copy(
+                        error = "Email cannot be empty"
+                    )
+                }
+                return
+            }
+
+            password.isBlank() -> {
+                _uiState.update {
+                    it.copy(
+                        error = "Password cannot be empty"
+                    )
+                }
+                return
+            }
+        }
+
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            
+
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    error = null
+                )
+            }
+
             repository.login(email, password).fold(
+
                 onSuccess = { user ->
-                    // Saving the user will trigger the observeAuthState collection
                     sessionManager.saveUser(user)
                 },
+
                 onFailure = { error ->
-                    val message = when(error) {
-                        is FirebaseAuthInvalidCredentialsException -> "Incorrect password"
-                        is FirebaseAuthInvalidUserException -> "User not found"
-                        is FirebaseNetworkException -> "No internet connection"
-                        else -> error.message ?: "Something went wrong"
+
+                    val message = when (error) {
+
+                        is FirebaseAuthInvalidCredentialsException ->
+                            "Incorrect password"
+
+                        is FirebaseAuthInvalidUserException ->
+                            "User not found"
+
+                        is FirebaseNetworkException ->
+                            "No internet connection"
+
+                        else ->
+                            error.message ?: "Something went wrong"
                     }
-                    _uiState.update { it.copy(isLoading = false, error = message) }
+
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = message
+                        )
+                    }
                 }
             )
         }

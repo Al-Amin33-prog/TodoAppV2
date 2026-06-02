@@ -16,4 +16,5 @@ sealed class AuthEvent {
 
     ): AuthEvent()
     object ResendVerificationEmail : AuthEvent()
+    object ClearError: AuthEvent()
 }
