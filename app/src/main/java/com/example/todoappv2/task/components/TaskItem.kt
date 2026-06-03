@@ -118,7 +118,7 @@ fun TaskItem(
                 }
             }
             PriorityBadge(
-                priority = task.predictedPriority,
+                priority = task.priority,
                 confidence = task.priorityConfidence,
                 modifier = Modifier.padding(end = 8.dp)
             )

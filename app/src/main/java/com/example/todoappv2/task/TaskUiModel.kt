@@ -13,6 +13,7 @@ class TaskUiModel (
     val dueLabel: String?,
     val isOverDue: Boolean,
     val createdAt: Long,
+    val priority: String,
     val predictedPriority: String = "Medium",
     val priorityConfidence: Float = 0.5f
 )
@@ -31,5 +32,6 @@ fun TaskUiModel.copy(
     dueDate = dueDate,
     dueLabel = dueLabel,
     isOverDue = isOverDue,
-    createdAt = createdAt
+    createdAt = createdAt,
+    priority = priority
 )

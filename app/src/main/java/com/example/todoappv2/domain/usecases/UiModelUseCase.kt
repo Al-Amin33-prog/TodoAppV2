@@ -37,7 +37,8 @@ class UiModelUseCase @Inject constructor() {
             subjectId = task.subjectId,
             createdAt = task.createdAt,
             predictedPriority = "Medium",
-            priorityConfidence = 0.5f
+            priorityConfidence = 0.5f,
+            priority = task.priority
         )
     }
 }

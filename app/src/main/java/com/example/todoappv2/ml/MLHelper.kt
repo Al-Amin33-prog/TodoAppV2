@@ -1,6 +1,7 @@
 package com.example.todoappv2.ml
 
 import android.content.Context
+import android.util.Log
 
 import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.data.repository.MlRepository
@@ -32,6 +33,10 @@ class MLHelper @Inject constructor(
 
             val savedSamples =
                 mlRepository.getTrainingSamples()
+            Log.d("ML_INIT","Loaded${savedSamples.size}")
+            savedSamples.forEach {
+                Log.d("ML_INIT","${it.taskTitle} -> ${it.priorityLevel}")
+            }
 
             savedSamples.forEach { sample ->
 
@@ -65,6 +70,7 @@ class MLHelper @Inject constructor(
     ): TaskPriorityModel.PriorityLevel {
         val completionRate = preprocessor.calculateSubjectCompletionRate(task.subjectId, allTasks)
         return priorityModel.predictPriority(task, completionRate)
+
     }
 
     fun getPredictionConfidence(
@@ -79,6 +85,7 @@ class MLHelper @Inject constructor(
         task: TaskEntity,
         actualPriority: Int,
         allTasks: List<TaskEntity>
+
     ) {
 
         val completionRate =
@@ -96,7 +103,10 @@ class MLHelper @Inject constructor(
         mlRepository.saveTrainingSample(
             task,
             actualPriority
+
         )
+        Log.d("ML_FEEDBACK","Training on ${task.title}" +
+                "priority =$actualPriority")
     }
 
 

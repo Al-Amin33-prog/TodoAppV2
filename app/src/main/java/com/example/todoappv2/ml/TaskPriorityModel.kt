@@ -63,7 +63,8 @@ class TaskPriorityModel(private val context: Context) {
     private fun detectHighKeywords(title: String): Boolean {
         val urgencyKeywords = listOf(
             "asap", "urgent", "critical", "important", "deadline", "immediately",
-            "must", "priority", "rush", "now", "today", "tonight"
+            "must", "priority", "rush", "now", "today", "tonight","exam,","submission",
+            "project","test","exam","tonight","assignment","tonight",
         )
         return urgencyKeywords.any { title.contains(it) }
     }

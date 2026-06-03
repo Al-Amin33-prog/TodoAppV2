@@ -22,12 +22,7 @@ class MLDataPreprocessor {
     }
 
 
-    fun prepareTrainingData(allTasks: List<TaskEntity>): List<TaskEntity> {
-        return allTasks.filter { task ->
-            task.title.isNotBlank() && 
-            task.subjectId > 0
-        }
-    }
+
 
 
 
