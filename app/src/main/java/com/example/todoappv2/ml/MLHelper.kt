@@ -1,8 +1,7 @@
 package com.example.todoappv2.ml
 
 import android.content.Context
-import com.example.todoappv2.data.local.dao.PriorityTrainingDao
-import com.example.todoappv2.data.local.entity.PriorityTrainingEntity
+
 import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.data.repository.MlRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
