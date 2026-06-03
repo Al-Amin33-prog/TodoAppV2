@@ -2,20 +2,21 @@ package com.example.todoappv2.ml
 
 import android.content.Context
 import com.example.todoappv2.data.local.entity.TaskEntity
-
+import kotlin.math.abs
+import kotlin.math.log10
+import kotlin.math.pow
 
 /**
- * TaskPriorityModel - ML model for predicting task priority
- * Uses statistical analysis on historical task data to predict priority levels
+ * TaskPriorityModel - Optimized ML model for predicting task priority.
  * 
- * Algorithm: Naive Bayes classifier with custom feature engineering
- * Features: title length, subject pattern, time to deadline, task history
+ * FIXES:
+ * 1. Laplace Smoothing: Prevents 0% probability when a feature hasn't been seen yet.
+ * 2. Log-Probabilities: Prevents numerical underflow and improves accuracy.
+ * 3. Feature Weighting: Urgency keywords are now given significantly higher weight (5x).
+ * 4. Confidence Fix: Removed the hardcoded 0.85 multiplier.
  */
 class TaskPriorityModel(private val context: Context) {
 
-    /**
-     * Priority levels: Low (0), Medium (1), High (2), Urgent (3)
-     */
     enum class PriorityLevel(val value: Int, val label: String) {
         LOW(0, "Low"),
         MEDIUM(1, "Medium"),
@@ -23,117 +24,84 @@ class TaskPriorityModel(private val context: Context) {
         URGENT(3, "Urgent")
     }
 
-    /**
-     * Feature set for ML model
-     */
     data class TaskFeatures(
         val titleLength: Int,
-        val hasKeywords: Boolean,
+        val hasHighKeywords: Boolean,
+        val hasLowKeywords: Boolean,
         val daysToDeadline: Int,
         val subjectCompletionRate: Float,
         val isOverdue: Boolean
     )
 
-    /**
-     * Training data - stores historical patterns
-     * Format: Priority -> List of feature patterns
-     */
     private val trainingData = mutableMapOf<Int, MutableList<TaskFeatures>>()
 
     init {
-        // Initialize empty training data for each priority level
         for (i in 0..3) {
             trainingData[i] = mutableListOf()
         }
     }
 
-    /**
-     * Extracts features from a task
-     */
     fun extractFeatures(
         task: TaskEntity,
-        subjectCompletionRate: Float = 0.5f,
-        allTasksCount: Int = 0
+        subjectCompletionRate: Float = 0.5f
     ): TaskFeatures {
-        val titleLength = task.title.length
-        val hasKeywords = detectUrgencyKeywords(task.title)
-        
-        val daysToDeadline = if (task.dueDate != null) {
+        val title = task.title.lowercase()
+        val days = if (task.dueDate != null) {
             ((task.dueDate - System.currentTimeMillis()) / (1000 * 60 * 60 * 24)).toInt()
-        } else {
-            365 // Default: far away
-        }
-        
-        val isOverdue = task.dueDate != null && task.dueDate < System.currentTimeMillis()
+        } else 30 
 
         return TaskFeatures(
-            titleLength = titleLength,
-            hasKeywords = hasKeywords,
-            daysToDeadline = daysToDeadline,
+            titleLength = title.length,
+            hasHighKeywords = detectHighKeywords(title),
+            hasLowKeywords = detectLowKeywords(title),
+            daysToDeadline = days,
             subjectCompletionRate = subjectCompletionRate,
-            isOverdue = isOverdue
+            isOverdue = task.dueDate != null && task.dueDate < System.currentTimeMillis()
         )
     }
 
-    /**
-     * Detects urgency keywords in task title
-     * Keywords: ASAP, urgent, critical, important, deadline, etc.
-     */
-    private fun detectUrgencyKeywords(title: String): Boolean {
+    private fun detectHighKeywords(title: String): Boolean {
         val urgencyKeywords = listOf(
-            "asap", "urgent", "critical", "important",
-            "deadline", "today", "tonight", "immediately",
-            "must", "essential", "priority", "rush"
+            "asap", "urgent", "critical", "important", "deadline", "immediately",
+            "must", "priority", "rush", "now", "today", "tonight"
         )
-        return urgencyKeywords.any { title.lowercase().contains(it) }
+        return urgencyKeywords.any { title.contains(it) }
     }
 
-    /**
-     * Train the model with labeled task data
-     * Call this when user marks tasks with priorities
-     */
+    private fun detectLowKeywords(title: String): Boolean {
+        val lowKeywords = listOf("whenever", "maybe", "optional", "low", "backlog", "relax", "later")
+        return lowKeywords.any { title.contains(it) }
+    }
+
     fun train(task: TaskEntity, actualPriority: Int, subjectCompletionRate: Float = 0.5f) {
         val features = extractFeatures(task, subjectCompletionRate)
         trainingData[actualPriority]?.add(features)
     }
 
-    /**
-     * Predict priority for a new task
-     * Returns PriorityLevel (Low, Medium, High, Urgent)
-     */
     fun predictPriority(
         task: TaskEntity,
         subjectCompletionRate: Float = 0.5f
     ): PriorityLevel {
+        val features = extractFeatures(task, subjectCompletionRate)
 
+        // Heuristic fallback if no training data exists
         if (trainingData.values.all { it.isEmpty() }) {
-
-            val features = extractFeatures(task, subjectCompletionRate)
-
             return when {
-                features.isOverdue ->
-                    PriorityLevel.URGENT
-
-                features.hasKeywords ->
-                    PriorityLevel.HIGH
-
-                features.daysToDeadline <= 1 ->
-                    PriorityLevel.HIGH
-
-                else ->
-                    PriorityLevel.MEDIUM
+                features.isOverdue -> PriorityLevel.URGENT
+                features.hasHighKeywords -> PriorityLevel.HIGH
+                features.daysToDeadline <= 1 -> PriorityLevel.HIGH
+                features.hasLowKeywords -> PriorityLevel.LOW
+                else -> PriorityLevel.MEDIUM
             }
         }
 
-        val features = extractFeatures(task, subjectCompletionRate)
-        var bestPriority = 1 // Default: Medium
-        var bestScore = Double.MIN_VALUE
+        var bestPriority = 1 
+        var maxLogProb = Double.NEGATIVE_INFINITY
 
-        // Calculate probability for each priority level
         for (priority in 0..3) {
-            val score = calculateProbability(features, priority)
-            if (score > bestScore) {
-                bestScore = score
+            val logProb = calculateLogProbability(features, priority)
+            if (logProb > maxLogProb) {
+                maxLogProb = logProb
                 bestPriority = priority
             }
         }
@@ -141,93 +109,54 @@ class TaskPriorityModel(private val context: Context) {
         return PriorityLevel.values().find { it.value == bestPriority } ?: PriorityLevel.MEDIUM
     }
 
-    /**
-     * Calculate probability using Naive Bayes approach
-     * P(Priority | Features) ∝ P(Features | Priority) * P(Priority)
-     */
-    private fun calculateProbability(features: TaskFeatures, priorityLevel: Int): Double {
-        val trainingExamples = trainingData[priorityLevel] ?: return 0.0
-        
-        if (trainingExamples.isEmpty()) return 0.0
+    private fun calculateLogProbability(features: TaskFeatures, priorityLevel: Int): Double {
+        val examples = trainingData[priorityLevel] ?: return -100.0
+        val totalSamples = trainingData.values.sumOf { it.size }.toDouble()
 
-        // Prior probability: P(Priority)
-        val totalSamples = trainingData.values.sumOf { it.size }
-        val priorProbability = trainingExamples.size.toDouble() / totalSamples
+        // 1. Class Prior with Laplace Smoothing (+1)
+        val prior = (examples.size + 1).toDouble() / (totalSamples + 4)
+        var logLikelihood = log10(prior)
 
-        // Likelihood: P(Features | Priority)
-        var likelihood = 1.0
-        
-        // Feature 1: Title length similarity
-        val avgTitleLength = trainingExamples.map { it.titleLength }.average()
-        val titleSimilarity = 1.0 / (1.0 + kotlin.math.abs(features.titleLength - avgTitleLength) / 10.0)
-        likelihood *= titleSimilarity
+        // 2. Keyword Likelihood (Weighted 5x)
+        val highKCount = examples.count { it.hasHighKeywords }.toDouble()
+        val highKLikelihood = (highKCount + 1) / (examples.size + 2)
+        val keywordTerm = if (features.hasHighKeywords) log10(highKLikelihood) else log10(1.0 - highKLikelihood)
+        logLikelihood += (keywordTerm * 5.0) 
 
-        // Feature 2: Keyword match
-        val keywordMatch = if (features.hasKeywords) {
-            trainingExamples.count { it.hasKeywords }.toDouble() / trainingExamples.size
-        } else {
-            1.0 - (trainingExamples.count { it.hasKeywords }.toDouble() / trainingExamples.size)
-        }
-        likelihood *= keywordMatch
+        // 3. Deadline Proximity
+        val avgDays = if (examples.isNotEmpty()) examples.map { it.daysToDeadline }.average() else 7.0
+        val deadlineLikelihood = 1.0 / (1.0 + abs(features.daysToDeadline - avgDays) / 7.0)
+        logLikelihood += log10(deadlineLikelihood)
 
-        // Feature 3: Days to deadline
-        val avgDaysToDeadline = trainingExamples.map { it.daysToDeadline }.average()
-        val deadlineSimilarity = 1.0 / (1.0 + kotlin.math.abs(features.daysToDeadline - avgDaysToDeadline) / 7.0)
-        likelihood *= deadlineSimilarity
-
-        // Feature 4: Subject completion rate
-        val avgCompletionRate = trainingExamples.map { it.subjectCompletionRate }.average()
-        val completionSimilarity = 1.0 - kotlin.math.abs(features.subjectCompletionRate - avgCompletionRate)
-        likelihood *= completionSimilarity
-
-        // Feature 5: Overdue penalty
+        // 4. Overdue logic
         if (features.isOverdue) {
-            likelihood *= 1.5 // Boost score for overdue tasks
+            logLikelihood += if (priorityLevel >= 2) 0.5 else -0.5
         }
 
-        // Combine prior and likelihood
-        return priorProbability * likelihood
+        return logLikelihood
     }
 
-    /**
-     * Get prediction confidence (0.0 - 1.0)
-     * Higher value = model is more confident
-     */
     fun getPredictionConfidence(
         task: TaskEntity,
         subjectCompletionRate: Float = 0.5f
     ): Float {
-
-        if (trainingData.values.all { it.isEmpty() }) {
-            return 0.30f
-        }
+        if (trainingData.values.all { it.isEmpty() }) return 0.45f
 
         val features = extractFeatures(task, subjectCompletionRate)
+        val logProbs = (0..3).map { calculateLogProbability(features, it) }
 
-        val scores = (0..3).map {
-            calculateProbability(features, it)
-        }
+        val maxLog = logProbs.maxOrNull() ?: 0.0
+        val sumExp = logProbs.sumOf { 10.0.pow(it - maxLog) }
+        val relativeProb = 1.0 / sumExp
 
-        val maxScore = scores.maxOrNull() ?: 0.0
-        val sumScores = scores.sum()
-
-        if (sumScores <= 0.0) {
-            return 0.30f
-        }
-
-        return ((maxScore / sumScores) * 0.85)
-            .coerceIn(0.30, 0.95)
-            .toFloat()
+        return relativeProb.toFloat().coerceIn(0.35f, 0.99f)
     }
 
-    /**
-     * Get model statistics
-     */
     fun getModelStats(): Map<String, Any> {
         return mapOf(
             "totalTrainingSamples" to trainingData.values.sumOf { it.size },
             "samplesPerPriority" to trainingData.mapKeys { (k, _) -> 
-                PriorityLevel. values().find { it.value == k }?.label ?: "Unknown"
+                PriorityLevel.values().find { it.value == k }?.label ?: "Unknown"
             }.mapValues { it.value.size },
             "isModelTrained" to (trainingData.values.any { it.isNotEmpty() })
         )
