@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -58,7 +60,7 @@ class TaskAddEditViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val allTasks = repository.getAllTasks().first()
-            mlHelper.initializeModel(allTasks)
+            mlHelper.initializeModel()
         }
     }
     private fun validate(state: TaskAddEditUiState): String?{
@@ -234,70 +236,58 @@ class TaskAddEditViewModel @Inject constructor(
     }
     private fun predictPriority() {
         viewModelScope.launch {
+
             val state = _uiState.value
 
-            //  FIXED: Set loading state properly
             _uiState.update {
                 it.copy(isPredictionLoading = true)
             }
 
-            // Check if we have enough data to predict
             if (state.title.isBlank() || state.subjectId == null) {
-                //  FIXED: Reset to default when conditions aren't met
                 _uiState.update {
                     it.copy(
                         predictedPriority = "Medium",
                         predictionConfidence = 0.3f,
-                        isPredictionLoading = false,  // ✅ Set to FALSE
-
-                        // Reset priority only if NOT overridden
-                        priority = if (!it.isPriorityOverridden) "Medium" else it.priority
+                        isPredictionLoading = false
                     )
                 }
                 return@launch
             }
 
             try {
-                // Get all tasks for training context
                 val allTasks = repository.getAllTasks().first()
 
-                // Create temporary task with current form values
                 val tempTask = TaskEntity(
                     id = 0,
                     subjectId = state.subjectId,
                     title = state.title,
                     description = state.description,
-                    dueDate = state.dueDate,
-                    isCompleted = false,
-                    createdAt = System.currentTimeMillis()
+                    dueDate = state.dueDate
                 )
 
-                // Get prediction from ML model
-                val prediction = mlHelper.predictTaskPriority(tempTask, allTasks)
-                val confidence = mlHelper.getPredictionConfidence(tempTask, allTasks)
+                val result = withContext(Dispatchers.Default) {
 
-                //  FIXED: Update UI with new prediction
+                    val prediction =
+                        mlHelper.predictTaskPriority(tempTask, allTasks)
+
+                    val confidence =
+                        mlHelper.getPredictionConfidence(tempTask, allTasks)
+
+                    prediction to confidence
+                }
+
                 _uiState.update {
                     it.copy(
-                        predictedPriority = prediction.label,
-                        predictionConfidence = confidence,
-                        isPredictionLoading = false,  //  Set to FALSE after prediction
-
-                        // Only auto-fill priority if user hasn't overridden
-                        priority = if (!it.isPriorityOverridden) {
-                            prediction.label
-                        } else {
-                            it.priority
-                        }
+                        predictedPriority = result.first.label,
+                        predictionConfidence = result.second,
+                        isPredictionLoading = false
                     )
                 }
+
             } catch (e: Exception) {
-                // Handle error gracefully
                 _uiState.update {
                     it.copy(
-                        isPredictionLoading = false,
-                        predictedPriority = "Medium",
-                        predictionConfidence = 0.3f
+                        isPredictionLoading = false
                     )
                 }
             }

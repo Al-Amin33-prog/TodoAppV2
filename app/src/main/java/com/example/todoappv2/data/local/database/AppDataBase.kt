@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.todoappv2.data.local.dao.PriorityTrainingDao
 import com.example.todoappv2.data.local.dao.SubjectDao
 import com.example.todoappv2.data.local.dao.TaskDao
 import com.example.todoappv2.data.local.entity.SubjectEntity
@@ -16,7 +17,7 @@ import com.example.todoappv2.data.local.entity.TaskEntity
         SubjectEntity::class,
         TaskEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 
 )
@@ -25,6 +26,7 @@ abstract class AppDataBase : RoomDatabase(){
 
     abstract fun subjectDao(): SubjectDao
     abstract fun taskDao(): TaskDao
+    abstract fun priorityTrainingDao(): PriorityTrainingDao
 
     companion object {
         private val MIGRATION_1_TO_2 = object : Migration(1, 2) {

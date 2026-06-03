@@ -1,76 +1,63 @@
 package com.example.todoappv2.ml
 
 import android.content.Context
+import com.example.todoappv2.data.local.dao.PriorityTrainingDao
+import com.example.todoappv2.data.local.entity.PriorityTrainingEntity
 import com.example.todoappv2.data.local.entity.TaskEntity
-import com.example.todoappv2.data.repository.AppRepository
+import com.example.todoappv2.data.repository.MlRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 // MLHelper.kt - FIXED
 @Singleton
 class MLHelper @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val repository: AppRepository  // ✅ NEW: To load historical data
+    private val mlRepository: MlRepository,
 ) {
     private val priorityModel: TaskPriorityModel = TaskPriorityModel(context)
     private val preprocessor = MLDataPreprocessor()
     private var isModelInitialized = false
 
 
+
+
     // ✅ NEW: Initialize model with historical data on first use
-    suspend fun initializeModel(allTasks: List<TaskEntity>) {
+    suspend fun initializeModel() {
+
         if (isModelInitialized) return
 
-        try {
-            val previousTasks = repository.getAllTasks().first()
+        withContext(Dispatchers.Default) {
 
-            trainModelWithHistoricalData(
-                previousTasks,
-                previousTasks.associate {
+            val savedSamples =
+                mlRepository.getTrainingSamples()
 
-                    it.id to getPriorityValue(it)
-                }
-            )
-        } catch (e: Exception) {
-            // If loading fails, train with current tasks only
-            trainModelWithHistoricalData(
-                allTasks,
-                allTasks.associate {
+            savedSamples.forEach { sample ->
 
-                    it.id to getPriorityValue(it)
-                }
-            )
-        }
+                val task = TaskEntity(
+                    id = sample.id,
+                    subjectId = sample.subjectId,
+                    title = sample.taskTitle,
+                    dueDate = sample.dueDate,
+                    isCompleted = sample.isCompleted,
+                    createdAt = sample.createdAt
+                )
 
-        isModelInitialized = true
-    }
-
-    private fun getPriorityValue(task: TaskEntity): Int {
-        return when (task.priority) {
-            "Low" -> 0
-            "Medium" -> 1
-            "High" -> 2
-            "Urgent" -> 3
-            else -> 1
-        }
-    }
-
-    fun trainModelWithHistoricalData(
-        allTasks: List<TaskEntity>,
-        taskPriorities: Map<Long, Int>
-    ) {
-        val validTasks = preprocessor.prepareTrainingData(allTasks)
-
-        validTasks.forEach { task ->
-            val priority = taskPriorities[task.id] ?: 1
-            // ✅ FIXED: Train on RECENT, incomplete tasks (inverted logic)
-            if (!task.isCompleted && System.currentTimeMillis() - task.createdAt < 30L * 24 * 60 * 60 * 1000) {
-                priorityModel.train(task, priority)
+                priorityModel.train(
+                    task,
+                    sample.priorityLevel
+                )
             }
+
+            isModelInitialized = true
         }
     }
+
+
+
+
 
 
     fun predictTaskPriority(
@@ -89,13 +76,28 @@ class MLHelper @Inject constructor(
         return priorityModel.getPredictionConfidence(task, completionRate)
     }
 
-    fun feedbackTask(
+    suspend fun feedbackTask(
         task: TaskEntity,
         actualPriority: Int,
         allTasks: List<TaskEntity>
     ) {
-        val completionRate = preprocessor.calculateSubjectCompletionRate(task.subjectId, allTasks)
-        priorityModel.train(task, actualPriority, completionRate)
+
+        val completionRate =
+            preprocessor.calculateSubjectCompletionRate(
+                task.subjectId,
+                allTasks
+            )
+
+        priorityModel.train(
+            task,
+            actualPriority,
+            completionRate
+        )
+
+        mlRepository.saveTrainingSample(
+            task,
+            actualPriority
+        )
     }
 
 
