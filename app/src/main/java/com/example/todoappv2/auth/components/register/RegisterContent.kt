@@ -123,11 +123,7 @@ fun RegisterContent(
 
             Button(
                 onClick = {
-                    if (
-                        name.isNotBlank() &&
-                        email.isNotBlank() &&
-                        password.isNotBlank()
-                    ){
+
                         onEvent(
                             AuthEvent.Register(
                                 name = name.trim(),
@@ -135,7 +131,7 @@ fun RegisterContent(
                                 password = password.trim()
                             )
                         )
-                    }
+
                 },
                 enabled = !state.isLoading,
                 modifier = Modifier

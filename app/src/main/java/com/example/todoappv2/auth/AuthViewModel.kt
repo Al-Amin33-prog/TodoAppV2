@@ -134,6 +134,41 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun register(name: String, email: String, password: String) {
+        when {
+            email.isBlank() && password.isBlank() && name.isBlank()-> {
+                _uiState.update {
+                    it.copy(
+                        error = "Fill up the fields above"
+                    )
+                }
+                return
+            }
+            name.isBlank() ->{
+                _uiState.update {
+                    it.copy(
+                        error = "Name cannot be blank"
+                    )
+                }
+            }
+
+            email.isBlank() -> {
+                _uiState.update {
+                    it.copy(
+                        error = "Email cannot be empty"
+                    )
+                }
+                return
+            }
+
+            password.isBlank() -> {
+                _uiState.update {
+                    it.copy(
+                        error = "Password cannot be empty"
+                    )
+                }
+                return
+            }
+        }
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
