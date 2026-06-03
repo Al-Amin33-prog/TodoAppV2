@@ -5,8 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.example.todoappv2.core.notification.AndroidTaskScheduler
-import com.example.todoappv2.core.notification.TaskScheduler
+import com.example.todoappv2.data.local.dao.PriorityTrainingDao
 import com.example.todoappv2.data.local.dao.SubjectDao
 import com.example.todoappv2.data.local.dao.TaskDao
 import com.example.todoappv2.data.local.database.AppDataBase
@@ -15,7 +14,6 @@ import com.example.todoappv2.data.repository.AppRepositoryImplementation
 import com.example.todoappv2.data.repository.AuthRepository
 import com.example.todoappv2.data.repository.AuthRepositoryImplementation
 import com.google.firebase.auth.FirebaseAuth
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,11 +25,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {
 
-    @Binds
-    @Singleton
-    abstract fun bindTaskScheduler(
-        androidTaskScheduler: AndroidTaskScheduler
-    ): TaskScheduler
+
 
     companion object {
         @Provides
@@ -69,5 +63,14 @@ abstract class AppModule {
         @Singleton
         fun provideAuthRepository(firebaseAuth: FirebaseAuth): AuthRepository = 
             AuthRepositoryImplementation(firebaseAuth)
+        @Provides
+
+        fun providePriorityTrainingDao(
+            db: AppDataBase
+        ): PriorityTrainingDao {
+            return db.priorityTrainingDao()
+        }
     }
+
+
 }

@@ -28,7 +28,7 @@ class TaskAddEditViewModel @Inject constructor(
     private val repository: AppRepository,
     private val reminderSchedule: TaskReminderSchedule,
     private val mlHelper: MLHelper,
-   // private var predictionJob: Job? = null,
+
     savedStateHandle: SavedStateHandle
 ): ViewModel(){
 
@@ -59,7 +59,6 @@ class TaskAddEditViewModel @Inject constructor(
             loadSubject(subjectId)
         }
         viewModelScope.launch {
-            val allTasks = repository.getAllTasks().first()
             mlHelper.initializeModel()
         }
     }

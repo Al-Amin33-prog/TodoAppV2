@@ -41,7 +41,7 @@ class TaskViewModel @Inject constructor (
     private fun observeTasks(){
         viewModelScope.launch {
             getTasks().collect { tasks ->
-                mlHelper.initializeModel(tasks)
+                mlHelper.initializeModel()
                 _uiState.update { it.copy(allTasks = tasks) }
                 refreshUiState()
             }
@@ -82,20 +82,8 @@ class TaskViewModel @Inject constructor (
             )
         }
     }
-    fun onTaskSaved(task: TaskEntity){
-        viewModelScope.launch {
-            refreshUiState()
-        }
-    }
-    fun onUserSetPriority(taskId: Long,priorityLevel: Int){
-        viewModelScope.launch {
-            val task = _uiState.value.allTasks.find { it.id == taskId }
-            task?.let{
-              mlHelper.feedbackTask(task,priorityLevel,_uiState.value.allTasks)
-                refreshUiState()
-            }
-        }
-    }
+
+
 
     fun onEvent(event: TaskEvent){
         when(event){

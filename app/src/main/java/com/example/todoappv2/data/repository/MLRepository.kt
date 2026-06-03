@@ -31,4 +31,5 @@ class MlRepository @Inject constructor(
     suspend fun getTrainingSamples(): List<PriorityTrainingEntity> {
         return trainingDao.getAllTrainingSamples()
     }
+
 }
