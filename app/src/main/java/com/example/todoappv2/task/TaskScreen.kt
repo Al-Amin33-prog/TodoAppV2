@@ -90,7 +90,7 @@ fun TaskScreen(
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize()) {
-            // 1. Unified Selection Bar (Floating overlay to avoid "Double Bar" visual)
+
             AnimatedVisibility(
                 visible = state.isSelectionMode,
                 enter = expandVertically(),
@@ -102,7 +102,8 @@ fun TaskScreen(
                     onClearSelection = { viewModel.onEvent(TaskEvent.ClearSelection) },
                     onDeleteSelected = { viewModel.onEvent(TaskEvent.DeleteSelectedTasks) },
                     onSelectAll = { viewModel.onEvent(TaskEvent.SelectAll) },
-                    isAllSelected = state.selectedTaskIds.size == state.visibleTasks.size && state.visibleTasks.isNotEmpty()
+                    isAllSelected = state.selectedTaskIds.size == state.visibleTasks.size && state.visibleTasks.isNotEmpty(),
+
                 )
             }
 

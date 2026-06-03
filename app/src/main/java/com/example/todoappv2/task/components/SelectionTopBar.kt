@@ -7,8 +7,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 
@@ -17,10 +19,10 @@ import androidx.compose.ui.res.painterResource
 fun SelectionTopBar(
     selectedCount: Int,
     onClearSelection: () -> Unit,
-    onDeleteSelected:  () -> Unit,
+    onDeleteSelected: () -> Unit,
     isAllSelected: Boolean,
     onSelectAll: () -> Unit
-){
+) {
     AnimatedVisibility(
         visible = true,
         enter = fadeIn(),
@@ -29,35 +31,48 @@ fun SelectionTopBar(
         TopAppBar(
             title = {
                 Text(
-                    "$selectedCount selected"
+                    text = "$selectedCount selected",
+                    style = MaterialTheme.typography.titleMedium
                 )
             },
             navigationIcon = {
                 IconButton(onClick = onClearSelection) {
                     Icon(
                         painter = painterResource(R.drawable.close_small_24px),
-                        contentDescription = "Close"
+                        contentDescription = "Clear Selection"
                     )
                 }
             },
             actions = {
-                IconButton(onClick = onSelectAll) {
+
+                IconButton(onClick = {
+                    if (isAllSelected)
+                        onClearSelection()
+                    else onSelectAll()
+                }) {
                     Icon(
                         painter = painterResource(
-                            if (isAllSelected) R.drawable.select_all_24px
-                            else R.drawable.deselect_24px
+                            if (isAllSelected) R.drawable.deselect_24px
+                            else R.drawable.select_all_24px
                         ),
-                        contentDescription = "Select All"
+                        contentDescription = if (isAllSelected)
+                            "Deselect All"
+                        else "Select All"
                     )
                 }
+                
+
                 IconButton(onClick = onDeleteSelected) {
                     Icon(
-                        painter =painterResource(R.drawable.ic_delete_24px),
-                        contentDescription = "Delete"
+                        painter = painterResource(R.drawable.ic_delete_24px),
+                        contentDescription = "Delete Selected",
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
-
-            }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            )
         )
     }
 }
