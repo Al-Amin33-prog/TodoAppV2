@@ -1,11 +1,13 @@
 package com.example.todoappv2.ml.component
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,29 +28,23 @@ fun PriorityOverrideSection(
     Column(modifier = Modifier.padding(16.dp)) {
         Text("Task Priority", style = MaterialTheme.typography.titleMedium)
 
-            FlowRow(
+
+            Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+          //  horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+
             listOf("Low", "Medium", "High", "Urgent").forEach { priority ->
+                Log.d("PRIORITY RENDER","selected = $selectedPriority chip =$priority")
                 FilterChip(
                     selected = selectedPriority == priority,
                     onClick = {
+                        Log.d("ML_CLICK","Chip Clicked = $priority")
                         onPriorityChange(priority)
-                        // CALL THIS WHEN USER MANUALLY SETS PRIORITY
-                        if (selectedPriority != mlPredictedPriority) {
-                            val priorityLevel = when (priority) {
-                                "Low" -> 0
-                                "Medium" -> 1
-                                "High" -> 2
-                                "Urgent" -> 3
-                                else -> 1
-                            }
-                         onPriorityOverride(priorityLevel)
-                        }
+
                     },
                     label = { Text(priority) },
                     modifier = Modifier

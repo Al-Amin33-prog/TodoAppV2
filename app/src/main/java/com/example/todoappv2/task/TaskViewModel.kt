@@ -50,6 +50,7 @@ class TaskViewModel @Inject constructor (
 
     // SINGLE SOURCE OF TRUTH FOR UI UPDATES
     private fun refreshUiState() {
+
         val currentState = _uiState.value
         
         // 1. Filter by status
@@ -81,6 +82,7 @@ class TaskViewModel @Inject constructor (
                 groupedTasks = grouped
             )
         }
+
     }
 
 

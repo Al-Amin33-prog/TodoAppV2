@@ -1,6 +1,7 @@
 package com.example.todoappv2.task.add_edit
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -135,10 +136,13 @@ class TaskAddEditViewModel @Inject constructor(
                handlePriorityFeedback(event.priorityLevel)
            }
             is TaskAddEditEvent.PriorityChanged ->{
+                android.util.Log.d("PRIORITY_EVENT","Changed to ${event.value}")
+                android.util.Log.d("ML_DEBUG","Clicked${event.value}")
                 _uiState.value = _uiState.value.copy(
                     priority = event.value,
                     isPriorityOverridden = true
                 )
+                android.util.Log.d("ML_DEBUG","State Priority = ${_uiState.value.priority}")
             }
 
             TaskAddEditEvent.SaveTask ->
@@ -157,6 +161,8 @@ class TaskAddEditViewModel @Inject constructor(
         }
             _uiState.update{it.copy(isSaving = true)}
             try {
+                Log.d("SAVE_TASK",
+                    "priority=${state.priority},predicted=${state.predictedPriority}")
                 val entity = TaskEntity(
                     id = if (state.isEditing)
                     requireNotNull(taskId) else 0,
@@ -176,6 +182,8 @@ class TaskAddEditViewModel @Inject constructor(
 
                 val taskWithId = entity.copy(id = savedId)
 
+                android.util.Log.d("ML_DEBUG","UI PRIORITY = ${state.priority}")
+
                 val priorityLevel = when(state.priority){
                     "Low" -> 0
                     "Medium" -> 1
@@ -183,6 +191,7 @@ class TaskAddEditViewModel @Inject constructor(
                     "Urgent" -> 3
                     else -> 1
                 }
+                android.util.Log.d("ML_DEBUG","Converted priority = $priorityLevel")
 
                 val allTasks = repository.getAllTasks().first()
 

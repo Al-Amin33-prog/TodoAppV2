@@ -240,7 +240,12 @@ fun TaskAddEditScreen(
                     },
                     mlPredictedPriority = state.predictedPriority,
                     taskId = 0L,
-                    onPriorityOverride = {}
+                    onPriorityOverride = { level ->
+                        viewModel.onEvent(
+                            TaskAddEditEvent.PriorityFeedback(level)
+                        )
+
+                    }
                 )
             }
 
