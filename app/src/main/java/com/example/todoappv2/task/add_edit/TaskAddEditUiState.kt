@@ -1,7 +1,9 @@
 package com.example.todoappv2.task.add_edit
 
+import androidx.compose.runtime.Immutable
 
 
+@Immutable
 data class TaskAddEditUiState(
 
     val title: String ="",

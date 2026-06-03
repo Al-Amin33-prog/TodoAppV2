@@ -28,13 +28,19 @@ class MLHelper @Inject constructor(
 
             trainModelWithHistoricalData(
                 previousTasks,
-                previousTasks.associate { it.id to getPriorityValue(it) }
+                previousTasks.associate {
+
+                    it.id to getPriorityValue(it)
+                }
             )
         } catch (e: Exception) {
             // If loading fails, train with current tasks only
             trainModelWithHistoricalData(
                 allTasks,
-                allTasks.associate { it.id to getPriorityValue(it) }
+                allTasks.associate {
+
+                    it.id to getPriorityValue(it)
+                }
             )
         }
 
@@ -65,11 +71,7 @@ class MLHelper @Inject constructor(
             }
         }
     }
-    private fun getDefaultPriority(task: TaskEntity): Int {
-        // If task has no priority field, use the predicted priority
-        // For now, default to Medium (1)
-        return 1
-    }
+
 
     fun predictTaskPriority(
         task: TaskEntity,
@@ -96,7 +98,5 @@ class MLHelper @Inject constructor(
         priorityModel.train(task, actualPriority, completionRate)
     }
 
-    fun getModelStats(): Map<String, Any> {
-        return priorityModel.getModelStats()
-    }
+
 }

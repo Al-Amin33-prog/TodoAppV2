@@ -35,7 +35,7 @@ class TaskAddEditViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(TaskAddEditUiState())
     val uiState: StateFlow<TaskAddEditUiState> = _uiState.asStateFlow()
-    // ✅ CORRECT - Job is created internally
+    //  CORRECT - Job is created internally
     private var predictionJob: Job? = null
     
     val subjects = repository.getSubjects()
@@ -236,14 +236,14 @@ class TaskAddEditViewModel @Inject constructor(
         viewModelScope.launch {
             val state = _uiState.value
 
-            // ✅ FIXED: Set loading state properly
+            //  FIXED: Set loading state properly
             _uiState.update {
                 it.copy(isPredictionLoading = true)
             }
 
             // Check if we have enough data to predict
             if (state.title.isBlank() || state.subjectId == null) {
-                // ✅ FIXED: Reset to default when conditions aren't met
+                //  FIXED: Reset to default when conditions aren't met
                 _uiState.update {
                     it.copy(
                         predictedPriority = "Medium",
@@ -276,12 +276,12 @@ class TaskAddEditViewModel @Inject constructor(
                 val prediction = mlHelper.predictTaskPriority(tempTask, allTasks)
                 val confidence = mlHelper.getPredictionConfidence(tempTask, allTasks)
 
-                // ✅ FIXED: Update UI with new prediction
+                //  FIXED: Update UI with new prediction
                 _uiState.update {
                     it.copy(
                         predictedPriority = prediction.label,
                         predictionConfidence = confidence,
-                        isPredictionLoading = false,  // ✅ Set to FALSE after prediction
+                        isPredictionLoading = false,  //  Set to FALSE after prediction
 
                         // Only auto-fill priority if user hasn't overridden
                         priority = if (!it.isPriorityOverridden) {

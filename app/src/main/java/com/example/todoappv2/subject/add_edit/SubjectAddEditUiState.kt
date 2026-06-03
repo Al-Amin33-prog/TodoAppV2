@@ -1,5 +1,8 @@
 package com.example.todoappv2.subject.add_edit
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class SubjectAddEditUiState (
     val title: String = "",
     val colorHex: Long = 0xFF4CAF50,

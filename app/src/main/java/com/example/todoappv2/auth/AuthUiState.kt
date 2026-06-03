@@ -1,8 +1,9 @@
 package com.example.todoappv2.auth
 
+import androidx.compose.runtime.Immutable
 import com.example.todoappv2.domain.UserModel
 
-
+@Immutable
 
 data class AuthUiState(
     val isLoading: Boolean = false,

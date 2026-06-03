@@ -1,9 +1,10 @@
 package com.example.todoappv2.task
 
+import androidx.compose.runtime.Immutable
 import com.example.todoappv2.data.local.entity.TaskEntity
 import com.example.todoappv2.task.components.TaskFilterType
 import com.example.todoappv2.task.components.TaskSection
-
+@Immutable
 data class TaskUiState(
     val isLoading: Boolean = false,
     val visibleTasks: List<TaskUiModel> = emptyList(),

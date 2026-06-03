@@ -1,7 +1,8 @@
 package com.example.todoappv2.subject
 
+import androidx.compose.runtime.Immutable
 import com.example.todoappv2.data.local.entity.SubjectEntity
-
+@Immutable
 data class SubjectUiState(
     val isLoading: Boolean = false,
     val searchQuery: String = "",
