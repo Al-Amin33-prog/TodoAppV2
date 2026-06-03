@@ -44,8 +44,8 @@ fun SelectionTopBar(
                 IconButton(onClick = onSelectAll) {
                     Icon(
                         painter = painterResource(
-                            if (isAllSelected) R.drawable.ic_delete_24px
-                            else R.drawable.select_all_24px
+                            if (isAllSelected) R.drawable.select_all_24px
+                            else R.drawable.deselect_24px
                         ),
                         contentDescription = "Select All"
                     )
